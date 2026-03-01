@@ -56,6 +56,12 @@ type Query {
   document(collection: String, relativePath: String): DocumentNode!
   homepage(relativePath: String): Homepage!
   homepageConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: HomepageFilter): HomepageConnection!
+  services(relativePath: String): Services!
+  servicesConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ServicesFilter): ServicesConnection!
+  about(relativePath: String): About!
+  aboutConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: AboutFilter): AboutConnection!
+  team(relativePath: String): Team!
+  teamConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: TeamFilter): TeamConnection!
   blog(relativePath: String): Blog!
   blogConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: BlogFilter): BlogConnection!
   projects(relativePath: String): Projects!
@@ -64,6 +70,9 @@ type Query {
 
 input DocumentFilter {
   homepage: HomepageFilter
+  services: ServicesFilter
+  about: AboutFilter
+  team: TeamFilter
   blog: BlogFilter
   projects: ProjectsFilter
 }
@@ -91,7 +100,7 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float, sort: String, filter: DocumentFilter, folder: String): DocumentConnection!
 }
 
-union DocumentNode = Homepage | Blog | Projects | Folder
+union DocumentNode = Homepage | Services | About | Team | Blog | Projects | Folder
 
 type Homepage implements Node & Document {
   heroVideo: String!
@@ -122,7 +131,144 @@ type HomepageConnection implements Connection {
   edges: [HomepageConnectionEdges]
 }
 
+type ServicesDisciplines {
+  number: String
+  label: String
+  statement: String
+  deliverables: [String]
+}
+
+type ServicesProcess {
+  step: String
+  title: String
+  text: String
+}
+
+type Services implements Node & Document {
+  headline: String
+  intro: String
+  disciplines: [ServicesDisciplines]
+  process: [ServicesProcess]
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input ServicesDisciplinesFilter {
+  number: StringFilter
+  label: StringFilter
+  statement: StringFilter
+  deliverables: StringFilter
+}
+
+input ServicesProcessFilter {
+  step: StringFilter
+  title: StringFilter
+  text: StringFilter
+}
+
+input ServicesFilter {
+  headline: StringFilter
+  intro: StringFilter
+  disciplines: ServicesDisciplinesFilter
+  process: ServicesProcessFilter
+}
+
+type ServicesConnectionEdges {
+  cursor: String!
+  node: Services
+}
+
+type ServicesConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [ServicesConnectionEdges]
+}
+
+type AboutPositioning {
+  title: String
+  text: String
+}
+
+type About implements Node & Document {
+  headline: String
+  intro: String
+  positioning: [AboutPositioning]
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input AboutPositioningFilter {
+  title: StringFilter
+  text: StringFilter
+}
+
+input AboutFilter {
+  headline: StringFilter
+  intro: StringFilter
+  positioning: AboutPositioningFilter
+}
+
+type AboutConnectionEdges {
+  cursor: String!
+  node: About
+}
+
+type AboutConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [AboutConnectionEdges]
+}
+
+type TeamMembers {
+  name: String
+  title: String
+  image: String
+  shortBio: String
+  fullBio: String
+}
+
+type Team implements Node & Document {
+  members: [TeamMembers]
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input ImageFilter {
+  startsWith: String
+  eq: String
+  exists: Boolean
+  in: [String]
+}
+
+input TeamMembersFilter {
+  name: StringFilter
+  title: StringFilter
+  image: ImageFilter
+  shortBio: StringFilter
+  fullBio: StringFilter
+}
+
+input TeamFilter {
+  members: TeamMembersFilter
+}
+
+type TeamConnectionEdges {
+  cursor: String!
+  node: Team
+}
+
+type TeamConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [TeamConnectionEdges]
+}
+
 type Blog implements Node & Document {
+  published: Boolean
+  order: Float
   title: String!
   excerpt: String!
   date: String!
@@ -137,11 +283,19 @@ type Blog implements Node & Document {
   _values: JSON!
 }
 
-input ImageFilter {
-  startsWith: String
-  eq: String
+input BooleanFilter {
+  eq: Boolean
   exists: Boolean
-  in: [String]
+}
+
+input NumberFilter {
+  lt: Float
+  lte: Float
+  gte: Float
+  gt: Float
+  eq: Float
+  exists: Boolean
+  in: [Float]
 }
 
 input RichTextFilter {
@@ -151,6 +305,8 @@ input RichTextFilter {
 }
 
 input BlogFilter {
+  published: BooleanFilter
+  order: NumberFilter
   title: StringFilter
   excerpt: StringFilter
   date: StringFilter
@@ -174,6 +330,8 @@ type BlogConnection implements Connection {
 }
 
 type Projects implements Node & Document {
+  published: Boolean
+  order: Float
   title: String!
   client: String!
   year: String!
@@ -195,6 +353,8 @@ type Projects implements Node & Document {
 }
 
 input ProjectsFilter {
+  published: BooleanFilter
+  order: NumberFilter
   title: StringFilter
   client: StringFilter
   year: StringFilter
@@ -231,6 +391,12 @@ type Mutation {
   createFolder(collection: String, relativePath: String!): DocumentNode!
   updateHomepage(relativePath: String!, params: HomepageMutation!): Homepage!
   createHomepage(relativePath: String!, params: HomepageMutation!): Homepage!
+  updateServices(relativePath: String!, params: ServicesMutation!): Services!
+  createServices(relativePath: String!, params: ServicesMutation!): Services!
+  updateAbout(relativePath: String!, params: AboutMutation!): About!
+  createAbout(relativePath: String!, params: AboutMutation!): About!
+  updateTeam(relativePath: String!, params: TeamMutation!): Team!
+  createTeam(relativePath: String!, params: TeamMutation!): Team!
   updateBlog(relativePath: String!, params: BlogMutation!): Blog!
   createBlog(relativePath: String!, params: BlogMutation!): Blog!
   updateProjects(relativePath: String!, params: ProjectsMutation!): Projects!
@@ -239,6 +405,9 @@ type Mutation {
 
 input DocumentUpdateMutation {
   homepage: HomepageMutation
+  services: ServicesMutation
+  about: AboutMutation
+  team: TeamMutation
   blog: BlogMutation
   projects: ProjectsMutation
   relativePath: String
@@ -246,6 +415,9 @@ input DocumentUpdateMutation {
 
 input DocumentMutation {
   homepage: HomepageMutation
+  services: ServicesMutation
+  about: AboutMutation
+  team: TeamMutation
   blog: BlogMutation
   projects: ProjectsMutation
 }
@@ -254,7 +426,52 @@ input HomepageMutation {
   heroVideo: String
 }
 
+input ServicesDisciplinesMutation {
+  number: String
+  label: String
+  statement: String
+  deliverables: [String]
+}
+
+input ServicesProcessMutation {
+  step: String
+  title: String
+  text: String
+}
+
+input ServicesMutation {
+  headline: String
+  intro: String
+  disciplines: [ServicesDisciplinesMutation]
+  process: [ServicesProcessMutation]
+}
+
+input AboutPositioningMutation {
+  title: String
+  text: String
+}
+
+input AboutMutation {
+  headline: String
+  intro: String
+  positioning: [AboutPositioningMutation]
+}
+
+input TeamMembersMutation {
+  name: String
+  title: String
+  image: String
+  shortBio: String
+  fullBio: String
+}
+
+input TeamMutation {
+  members: [TeamMembersMutation]
+}
+
 input BlogMutation {
+  published: Boolean
+  order: Float
   title: String
   excerpt: String
   date: String
@@ -267,6 +484,8 @@ input BlogMutation {
 }
 
 input ProjectsMutation {
+  published: Boolean
+  order: Float
   title: String
   client: String
   year: String

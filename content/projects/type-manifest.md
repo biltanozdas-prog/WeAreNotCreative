@@ -1,4 +1,6 @@
 ---
+published: true
+order: 4
 title: |-
   TYPE
   MANIFEST

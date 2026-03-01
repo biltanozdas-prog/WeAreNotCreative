@@ -19,6 +19,8 @@ export default async function ProjectsPage() {
             const { data } = matter(fileContent)
             return { ...data, slug: filename.replace(".md", ""), id: filename }
         })
+            .filter((p: any) => p.published !== false)
+            .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
     } catch (e) { }
 
     return <ProjectsClient projects={projects} />

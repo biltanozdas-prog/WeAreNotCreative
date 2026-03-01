@@ -3,8 +3,52 @@ fragment HomepageParts on Homepage {
   heroVideo
 }
 
+fragment ServicesParts on Services {
+  __typename
+  headline
+  intro
+  disciplines {
+    __typename
+    number
+    label
+    statement
+    deliverables
+  }
+  process {
+    __typename
+    step
+    title
+    text
+  }
+}
+
+fragment AboutParts on About {
+  __typename
+  headline
+  intro
+  positioning {
+    __typename
+    title
+    text
+  }
+}
+
+fragment TeamParts on Team {
+  __typename
+  members {
+    __typename
+    name
+    title
+    image
+    shortBio
+    fullBio
+  }
+}
+
 fragment BlogParts on Blog {
   __typename
+  published
+  order
   title
   excerpt
   date
@@ -18,6 +62,8 @@ fragment BlogParts on Blog {
 
 fragment ProjectsParts on Projects {
   __typename
+  published
+  order
   title
   client
   year

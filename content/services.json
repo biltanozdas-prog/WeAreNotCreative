@@ -1,0 +1,95 @@
+{
+    "headline": "SERVICES",
+    "intro": "We operate across five core disciplines. Each project draws from multiple domains — structured around the specific needs of the brief, never templated.",
+    "disciplines": [
+        {
+            "number": "01",
+            "label": "Brand Positioning",
+            "statement": "Defining where a brand stands and why it matters.",
+            "deliverables": [
+                "Brand Strategy",
+                "Market Positioning",
+                "Naming & Verbal Identity",
+                "Tone of Voice",
+                "Brand Guidelines"
+            ]
+        },
+        {
+            "number": "02",
+            "label": "Visual Systems",
+            "statement": "Building cohesive design languages that scale across every touchpoint.",
+            "deliverables": [
+                "Visual Identity",
+                "Design Systems",
+                "Typography Systems",
+                "Color Architecture",
+                "Icon & Asset Libraries",
+                "Print & Digital Templates"
+            ]
+        },
+        {
+            "number": "03",
+            "label": "Art Direction",
+            "statement": "Shaping the visual narrative from concept to final frame.",
+            "deliverables": [
+                "Creative Direction",
+                "Campaign Concepts",
+                "Fashion Direction",
+                "Set Design Guidance",
+                "Image Making"
+            ]
+        },
+        {
+            "number": "04",
+            "label": "Identity Architecture",
+            "statement": "Structuring brand identities as living, interconnected systems.",
+            "deliverables": [
+                "Brand Architecture",
+                "Sub-brand Systems",
+                "Packaging Design",
+                "Environmental Identity",
+                "Digital Identity",
+                "Collateral Systems"
+            ]
+        },
+        {
+            "number": "05",
+            "label": "Product Thinking",
+            "statement": "Designing physical and digital objects with intention and clarity.",
+            "deliverables": [
+                "Product Design",
+                "UX Strategy",
+                "Prototyping",
+                "Material Direction",
+                "Object Design"
+            ]
+        }
+    ],
+    "process": [
+        {
+            "step": "01",
+            "title": "Research",
+            "text": "We listen before we design. Understanding context, audience and landscape."
+        },
+        {
+            "step": "02",
+            "title": "Concept",
+            "text": "Translating research into strategic and creative frameworks."
+        },
+        {
+            "step": "03",
+            "title": "System",
+            "text": "Building scalable design languages, not isolated deliverables."
+        },
+        {
+            "step": "04",
+            "title": "Execution",
+            "text": "Precision in craft. Every detail serves the whole."
+        },
+        {
+            "step": "05",
+            "title": "Deployment",
+            "text": "Delivering systems that work across contexts and evolve over time."
+        }
+    ]
+}

@@ -20,7 +20,9 @@ export default async function BlogPage() {
             // Reconstruct content array as original layout expected
             const contentArray = content.split('\n\n').filter((p: string) => p.trim() !== '')
             return { ...data, content: contentArray, slug: filename.replace(".md", ""), id: filename }
-        }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        })
+            .filter((p: any) => p.published !== false)
+            .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
     } catch (e) { }
 
     return <BlogClient blogPosts={blogPosts} />

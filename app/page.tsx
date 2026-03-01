@@ -27,7 +27,10 @@ export default async function HomePage() {
       const fileContent = fs.readFileSync(path.join(projectsDir, filename), "utf8")
       const { data } = matter(fileContent)
       return { ...data, slug: filename.replace(".md", ""), id: filename }
-    }).slice(0, 4)
+    })
+      .filter((p: any) => p.published !== false)
+      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+      .slice(0, 4)
   } catch (e) { }
 
   return (
