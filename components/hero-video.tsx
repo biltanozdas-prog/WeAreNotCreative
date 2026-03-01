@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 
-export function HeroVideo() {
+export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVisible, setIsVisible] = useState(true)
 
@@ -39,7 +39,7 @@ export function HeroVideo() {
       >
         <source
           type="video/mp4"
-          src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+          src={videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"}
         />
       </video>
       {/* Dark overlay for readability */}

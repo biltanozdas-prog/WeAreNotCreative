@@ -3,21 +3,41 @@ import { HeroVideo } from "@/components/hero-video"
 import { ManifestoSection } from "@/components/manifesto-section"
 import { SelectedProjects } from "@/components/selected-projects"
 import Link from "next/link"
+import fs from "fs"
+import path from "path"
+import matter from "gray-matter"
 
 export const metadata: Metadata = {
   title: "WEARENOTCREATIVE | Design as a Cultural Practice",
   description: "A multidisciplinary creative studio working across brand identity, art direction, visual systems and product thinking. Istanbul / Global.",
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const homeDataPath = path.join(process.cwd(), "content", "homepage.json")
+  let homeData: any = {}
+  try {
+    homeData = JSON.parse(fs.readFileSync(homeDataPath, "utf8"))
+  } catch (e) { }
+
+  const projectsDir = path.join(process.cwd(), "content", "projects")
+  let projects: any[] = []
+  try {
+    const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
+    projects = files.map(filename => {
+      const fileContent = fs.readFileSync(path.join(projectsDir, filename), "utf8")
+      const { data } = matter(fileContent)
+      return { ...data, slug: filename.replace(".md", ""), id: filename }
+    }).slice(0, 4)
+  } catch (e) { }
+
   return (
     <main>
-      <HeroVideo />
+      <HeroVideo videoUrl={homeData.heroVideo} />
       {/* Spacer for the video hero area */}
       <div className="h-screen" />
       {/* Content starts after the video */}
       <ManifestoSection />
-      <SelectedProjects />
+      <SelectedProjects projects={projects as any} />
 
       {/* Footer CTA */}
       <section className="bg-background relative z-10 px-8 py-32 md:px-[60px] md:py-[180px] border-t border-secondary">

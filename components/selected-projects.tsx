@@ -3,7 +3,6 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useRef, useEffect, useState, useCallback } from "react"
-import { projects } from "@/lib/projects"
 
 const homeSizes = [
   { w: 480, mw: 320, h: "h-[55vh] md:h-[65vh]" },
@@ -14,7 +13,7 @@ const homeSizes = [
 
 const homeOffsets = ["self-end", "self-start", "self-center", "self-end"]
 
-export function SelectedProjects() {
+export function SelectedProjects({ projects }: { projects: any[] }) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)

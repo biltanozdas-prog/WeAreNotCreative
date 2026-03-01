@@ -1,0 +1,36 @@
+fragment HomepageParts on Homepage {
+  __typename
+  heroVideo
+}
+
+fragment BlogParts on Blog {
+  __typename
+  title
+  excerpt
+  date
+  category
+  image
+  readTime
+  pullQuote
+  contentImages
+  body
+}
+
+fragment ProjectsParts on Projects {
+  __typename
+  title
+  client
+  year
+  role
+  category
+  image
+  description
+  roles
+  services
+  overview
+  context
+  approach
+  system
+  execution
+  outcome
+}
