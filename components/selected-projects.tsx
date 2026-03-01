@@ -26,11 +26,9 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
     if (!trackRef.current || !sectionRef.current) return
     const tw = trackRef.current.scrollWidth
     const cw = sectionRef.current.offsetWidth
-    const desktop = window.innerWidth >= 768
-    setIsDesktop(desktop)
     setTrackWidth(tw)
 
-    if (desktop) {
+    if (window.innerWidth >= 768) {
       // Scroll distance = how much the track overflows + viewport height
       setSectionHeight(tw - cw + window.innerHeight)
     } else {
@@ -40,12 +38,27 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
   }, [])
 
   useEffect(() => {
+    const mql = window.matchMedia("(min-width: 768px)")
+    setIsDesktop(mql.matches)
+
+    const handler = (e: MediaQueryListEvent) => {
+      setIsDesktop(e.matches)
+      measure()
+    }
+
+    mql.addEventListener("change", handler)
+    return () => mql.removeEventListener("change", handler)
+  }, [measure])
+
+  useEffect(() => {
     measure()
     window.addEventListener("resize", measure)
     return () => window.removeEventListener("resize", measure)
   }, [measure])
 
   useEffect(() => {
+    if (!isDesktop) return // Strictly disable vertically synced scroll tracking on mobile
+
     const handleScroll = () => {
       if (!sectionRef.current) return
       const rect = sectionRef.current.getBoundingClientRect()
@@ -58,7 +71,7 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [sectionHeight])
+  }, [sectionHeight, isDesktop])
 
   const translateX = isDesktop ? scrollProgress * (trackWidth - (typeof window !== "undefined" ? window.innerWidth : 0)) : 0
 
@@ -66,9 +79,9 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
     <section
       ref={sectionRef}
       className="relative bg-background md:h-[var(--section-height,200vh)]"
-      style={{
+      style={isDesktop ? {
         "--section-height": sectionHeight > 0 ? `${sectionHeight}px` : "200vh"
-      } as React.CSSProperties}
+      } as React.CSSProperties : undefined}
     >
       <div className="md:sticky md:top-0 md:h-screen w-full overflow-hidden flex flex-col">
         {/* Header */}
@@ -101,7 +114,7 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
           <div
             ref={trackRef}
             className="flex flex-row items-end md:absolute md:top-0 md:left-0 h-full pl-8 md:pl-[60px] pr-8 pb-4 gap-6 md:gap-10 w-max md:w-auto"
-            style={{ transform: `translateX(-${translateX}px)` }}
+            style={{ transform: isDesktop ? `translateX(-${translateX}px)` : 'none' }}
           >
             {selectedProjects.map((project, i) => {
               const size = homeSizes[i % homeSizes.length]
