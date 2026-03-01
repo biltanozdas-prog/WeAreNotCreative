@@ -274,7 +274,6 @@ export default defineConfig({
                 format: "md",
                 fields: [
                     { type: "string", name: "title", label: "Title" },
-                    { type: "string", name: "slug", label: "Slug" },
                     { type: "string", name: "year", label: "Year" },
                     { type: "string", name: "role", label: "Role" },
                     { type: "boolean", name: "published", label: "Published" },

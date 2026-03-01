@@ -359,7 +359,6 @@ type BlogConnection implements Connection {
 
 type Projects implements Node & Document {
   title: String
-  slug: String
   year: String
   role: String
   published: Boolean
@@ -374,7 +373,6 @@ type Projects implements Node & Document {
 
 input ProjectsFilter {
   title: StringFilter
-  slug: StringFilter
   year: StringFilter
   role: StringFilter
   published: BooleanFilter
@@ -511,7 +509,6 @@ input BlogMutation {
 
 input ProjectsMutation {
   title: String
-  slug: String
   year: String
   role: String
   published: Boolean

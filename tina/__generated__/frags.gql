@@ -75,7 +75,6 @@ fragment BlogParts on Blog {
 fragment ProjectsParts on Projects {
   __typename
   title
-  slug
   year
   role
   published

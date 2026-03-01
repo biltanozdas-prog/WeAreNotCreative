@@ -534,7 +534,6 @@ export type BlogConnection = Connection & {
 export type Projects = Node & Document & {
   __typename?: 'Projects';
   title?: Maybe<Scalars['String']['output']>;
-  slug?: Maybe<Scalars['String']['output']>;
   year?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   published?: Maybe<Scalars['Boolean']['output']>;
@@ -549,7 +548,6 @@ export type Projects = Node & Document & {
 
 export type ProjectsFilter = {
   title?: InputMaybe<StringFilter>;
-  slug?: InputMaybe<StringFilter>;
   year?: InputMaybe<StringFilter>;
   role?: InputMaybe<StringFilter>;
   published?: InputMaybe<BooleanFilter>;
@@ -794,7 +792,6 @@ export type BlogMutation = {
 
 export type ProjectsMutation = {
   title?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
   year?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
@@ -814,7 +811,7 @@ export type TeamPartsFragment = { __typename: 'Team', members?: Array<{ __typena
 
 export type BlogPartsFragment = { __typename: 'Blog', published?: boolean | null, order?: number | null, title: string, excerpt: string, date: string, category: string, image: string, readTime: string, pullQuote?: string | null, contentImages?: Array<string | null> | null, body?: any | null };
 
-export type ProjectsPartsFragment = { __typename: 'Projects', title?: string | null, slug?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null };
+export type ProjectsPartsFragment = { __typename: 'Projects', title?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null };
 
 export type HomepageQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -916,7 +913,7 @@ export type ProjectsQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, title?: string | null, slug?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, title?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type ProjectsConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -928,7 +925,7 @@ export type ProjectsConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, title?: string | null, slug?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, title?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export const HomepagePartsFragmentDoc = gql`
     fragment HomepageParts on Homepage {
@@ -1013,7 +1010,6 @@ export const ProjectsPartsFragmentDoc = gql`
     fragment ProjectsParts on Projects {
   __typename
   title
-  slug
   year
   role
   published
