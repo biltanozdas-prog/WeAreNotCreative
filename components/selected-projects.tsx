@@ -172,7 +172,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
       <div
         className="w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-track]:bg-transparent"
         style={{
-          touchAction: "pan-x",
+          touchAction: "pan-x pan-y",
           WebkitOverflowScrolling: "touch",
           scrollbarWidth: "thin",
         }}
