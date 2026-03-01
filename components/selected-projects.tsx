@@ -19,15 +19,24 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [trackWidth, setTrackWidth] = useState(0)
   const [sectionHeight, setSectionHeight] = useState(0)
+  const [isDesktop, setIsDesktop] = useState(true)
   const selectedProjects = projects.slice(0, 4)
 
   const measure = useCallback(() => {
     if (!trackRef.current || !sectionRef.current) return
     const tw = trackRef.current.scrollWidth
     const cw = sectionRef.current.offsetWidth
+    const desktop = window.innerWidth >= 768
+    setIsDesktop(desktop)
     setTrackWidth(tw)
-    // Scroll distance = how much the track overflows + viewport height
-    setSectionHeight(tw - cw + window.innerHeight)
+
+    if (desktop) {
+      // Scroll distance = how much the track overflows + viewport height
+      setSectionHeight(tw - cw + window.innerHeight)
+    } else {
+      // Disable scroll vertical hijacking on mobile
+      setSectionHeight(0)
+    }
   }, [])
 
   useEffect(() => {
@@ -51,15 +60,17 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [sectionHeight])
 
-  const translateX = scrollProgress * (trackWidth - (typeof window !== "undefined" ? window.innerWidth : 0))
+  const translateX = isDesktop ? scrollProgress * (trackWidth - (typeof window !== "undefined" ? window.innerWidth : 0)) : 0
 
   return (
     <section
       ref={sectionRef}
-      className="relative bg-background"
-      style={{ height: sectionHeight > 0 ? `${sectionHeight}px` : "200vh" }}
+      className="relative bg-background md:h-[var(--section-height,200vh)]"
+      style={{
+        "--section-height": sectionHeight > 0 ? `${sectionHeight}px` : "200vh"
+      } as React.CSSProperties}
     >
-      <div className="sticky top-0 h-screen w-screen overflow-hidden flex flex-col">
+      <div className="md:sticky md:top-0 md:h-screen w-full overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-4 px-8 md:px-[60px] pt-12 md:pt-16 mb-8 md:mb-12">
           <span className="font-sans font-light text-[13px] md:text-[14px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -75,10 +86,21 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
         </div>
 
         {/* Horizontal track */}
-        <div className="flex-1 overflow-hidden relative">
+        <div
+          className="flex-1 overflow-x-auto overflow-y-hidden md:overflow-hidden relative touch-pan-x"
+          style={{ scrollbarWidth: "none" }}
+          onScroll={(e) => {
+            if (isDesktop) return;
+            const target = e.currentTarget;
+            const maxScroll = target.scrollWidth - target.clientWidth;
+            if (maxScroll > 0) {
+              setScrollProgress(target.scrollLeft / maxScroll);
+            }
+          }}
+        >
           <div
             ref={trackRef}
-            className="flex flex-row items-end absolute top-0 left-0 h-full pl-8 md:pl-[60px] pb-4 gap-6 md:gap-10"
+            className="flex flex-row items-end md:absolute md:top-0 md:left-0 h-full pl-8 md:pl-[60px] pr-8 pb-4 gap-6 md:gap-10 w-max md:w-auto"
             style={{ transform: `translateX(-${translateX}px)` }}
           >
             {selectedProjects.map((project, i) => {
