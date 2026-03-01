@@ -155,7 +155,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
   return (
     <section className="relative bg-background w-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-4 px-8 pt-12 mb-8">
+      <div className="flex items-center gap-4 px-8 pt-12 mb-8 relative z-10 bg-background">
         <span className="font-sans font-light text-[13px] uppercase tracking-[0.2em] text-muted-foreground">
           Selected Work
         </span>
@@ -170,7 +170,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
 
       {/* Horizontal track (Native Scroll) */}
       <div
-        className="w-full overflow-x-auto overflow-y-hidden touch-pan-x"
+        className="w-full overflow-x-auto overflow-y-hidden touch-pan-x snap-x snap-mandatory"
         style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         onScroll={(e) => {
           const target = e.currentTarget
@@ -180,7 +180,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
           }
         }}
       >
-        <div className="flex flex-row items-end h-full pl-8 pr-8 pb-4 gap-6 w-max">
+        <div className="flex flex-row items-end h-full px-8 pb-4 gap-6 w-max">
           {selectedProjects.map((project, i) => {
             const size = homeSizes[i % homeSizes.length]
             const offset = homeOffsets[i % homeOffsets.length]
@@ -189,7 +189,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
               <Link
                 key={project.id}
                 href={`/projects/${project.slug}`}
-                className={`shrink-0 ${offset} flex flex-col no-underline text-foreground`}
+                className={`snap-start shrink-0 flex-none ${offset} flex flex-col no-underline text-foreground`}
                 style={{ width: `clamp(${size.mw}px, 60vw, ${size.w}px)` }}
               >
                 <div className={`w-full ${size.h} bg-muted relative overflow-hidden`}>
@@ -215,7 +215,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
             )
           })}
           {/* Edge spacing for the last item */}
-          <div className="shrink-0 w-4" />
+          <div className="shrink-0 flex-none w-[1px]" />
         </div>
       </div>
 
