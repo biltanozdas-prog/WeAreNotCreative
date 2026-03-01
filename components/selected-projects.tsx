@@ -170,8 +170,12 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
 
       {/* Horizontal track (Native Scroll) */}
       <div
-        className="w-full overflow-x-auto overflow-y-hidden touch-pan-x snap-x snap-mandatory"
-        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+        className="w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-track]:bg-transparent"
+        style={{
+          touchAction: "pan-x",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "thin",
+        }}
         onScroll={(e) => {
           const target = e.currentTarget
           const maxScroll = target.scrollWidth - target.clientWidth
