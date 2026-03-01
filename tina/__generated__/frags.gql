@@ -12,7 +12,40 @@ fragment HomepageParts on Homepage {
     title
     body
   }
-  selectedProjectSlugs
+  selectedProjects {
+    __typename
+    project {
+      ... on Projects {
+        __typename
+        title
+        client
+        year
+        category
+        published
+        order
+        thumbnail
+        heroImage
+        sections {
+          __typename
+          type
+          heading
+          content
+        }
+      }
+      ... on Document {
+        _sys {
+          filename
+          basename
+          hasReferences
+          breadcrumbs
+          path
+          relativePath
+          extension
+        }
+        id
+      }
+    }
+  }
 }
 
 fragment ServicesParts on Services {
@@ -75,11 +108,17 @@ fragment BlogParts on Blog {
 fragment ProjectsParts on Projects {
   __typename
   title
+  client
   year
-  role
+  category
   published
   order
   thumbnail
   heroImage
-  body
+  sections {
+    __typename
+    type
+    heading
+    content
+  }
 }

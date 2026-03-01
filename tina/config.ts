@@ -70,10 +70,21 @@ export default defineConfig({
                         ]
                     },
                     {
-                        type: "string",
-                        name: "selectedProjectSlugs",
-                        label: "Selected Projects (Homepage)",
-                        list: true
+                        type: "object",
+                        name: "selectedProjects",
+                        label: "Selected Projects",
+                        list: true,
+                        ui: {
+                            itemProps: (item) => ({ label: item?.project })
+                        },
+                        fields: [
+                            {
+                                type: "reference",
+                                name: "project",
+                                label: "Project",
+                                collections: ["projects"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -273,17 +284,32 @@ export default defineConfig({
                 path: "content/projects",
                 format: "md",
                 fields: [
-                    { type: "string", name: "title", label: "Title" },
+                    { type: "string", name: "title", label: "Title", required: true },
+                    { type: "string", name: "client", label: "Client" },
                     { type: "string", name: "year", label: "Year" },
-                    { type: "string", name: "role", label: "Role" },
+                    { type: "string", name: "category", label: "Category" },
                     { type: "boolean", name: "published", label: "Published" },
                     { type: "number", name: "order", label: "Order" },
                     { type: "image", name: "thumbnail", label: "Thumbnail" },
                     { type: "image", name: "heroImage", label: "Hero Image" },
                     {
-                        type: "rich-text",
-                        name: "body",
-                        label: "Body"
+                        type: "object",
+                        name: "sections",
+                        label: "Sections",
+                        list: true,
+                        ui: {
+                            itemProps: (item) => { return { label: item?.heading } }
+                        },
+                        fields: [
+                            {
+                                type: "string",
+                                name: "type",
+                                label: "Section Type",
+                                options: ["overview", "context", "approach", "system", "execution", "outcome"]
+                            },
+                            { type: "string", name: "heading", label: "Heading" },
+                            { type: "rich-text", name: "content", label: "Content" }
+                        ]
                     }
                 ]
             }

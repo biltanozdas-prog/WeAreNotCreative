@@ -114,10 +114,16 @@ type HomepageIntro {
   body: JSON
 }
 
+union HomepageSelectedProjectsProject = Projects
+
+type HomepageSelectedProjects {
+  project: HomepageSelectedProjectsProject
+}
+
 type Homepage implements Node & Document {
   hero: HomepageHero
   intro: HomepageIntro
-  selectedProjectSlugs: [String]
+  selectedProjects: [HomepageSelectedProjects]
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
@@ -148,10 +154,18 @@ input HomepageIntroFilter {
   body: RichTextFilter
 }
 
+input HomepageSelectedProjectsProjectFilter {
+  projects: ProjectsFilter
+}
+
+input HomepageSelectedProjectsFilter {
+  project: HomepageSelectedProjectsProjectFilter
+}
+
 input HomepageFilter {
   hero: HomepageHeroFilter
   intro: HomepageIntroFilter
-  selectedProjectSlugs: StringFilter
+  selectedProjects: HomepageSelectedProjectsFilter
 }
 
 type HomepageConnectionEdges {
@@ -357,29 +371,43 @@ type BlogConnection implements Connection {
   edges: [BlogConnectionEdges]
 }
 
+type ProjectsSections {
+  type: String
+  heading: String
+  content: JSON
+}
+
 type Projects implements Node & Document {
-  title: String
+  title: String!
+  client: String
   year: String
-  role: String
+  category: String
   published: Boolean
   order: Float
   thumbnail: String
   heroImage: String
-  body: JSON
+  sections: [ProjectsSections]
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
 }
 
+input ProjectsSectionsFilter {
+  type: StringFilter
+  heading: StringFilter
+  content: RichTextFilter
+}
+
 input ProjectsFilter {
   title: StringFilter
+  client: StringFilter
   year: StringFilter
-  role: StringFilter
+  category: StringFilter
   published: BooleanFilter
   order: NumberFilter
   thumbnail: ImageFilter
   heroImage: ImageFilter
-  body: RichTextFilter
+  sections: ProjectsSectionsFilter
 }
 
 type ProjectsConnectionEdges {
@@ -444,10 +472,14 @@ input HomepageIntroMutation {
   body: JSON
 }
 
+input HomepageSelectedProjectsMutation {
+  project: String
+}
+
 input HomepageMutation {
   hero: HomepageHeroMutation
   intro: HomepageIntroMutation
-  selectedProjectSlugs: [String]
+  selectedProjects: [HomepageSelectedProjectsMutation]
 }
 
 input ServicesDisciplinesMutation {
@@ -507,15 +539,22 @@ input BlogMutation {
   body: JSON
 }
 
+input ProjectsSectionsMutation {
+  type: String
+  heading: String
+  content: JSON
+}
+
 input ProjectsMutation {
   title: String
+  client: String
   year: String
-  role: String
+  category: String
   published: Boolean
   order: Float
   thumbnail: String
   heroImage: String
-  body: JSON
+  sections: [ProjectsSectionsMutation]
 }
 
 schema {

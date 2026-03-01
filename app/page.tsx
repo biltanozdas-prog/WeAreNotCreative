@@ -29,12 +29,22 @@ export default async function HomePage() {
       const { data } = matter(fileContent)
       return { ...data, slug: filename.replace(".md", ""), id: filename }
     })
-      .filter((p: any) => p.published === true)
+      .filter((p: any) => p.published !== false)
 
-    if (homeData.selectedProjectSlugs && Array.isArray(homeData.selectedProjectSlugs)) {
-      selectedProjects = homeData.selectedProjectSlugs
-        .map((slug: string) => projects.find(p => p.slug === slug))
+    if (homeData.selectedProjects && Array.isArray(homeData.selectedProjects) && homeData.selectedProjects.length > 0) {
+      selectedProjects = homeData.selectedProjects
+        .map((item: any) => {
+          const ref = item.project;
+          if (!ref) return null;
+          const slug = ref.split('/').pop()?.replace('.md', '');
+          return projects.find(p => p.slug === slug);
+        })
         .filter(Boolean);
+
+      // Fallback if all referenced projects are filtered out
+      if (selectedProjects.length === 0) {
+        selectedProjects = projects.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, 4);
+      }
     } else {
       selectedProjects = projects.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, 4);
     }

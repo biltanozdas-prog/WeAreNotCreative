@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
+import { TinaMarkdown } from "tinacms/dist/rich-text"
 
 interface ProjectDetailProps {
   params: Promise<{ slug: string }>
@@ -37,14 +38,7 @@ export async function generateStaticParams() {
   }
 }
 
-const caseSections = [
-  { key: "overview", label: "Overview", number: "01" },
-  { key: "context", label: "Context", number: "02" },
-  { key: "approach", label: "Approach", number: "03" },
-  { key: "system", label: "System", number: "04" },
-  { key: "execution", label: "Execution", number: "05" },
-  { key: "outcome", label: "Outcome", number: "06" },
-] as const
+// We map sections dynamically from projectData.sections now.
 
 export default async function ProjectDetailPage({ params }: ProjectDetailProps) {
   const { slug } = await params
@@ -132,35 +126,35 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
       </div>
 
       {/* Case Study Sections */}
-      {caseSections.map((section, i) => {
-        const content = projectData?.[section.key]
-        if (!content) return null
+      {(projectData?.sections || []).map((section: any, i: number) => {
+        if (!section.content) return null
 
         // Insert images between certain sections
         const showImageAfter = i === 1 || i === 3
+        const sectionNumber = String(i + 1).padStart(2, '0')
 
         return (
-          <div key={section.key}>
+          <div key={section.type || i}>
             <div className="mb-20 md:mb-28 max-w-[900px]">
               <div className="flex items-center gap-4 mb-8 md:mb-10">
                 <span className="font-sans font-light text-[12px] tracking-[0.25em] text-muted-foreground uppercase">
-                  {section.number}
+                  {sectionNumber}
                 </span>
                 <span className="w-8 h-px bg-muted-foreground" />
                 <span className="font-sans font-medium text-[12px] md:text-[13px] tracking-[0.15em] text-foreground uppercase">
-                  {section.label}
+                  {section.heading || section.type}
                 </span>
               </div>
-              <p className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line">
-                {content}
-              </p>
+              <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+                {typeof section.content === "string" ? section.content : <TinaMarkdown content={section.content} />}
+              </div>
             </div>
 
             {showImageAfter && (
               <div className={`mb-24 md:mb-32 ${i === 1 ? "w-full" : "w-[85%] md:w-[70%] md:ml-[15%]"}`}>
                 <div className={`${i === 1 ? "h-[40vh] md:h-[60vh]" : "h-[35vh] md:h-[50vh]"} bg-muted relative overflow-hidden`}>
                   <Image
-                    src={projectData.image || ""}
+                    src={projectData.heroImage || projectData.thumbnail || projectData.image || ""}
                     alt={`${projectData.title} - Detail ${i + 1}`}
                     fill
                     className={`object-cover ${i === 1 ? "grayscale" : ""}`}

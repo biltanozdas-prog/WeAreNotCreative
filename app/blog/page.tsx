@@ -21,7 +21,7 @@ export default async function BlogPage() {
             const contentArray = content.split('\n\n').filter((p: string) => p.trim() !== '')
             return { ...data, content: contentArray, slug: filename.replace(".md", ""), id: filename }
         })
-            .filter((p: any) => p.published === true)
+            .filter((p: any) => p.published !== false)
             .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
     } catch (e) { }
 
