@@ -21,6 +21,7 @@ export default async function HomePage() {
 
   const projectsDir = path.join(process.cwd(), "content", "projects")
   let projects: any[] = []
+  let selectedProjects: any[] = []
   try {
     const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
     projects = files.map(filename => {
@@ -28,19 +29,25 @@ export default async function HomePage() {
       const { data } = matter(fileContent)
       return { ...data, slug: filename.replace(".md", ""), id: filename }
     })
-      .filter((p: any) => p.published !== false)
-      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
-      .slice(0, 4)
+      .filter((p: any) => p.published === true)
+
+    if (homeData.selectedProjectSlugs && Array.isArray(homeData.selectedProjectSlugs)) {
+      selectedProjects = homeData.selectedProjectSlugs
+        .map((slug: string) => projects.find(p => p.slug === slug))
+        .filter(Boolean);
+    } else {
+      selectedProjects = projects.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, 4);
+    }
   } catch (e) { }
 
   return (
     <main>
-      <HeroVideo videoUrl={homeData.heroVideo} />
+      <HeroVideo videoUrl={homeData.hero?.videoUrl || homeData.heroVideo} {...homeData.hero} />
       {/* Spacer for the video hero area */}
       <div className="h-screen" />
       {/* Content starts after the video */}
-      <ManifestoSection />
-      <SelectedProjects projects={projects as any} />
+      <ManifestoSection {...homeData.intro} />
+      <SelectedProjects projects={selectedProjects as any} />
 
       {/* Footer CTA */}
       <section className="bg-background relative z-10 px-8 py-32 md:px-[60px] md:py-[180px] border-t border-secondary">

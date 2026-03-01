@@ -1,6 +1,18 @@
 fragment HomepageParts on Homepage {
   __typename
-  heroVideo
+  hero {
+    __typename
+    title
+    subtitle
+    videoUrl
+  }
+  intro {
+    __typename
+    kicker
+    title
+    body
+  }
+  selectedProjectSlugs
 }
 
 fragment ServicesParts on Services {
@@ -62,21 +74,13 @@ fragment BlogParts on Blog {
 
 fragment ProjectsParts on Projects {
   __typename
-  published
-  order
   title
-  client
+  slug
   year
   role
-  category
-  image
-  description
-  roles
-  services
-  overview
-  context
-  approach
-  system
-  execution
-  outcome
+  published
+  order
+  thumbnail
+  heroImage
+  body
 }

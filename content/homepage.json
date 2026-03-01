@@ -1,3 +1,18 @@
 {
-    "heroVideo": "/videos/hero.mp4"
+    "hero": {
+        "title": "Design as a",
+        "subtitle": "cultural practice.",
+        "videoUrl": "/videos/hero.mp4"
+    },
+    "intro": {
+        "kicker": "Manifesto",
+        "title": "Design as a cultural practice.",
+        "body": "We work with independent brands, cultural institutions and creative leaders who need clarity without compromise. From identity systems to editorial direction — we shape how ideas become visible."
+    },
+    "selectedProjectSlugs": [
+        "concrete-objects",
+        "gio-telli",
+        "noir-identity",
+        "raw-culture"
+    ]
 }

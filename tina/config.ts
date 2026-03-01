@@ -46,12 +46,36 @@ export default defineConfig({
                 },
                 fields: [
                     {
-                        type: "string",
-                        name: "heroVideo",
-                        label: "Hero Video URL",
-                        required: true,
+                        type: "object",
+                        name: "hero",
+                        label: "Hero Section",
+                        fields: [
+                            { type: "string", name: "title", label: "Hero Title" },
+                            { type: "string", name: "subtitle", label: "Hero Subtitle" },
+                            { type: "string", name: "videoUrl", label: "Video URL" }
+                        ]
                     },
-                ],
+                    {
+                        type: "object",
+                        name: "intro",
+                        label: "Intro Section",
+                        fields: [
+                            { type: "string", name: "kicker", label: "Kicker" },
+                            { type: "string", name: "title", label: "Title" },
+                            {
+                                type: "rich-text",
+                                name: "body",
+                                label: "Body"
+                            }
+                        ]
+                    },
+                    {
+                        type: "string",
+                        name: "selectedProjectSlugs",
+                        label: "Selected Projects (Homepage)",
+                        list: true
+                    }
+                ]
             },
             {
                 name: "services",
@@ -249,132 +273,21 @@ export default defineConfig({
                 path: "content/projects",
                 format: "md",
                 fields: [
+                    { type: "string", name: "title", label: "Title" },
+                    { type: "string", name: "slug", label: "Slug" },
+                    { type: "string", name: "year", label: "Year" },
+                    { type: "string", name: "role", label: "Role" },
+                    { type: "boolean", name: "published", label: "Published" },
+                    { type: "number", name: "order", label: "Order" },
+                    { type: "image", name: "thumbnail", label: "Thumbnail" },
+                    { type: "image", name: "heroImage", label: "Hero Image" },
                     {
-                        type: "boolean",
-                        name: "published",
-                        label: "Published",
-                        description: "Check to manifest this project on the site.",
-                    },
-                    {
-                        type: "number",
-                        name: "order",
-                        label: "Sort Order",
-                        description: "Lower numbers appear first.",
-                    },
-                    {
-                        type: "string",
-                        name: "title",
-                        label: "Title",
-                        isTitle: true,
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "client",
-                        label: "Client",
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "year",
-                        label: "Year",
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "role",
-                        label: "Role (Short)",
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "category",
-                        label: "Category",
-                        required: true,
-                    },
-                    {
-                        type: "image",
-                        name: "image",
-                        label: "Cover Image",
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "description",
-                        label: "Description",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                    {
-                        type: "string",
-                        name: "roles",
-                        label: "Roles",
-                        list: true,
-                    },
-                    {
-                        type: "string",
-                        name: "services",
-                        label: "Services",
-                        list: true,
-                    },
-                    {
-                        type: "string",
-                        name: "overview",
-                        label: "Overview",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                    {
-                        type: "string",
-                        name: "context",
-                        label: "Context",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                    {
-                        type: "string",
-                        name: "approach",
-                        label: "Approach",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                    {
-                        type: "string",
-                        name: "system",
-                        label: "System",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                    {
-                        type: "string",
-                        name: "execution",
-                        label: "Execution",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                    {
-                        type: "string",
-                        name: "outcome",
-                        label: "Outcome",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                ],
-            },
+                        type: "rich-text",
+                        name: "body",
+                        label: "Body"
+                    }
+                ]
+            }
         ],
     },
 })

@@ -255,9 +255,25 @@ export type CollectionDocumentsArgs = {
 
 export type DocumentNode = Homepage | Services | About | Team | Blog | Projects | Folder;
 
+export type HomepageHero = {
+  __typename?: 'HomepageHero';
+  title?: Maybe<Scalars['String']['output']>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  videoUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type HomepageIntro = {
+  __typename?: 'HomepageIntro';
+  kicker?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  body?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type Homepage = Node & Document & {
   __typename?: 'Homepage';
-  heroVideo: Scalars['String']['output'];
+  hero?: Maybe<HomepageHero>;
+  intro?: Maybe<HomepageIntro>;
+  selectedProjectSlugs?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   id: Scalars['ID']['output'];
   _sys: SystemInfo;
   _values: Scalars['JSON']['output'];
@@ -270,8 +286,28 @@ export type StringFilter = {
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+export type HomepageHeroFilter = {
+  title?: InputMaybe<StringFilter>;
+  subtitle?: InputMaybe<StringFilter>;
+  videoUrl?: InputMaybe<StringFilter>;
+};
+
+export type RichTextFilter = {
+  startsWith?: InputMaybe<Scalars['String']['input']>;
+  eq?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type HomepageIntroFilter = {
+  kicker?: InputMaybe<StringFilter>;
+  title?: InputMaybe<StringFilter>;
+  body?: InputMaybe<RichTextFilter>;
+};
+
 export type HomepageFilter = {
-  heroVideo?: InputMaybe<StringFilter>;
+  hero?: InputMaybe<HomepageHeroFilter>;
+  intro?: InputMaybe<HomepageIntroFilter>;
+  selectedProjectSlugs?: InputMaybe<StringFilter>;
 };
 
 export type HomepageConnectionEdges = {
@@ -468,12 +504,6 @@ export type NumberFilter = {
   in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
 };
 
-export type RichTextFilter = {
-  startsWith?: InputMaybe<Scalars['String']['input']>;
-  eq?: InputMaybe<Scalars['String']['input']>;
-  exists?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 export type BlogFilter = {
   published?: InputMaybe<BooleanFilter>;
   order?: InputMaybe<NumberFilter>;
@@ -503,46 +533,30 @@ export type BlogConnection = Connection & {
 
 export type Projects = Node & Document & {
   __typename?: 'Projects';
+  title?: Maybe<Scalars['String']['output']>;
+  slug?: Maybe<Scalars['String']['output']>;
+  year?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Scalars['String']['output']>;
   published?: Maybe<Scalars['Boolean']['output']>;
   order?: Maybe<Scalars['Float']['output']>;
-  title: Scalars['String']['output'];
-  client: Scalars['String']['output'];
-  year: Scalars['String']['output'];
-  role: Scalars['String']['output'];
-  category: Scalars['String']['output'];
-  image: Scalars['String']['output'];
-  description: Scalars['String']['output'];
-  roles?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  services?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  overview: Scalars['String']['output'];
-  context: Scalars['String']['output'];
-  approach: Scalars['String']['output'];
-  system: Scalars['String']['output'];
-  execution: Scalars['String']['output'];
-  outcome: Scalars['String']['output'];
+  thumbnail?: Maybe<Scalars['String']['output']>;
+  heroImage?: Maybe<Scalars['String']['output']>;
+  body?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   _sys: SystemInfo;
   _values: Scalars['JSON']['output'];
 };
 
 export type ProjectsFilter = {
-  published?: InputMaybe<BooleanFilter>;
-  order?: InputMaybe<NumberFilter>;
   title?: InputMaybe<StringFilter>;
-  client?: InputMaybe<StringFilter>;
+  slug?: InputMaybe<StringFilter>;
   year?: InputMaybe<StringFilter>;
   role?: InputMaybe<StringFilter>;
-  category?: InputMaybe<StringFilter>;
-  image?: InputMaybe<ImageFilter>;
-  description?: InputMaybe<StringFilter>;
-  roles?: InputMaybe<StringFilter>;
-  services?: InputMaybe<StringFilter>;
-  overview?: InputMaybe<StringFilter>;
-  context?: InputMaybe<StringFilter>;
-  approach?: InputMaybe<StringFilter>;
-  system?: InputMaybe<StringFilter>;
-  execution?: InputMaybe<StringFilter>;
-  outcome?: InputMaybe<StringFilter>;
+  published?: InputMaybe<BooleanFilter>;
+  order?: InputMaybe<NumberFilter>;
+  thumbnail?: InputMaybe<ImageFilter>;
+  heroImage?: InputMaybe<ImageFilter>;
+  body?: InputMaybe<RichTextFilter>;
 };
 
 export type ProjectsConnectionEdges = {
@@ -703,8 +717,22 @@ export type DocumentMutation = {
   projects?: InputMaybe<ProjectsMutation>;
 };
 
+export type HomepageHeroMutation = {
+  title?: InputMaybe<Scalars['String']['input']>;
+  subtitle?: InputMaybe<Scalars['String']['input']>;
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type HomepageIntroMutation = {
+  kicker?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  body?: InputMaybe<Scalars['JSON']['input']>;
+};
+
 export type HomepageMutation = {
-  heroVideo?: InputMaybe<Scalars['String']['input']>;
+  hero?: InputMaybe<HomepageHeroMutation>;
+  intro?: InputMaybe<HomepageIntroMutation>;
+  selectedProjectSlugs?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type ServicesDisciplinesMutation = {
@@ -765,26 +793,18 @@ export type BlogMutation = {
 };
 
 export type ProjectsMutation = {
-  published?: InputMaybe<Scalars['Boolean']['input']>;
-  order?: InputMaybe<Scalars['Float']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
-  client?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
   year?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<Scalars['String']['input']>;
-  category?: InputMaybe<Scalars['String']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  services?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  overview?: InputMaybe<Scalars['String']['input']>;
-  context?: InputMaybe<Scalars['String']['input']>;
-  approach?: InputMaybe<Scalars['String']['input']>;
-  system?: InputMaybe<Scalars['String']['input']>;
-  execution?: InputMaybe<Scalars['String']['input']>;
-  outcome?: InputMaybe<Scalars['String']['input']>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
+  order?: InputMaybe<Scalars['Float']['input']>;
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  heroImage?: InputMaybe<Scalars['String']['input']>;
+  body?: InputMaybe<Scalars['JSON']['input']>;
 };
 
-export type HomepagePartsFragment = { __typename: 'Homepage', heroVideo: string };
+export type HomepagePartsFragment = { __typename: 'Homepage', selectedProjectSlugs?: Array<string | null> | null, hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null };
 
 export type ServicesPartsFragment = { __typename: 'Services', headline?: string | null, intro?: string | null, disciplines?: Array<{ __typename: 'ServicesDisciplines', number?: string | null, label?: string | null, statement?: string | null, deliverables?: Array<string | null> | null } | null> | null, process?: Array<{ __typename: 'ServicesProcess', step?: string | null, title?: string | null, text?: string | null } | null> | null };
 
@@ -794,14 +814,14 @@ export type TeamPartsFragment = { __typename: 'Team', members?: Array<{ __typena
 
 export type BlogPartsFragment = { __typename: 'Blog', published?: boolean | null, order?: number | null, title: string, excerpt: string, date: string, category: string, image: string, readTime: string, pullQuote?: string | null, contentImages?: Array<string | null> | null, body?: any | null };
 
-export type ProjectsPartsFragment = { __typename: 'Projects', published?: boolean | null, order?: number | null, title: string, client: string, year: string, role: string, category: string, image: string, description: string, roles?: Array<string | null> | null, services?: Array<string | null> | null, overview: string, context: string, approach: string, system: string, execution: string, outcome: string };
+export type ProjectsPartsFragment = { __typename: 'Projects', title?: string | null, slug?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null };
 
 export type HomepageQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
 }>;
 
 
-export type HomepageQuery = { __typename?: 'Query', homepage: { __typename: 'Homepage', id: string, heroVideo: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type HomepageQuery = { __typename?: 'Query', homepage: { __typename: 'Homepage', id: string, selectedProjectSlugs?: Array<string | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null } };
 
 export type HomepageConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -813,7 +833,7 @@ export type HomepageConnectionQueryVariables = Exact<{
 }>;
 
 
-export type HomepageConnectionQuery = { __typename?: 'Query', homepageConnection: { __typename?: 'HomepageConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'HomepageConnectionEdges', cursor: string, node?: { __typename: 'Homepage', id: string, heroVideo: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type HomepageConnectionQuery = { __typename?: 'Query', homepageConnection: { __typename?: 'HomepageConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'HomepageConnectionEdges', cursor: string, node?: { __typename: 'Homepage', id: string, selectedProjectSlugs?: Array<string | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null } | null } | null> | null } };
 
 export type ServicesQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -896,7 +916,7 @@ export type ProjectsQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, published?: boolean | null, order?: number | null, title: string, client: string, year: string, role: string, category: string, image: string, description: string, roles?: Array<string | null> | null, services?: Array<string | null> | null, overview: string, context: string, approach: string, system: string, execution: string, outcome: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, title?: string | null, slug?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type ProjectsConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -908,12 +928,24 @@ export type ProjectsConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, published?: boolean | null, order?: number | null, title: string, client: string, year: string, role: string, category: string, image: string, description: string, roles?: Array<string | null> | null, services?: Array<string | null> | null, overview: string, context: string, approach: string, system: string, execution: string, outcome: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, title?: string | null, slug?: string | null, year?: string | null, role?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export const HomepagePartsFragmentDoc = gql`
     fragment HomepageParts on Homepage {
   __typename
-  heroVideo
+  hero {
+    __typename
+    title
+    subtitle
+    videoUrl
+  }
+  intro {
+    __typename
+    kicker
+    title
+    body
+  }
+  selectedProjectSlugs
 }
     `;
 export const ServicesPartsFragmentDoc = gql`
@@ -980,23 +1012,15 @@ export const BlogPartsFragmentDoc = gql`
 export const ProjectsPartsFragmentDoc = gql`
     fragment ProjectsParts on Projects {
   __typename
-  published
-  order
   title
-  client
+  slug
   year
   role
-  category
-  image
-  description
-  roles
-  services
-  overview
-  context
-  approach
-  system
-  execution
-  outcome
+  published
+  order
+  thumbnail
+  heroImage
+  body
 }
     `;
 export const HomepageDocument = gql`
