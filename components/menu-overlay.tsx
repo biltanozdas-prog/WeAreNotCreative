@@ -10,7 +10,7 @@ const menuLinks = [
   { href: "/about", label: "ABOUT" },
   { href: "/services", label: "SERVICES" },
   { href: "/projects", label: "PROJECTS" },
-  { href: "/blog", label: "BLOG" },
+  { href: "/blog", label: "JOURNAL" },
   { href: "/contact", label: "CONTACT" },
 ]
 
@@ -51,7 +51,7 @@ export function MenuOverlay() {
 
       {/* Menu Panel */}
       <div
-        className={`fixed top-0 left-0 w-full md:w-[38vw] md:max-w-[600px] h-screen bg-accent z-[999999] flex flex-col justify-between px-8 py-12 md:px-10 md:py-[60px] box-border transition-transform duration-500 ease-[cubic-bezier(0.85,0,0.15,1)] ${isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 w-[85vw] max-w-[420px] md:w-[38vw] md:max-w-[600px] h-screen bg-accent z-[999999] flex flex-col justify-between px-8 py-12 md:px-10 md:py-[60px] box-border transition-transform duration-500 ease-[cubic-bezier(0.85,0,0.15,1)] ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         role="dialog"
         aria-modal="true"
