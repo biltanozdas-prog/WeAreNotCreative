@@ -7,6 +7,55 @@ const branch =
     process.env.HEAD ||
     "main"
 
+const blockTemplates: any[] = [
+    {
+        name: "fullImage",
+        label: "Full Image",
+        fields: [
+            { type: "image", name: "image", label: "Image" },
+            { type: "string", name: "caption", label: "Caption" }
+        ]
+    },
+    {
+        name: "textBlock",
+        label: "Text Block",
+        fields: [
+            { type: "string", name: "heading", label: "Heading" },
+            { type: "rich-text", name: "body", label: "Body" }
+        ]
+    },
+    {
+        name: "twoColumn",
+        label: "Two Column",
+        fields: [
+            { type: "rich-text", name: "leftContent", label: "Left Content" },
+            { type: "image", name: "rightImage", label: "Right Image" }
+        ]
+    },
+    {
+        name: "gallery",
+        label: "Gallery",
+        fields: [
+            { type: "image", name: "images", label: "Images", list: true }
+        ]
+    },
+    {
+        name: "quote",
+        label: "Quote",
+        fields: [
+            { type: "string", name: "quoteText", label: "Quote Text", ui: { component: "textarea" } },
+            { type: "string", name: "author", label: "Author" }
+        ]
+    },
+    {
+        name: "spacer",
+        label: "Spacer",
+        fields: [
+            { type: "string", name: "size", label: "Size", options: ["small", "medium", "large"] }
+        ]
+    }
+];
+
 export default defineConfig({
     branch,
     // Get this from tina.io
@@ -207,74 +256,19 @@ export default defineConfig({
                 path: "content/blog",
                 format: "md",
                 fields: [
+                    { type: "string", name: "title", label: "Title", isTitle: true, required: true },
+                    { type: "string", name: "slug", label: "Slug" },
+                    { type: "string", name: "date", label: "Date String (e.g. Feb 2026)", required: true },
+                    { type: "image", name: "coverImage", label: "Cover Image", required: true },
+                    { type: "string", name: "excerpt", label: "Excerpt", ui: { component: "textarea" } },
+                    { type: "boolean", name: "published", label: "Published" },
+                    { type: "number", name: "order", label: "Sort Order" },
                     {
-                        type: "boolean",
-                        name: "published",
-                        label: "Published",
-                        description: "Check to manifest this post on the site.",
-                    },
-                    {
-                        type: "number",
-                        name: "order",
-                        label: "Sort Order",
-                        description: "Lower numbers appear first.",
-                    },
-                    {
-                        type: "string",
-                        name: "title",
-                        label: "Title",
-                        isTitle: true,
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "excerpt",
-                        label: "Excerpt",
-                        required: true,
-                        ui: {
-                            component: "textarea"
-                        }
-                    },
-                    {
-                        type: "string",
-                        name: "date",
-                        label: "Date String (e.g. Feb 2026)",
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "category",
-                        label: "Category",
-                        required: true,
-                    },
-                    {
-                        type: "image",
-                        name: "image",
-                        label: "Hero Image",
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "readTime",
-                        label: "Read Time",
-                        required: true,
-                    },
-                    {
-                        type: "string",
-                        name: "pullQuote",
-                        label: "Pull Quote",
-                    },
-                    {
-                        type: "image",
-                        name: "contentImages",
-                        label: "Content Images",
+                        type: "object",
+                        name: "blocks",
+                        label: "Blocks",
                         list: true,
-                    },
-                    {
-                        type: "rich-text",
-                        name: "body",
-                        label: "Body",
-                        isBody: true,
+                        templates: blockTemplates,
                     },
                 ],
             },
@@ -284,33 +278,23 @@ export default defineConfig({
                 path: "content/projects",
                 format: "md",
                 fields: [
-                    { type: "string", name: "title", label: "Title", required: true },
+                    { type: "string", name: "title", label: "Title", isTitle: true, required: true },
+                    { type: "string", name: "slug", label: "Slug" },
                     { type: "string", name: "client", label: "Client" },
-                    { type: "string", name: "year", label: "Year" },
-                    { type: "string", name: "category", label: "Category" },
+                    { type: "string", name: "industry", label: "Industry", required: true },
+                    { type: "number", name: "year", label: "Year", required: true },
+                    { type: "string", name: "services", label: "Services", list: true },
+                    { type: "string", name: "excerpt", label: "Excerpt", ui: { component: "textarea" } },
+                    { type: "image", name: "heroImage", label: "Hero Image" },
                     { type: "boolean", name: "published", label: "Published" },
                     { type: "number", name: "order", label: "Order" },
-                    { type: "image", name: "thumbnail", label: "Thumbnail" },
-                    { type: "image", name: "heroImage", label: "Hero Image" },
                     {
                         type: "object",
-                        name: "sections",
-                        label: "Sections",
+                        name: "blocks",
+                        label: "Blocks",
                         list: true,
-                        ui: {
-                            itemProps: (item) => { return { label: item?.heading } }
-                        },
-                        fields: [
-                            {
-                                type: "string",
-                                name: "type",
-                                label: "Section Type",
-                                options: ["overview", "context", "approach", "system", "execution", "outcome"]
-                            },
-                            { type: "string", name: "heading", label: "Heading" },
-                            { type: "rich-text", name: "content", label: "Content" }
-                        ]
-                    }
+                        templates: blockTemplates,
+                    },
                 ]
             }
         ],

@@ -38,15 +38,7 @@ export async function generateStaticParams() {
   }
 }
 
-// Original structure mapping
-const caseSections = [
-  { key: "overview", label: "Overview", number: "01" },
-  { key: "context", label: "Context", number: "02" },
-  { key: "approach", label: "Approach", number: "03" },
-  { key: "system", label: "System", number: "04" },
-  { key: "execution", label: "Execution", number: "05" },
-  { key: "outcome", label: "Outcome", number: "06" },
-] as const
+
 
 export default async function ProjectDetailPage({ params }: ProjectDetailProps) {
   const { slug } = await params
@@ -107,12 +99,12 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
             <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.client}</span>
           </div>
           <div>
-            <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Year</span>
-            <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.year}</span>
+            <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Industry</span>
+            <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.industry}</span>
           </div>
           <div>
-            <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Role</span>
-            <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.roles?.join(" / ")}</span>
+            <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Year</span>
+            <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.year}</span>
           </div>
           <div>
             <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Services</span>
@@ -133,49 +125,89 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
         />
       </div>
 
-      {/* Case Study Sections */}
-      {caseSections.map((section, i) => {
-        const cmsSection = (projectData.sections || []).find((s: any) => s.type === section.key)
-        const content = cmsSection?.content || projectData[section.key]
-
-        if (!content) return null
-
-        // Insert images between certain sections
-        const showImageAfter = i === 1 || i === 3
-
-        return (
-          <div key={section.key}>
-            <div className="mb-20 md:mb-28 max-w-[900px]">
-              <div className="flex items-center gap-4 mb-8 md:mb-10">
-                <span className="font-sans font-light text-[12px] tracking-[0.25em] text-muted-foreground uppercase">
-                  {section.number}
-                </span>
-                <span className="w-8 h-px bg-muted-foreground" />
-                <span className="font-sans font-medium text-[12px] md:text-[13px] tracking-[0.15em] text-foreground uppercase">
-                  {section.label}
-                </span>
+      {/* Project Blocks */}
+      {(projectData.blocks || []).map((block: any, i: number) => {
+        switch (block._template) {
+          case "fullImage":
+            return (
+              <div key={i} className="w-full mb-20 md:mb-28 relative overflow-hidden">
+                <div className="w-full h-[50vh] md:h-[85vh] bg-muted relative">
+                  <Image src={block.image || ""} alt={block.caption || "Full Image"} fill className="object-cover" sizes="100vw" />
+                </div>
+                {block.caption && (
+                  <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase text-center">
+                    {block.caption}
+                  </p>
+                )}
               </div>
-              <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                {typeof content === "string" ? content : <TinaMarkdown content={content} />}
-              </div>
-            </div>
-
-            {showImageAfter && (
-              <div className={`mb-24 md:mb-32 ${i === 1 ? "w-full" : "w-[85%] md:w-[70%] md:ml-[15%]"}`}>
-                <div className={`${i === 1 ? "h-[40vh] md:h-[60vh]" : "h-[35vh] md:h-[50vh]"} bg-muted relative overflow-hidden`}>
-                  <Image
-                    src={projectData.heroImage || projectData.thumbnail || projectData.image || ""}
-                    alt={`${projectData.title} - Detail ${i + 1}`}
-                    fill
-                    className={`object-cover ${i === 1 ? "grayscale" : ""}`}
-                    sizes={i === 1 ? "100vw" : "(max-width: 768px) 85vw, 70vw"}
-                  />
+            )
+          case "textBlock":
+            return (
+              <div key={i} className="mb-20 md:mb-28 max-w-[900px]">
+                {block.heading && (
+                  <div className="flex items-center gap-4 mb-8 md:mb-10">
+                    <span className="w-8 h-px bg-muted-foreground" />
+                    <span className="font-sans font-medium text-[12px] md:text-[13px] tracking-[0.15em] text-foreground uppercase">
+                      {block.heading}
+                    </span>
+                  </div>
+                )}
+                <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+                  <TinaMarkdown content={block.body} />
                 </div>
               </div>
-            )}
-          </div>
-        )
+            )
+          case "twoColumn":
+            return (
+              <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-20 md:mb-28 items-start">
+                <div className="font-sans font-light text-[16px] md:text-[20px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+                  <TinaMarkdown content={block.leftContent} />
+                </div>
+                {block.rightImage && (
+                  <div className="w-full h-[40vh] md:h-[60vh] relative bg-muted">
+                    <Image src={block.rightImage} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+                  </div>
+                )}
+              </div>
+            )
+          case "gallery":
+            return (
+              <div key={i} className={`grid gap-4 md:gap-8 mb-20 md:mb-28 ${block.images?.length === 1 ? 'grid-cols-1' : block.images?.length === 2 ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
+                {(block.images || []).slice(0, 4).map((img: string, idx: number) => (
+                  <div key={idx} className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
+                    <Image src={img} alt={`Gallery ${idx}`} fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
+                  </div>
+                ))}
+              </div>
+            )
+          case "quote":
+            return (
+              <div key={i} className="mb-20 md:mb-28 max-w-[900px] border-l-2 md:border-l-4 border-foreground pl-6 md:pl-10">
+                <blockquote className="font-sans font-black text-[clamp(24px,5vw,48px)] leading-[1.1] text-foreground uppercase tracking-[-0.03em] mb-6">
+                  "{block.quoteText}"
+                </blockquote>
+                {block.author && (
+                  <cite className="font-sans font-light text-[12px] md:text-[14px] text-muted-foreground tracking-[0.2em] uppercase block not-italic">
+                    — {block.author}
+                  </cite>
+                )}
+              </div>
+            )
+          case "spacer":
+            const h = block.size === "small" ? "h-16 md:h-24" : block.size === "large" ? "h-32 md:h-48" : "h-24 md:h-32"
+            return <div key={i} className={`w-full ${h}`} />
+          default:
+            return null
+        }
       })}
+
+      {(!projectData.blocks || projectData.blocks.length === 0) && (
+        <div className="mb-24 max-w-[900px]">
+          <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+            {projectData.excerpt || projectData.description || "Project details coming soon."}
+          </div>
+        </div>
+      )}
 
       {/* Next Project */}
       {nextProject && (

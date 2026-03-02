@@ -63,12 +63,12 @@ function BlogEntry({
       <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
         <div
           className={`relative overflow-hidden bg-muted shrink-0 ${isWide
-              ? "w-full md:w-[420px] h-[240px] md:h-[320px]"
-              : "w-full md:w-[300px] h-[200px] md:h-[240px]"
+            ? "w-full md:w-[420px] h-[240px] md:h-[320px]"
+            : "w-full md:w-[300px] h-[200px] md:h-[240px]"
             }`}
         >
           <Image
-            src={post.image || ""}
+            src={post.coverImage || post.image || ""}
             alt={post.title}
             fill
             className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-[1.02]"
@@ -79,10 +79,6 @@ function BlogEntry({
         <div className="flex flex-col justify-between flex-1 min-h-[200px]">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.2em] text-muted-foreground uppercase">
-                {post.category}
-              </span>
-              <span className="w-4 h-px bg-muted-foreground" />
               <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.2em] text-muted-foreground uppercase">
                 {post.date}
               </span>
@@ -98,9 +94,6 @@ function BlogEntry({
           </div>
 
           <div className="flex items-center gap-3 mt-6">
-            <span className="font-sans font-light text-[12px] tracking-[0.15em] text-muted-foreground uppercase">
-              {post.readTime}
-            </span>
             <span className="font-sans font-medium text-[12px] tracking-[0.1em] text-foreground uppercase border-b border-foreground">
               Read
             </span>
@@ -158,11 +151,7 @@ function ReaderPanel({
             </button>
 
             <div className="flex items-center gap-3 mb-6">
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.2em] text-muted-foreground uppercase">{post.category}</span>
-              <span className="w-4 h-px bg-muted-foreground" />
               <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.2em] text-muted-foreground uppercase">{post.date}</span>
-              <span className="w-4 h-px bg-muted-foreground" />
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.2em] text-muted-foreground uppercase">{post.readTime}</span>
             </div>
 
             <h1 className="font-sans font-black text-[36px] md:text-[56px] leading-[0.88] uppercase tracking-[-0.03em] text-foreground mb-10 md:mb-14">
@@ -170,24 +159,89 @@ function ReaderPanel({
             </h1>
 
             <div className="w-full h-[30vh] md:h-[45vh] bg-muted relative overflow-hidden mb-10 md:mb-14">
-              <Image src={post.image || ""} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
+              <Image src={post.coverImage || post.image || ""} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
             </div>
 
-            <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-6">
-              <TinaMarkdown content={post.body} />
+            <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-8">
+              {(post.blocks || []).map((block: any, i: number) => {
+                switch (block._template) {
+                  case "fullImage":
+                    return (
+                      <div key={i} className="w-full mb-12 md:mb-16 relative overflow-hidden">
+                        <div className="w-full h-[40vh] md:h-[50vh] bg-muted relative">
+                          <Image src={block.image || ""} alt={block.caption || "Full Image"} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
+                        </div>
+                        {block.caption && (
+                          <p className="mt-4 font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase text-center">
+                            {block.caption}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  case "textBlock":
+                    return (
+                      <div key={i} className="mb-12 md:mb-16">
+                        {block.heading && (
+                          <div className="flex items-center gap-4 mb-6 md:mb-8">
+                            <span className="w-6 h-px bg-muted-foreground" />
+                            <span className="font-sans font-medium text-[12px] tracking-[0.15em] text-foreground uppercase">
+                              {block.heading}
+                            </span>
+                          </div>
+                        )}
+                        <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+                          <TinaMarkdown content={block.body} />
+                        </div>
+                      </div>
+                    )
+                  case "twoColumn":
+                    return (
+                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16 items-start">
+                        <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+                          <TinaMarkdown content={block.leftContent} />
+                        </div>
+                        {block.rightImage && (
+                          <div className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
+                            <Image src={block.rightImage} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  case "gallery":
+                    return (
+                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 ${block.images?.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                        {(block.images || []).slice(0, 4).map((img: string, idx: number) => (
+                          <div key={idx} className="w-full h-[25vh] md:h-[30vh] relative bg-muted">
+                            <Image src={img} alt={`Gallery ${idx}`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" />
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  case "quote":
+                    return (
+                      <div key={i} className="mb-12 md:mb-16 border-l-2 md:border-l-[3px] border-foreground pl-6 md:pl-8">
+                        <blockquote className="font-sans font-black text-[clamp(20px,4vw,36px)] leading-[1.1] text-foreground uppercase tracking-[-0.02em] mb-4">
+                          "{block.quoteText}"
+                        </blockquote>
+                        {block.author && (
+                          <cite className="font-sans font-light text-[11px] md:text-[12px] text-muted-foreground tracking-[0.2em] uppercase block not-italic">
+                            — {block.author}
+                          </cite>
+                        )}
+                      </div>
+                    )
+                  case "spacer":
+                    const h = block.size === "small" ? "h-12" : block.size === "large" ? "h-24 md:h-32" : "h-16 md:h-20"
+                    return <div key={i} className={`w-full ${h}`} />
+                  default:
+                    return null
+                }
+              })}
             </div>
 
-            {post.pullQuote && (
-              <blockquote className="border-l-[4px] border-foreground pl-6 md:pl-8 my-10 md:my-14">
-                <p className="font-sans font-black text-[20px] md:text-[28px] leading-[1.1] uppercase tracking-[-0.02em] text-foreground">
-                  {post.pullQuote}
-                </p>
-              </blockquote>
-            )}
-
-            {post.contentImages && post.contentImages.length > 0 && (
-              <div className="w-[85%] md:w-[70%] h-[25vh] md:h-[35vh] bg-muted relative overflow-hidden my-10 md:my-14 md:ml-[15%]">
-                <Image src={post.contentImages[0] || ""} alt={`${post.title} - detail`} fill className="object-cover" sizes="(max-width: 768px) 85vw, 40vw" />
+            {(!post.blocks || post.blocks.length === 0) && (
+              <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-6">
+                {post.body ? <TinaMarkdown content={post.body} /> : "Blog content coming soon."}
               </div>
             )}
 
