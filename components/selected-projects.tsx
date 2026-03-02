@@ -16,6 +16,19 @@ const homeOffsets = ["self-end", "self-start", "self-center", "self-end"]
 export function SelectedProjects({ projects }: { projects: any[] }) {
   const selectedProjects = projects.slice(0, 4)
 
+  if (!selectedProjects || selectedProjects.length === 0) {
+    return (
+      <section className="w-full bg-background min-h-[50vh] md:min-h-[80vh] flex flex-col">
+        <div className="flex items-center gap-4 px-8 md:px-[60px] pt-12 md:pt-16 mb-8 md:mb-12">
+          <span className="font-sans font-light text-[13px] md:text-[14px] uppercase tracking-[0.2em] text-muted-foreground">
+            Selected Work
+          </span>
+          <span className="w-6 h-px bg-muted-foreground" />
+        </div>
+      </section>
+    )
+  }
+
   return (
     <>
       {/* Desktop (md and above) */}

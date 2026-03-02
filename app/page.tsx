@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: "A multidisciplinary creative studio working across brand identity, art direction, visual systems and product thinking. Istanbul / Global.",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
   const homeDataPath = path.join(process.cwd(), "content", "homepage.json")
   let homeData: any = {}
@@ -27,8 +29,11 @@ export default async function HomePage() {
     projects = files.map(filename => {
       const fileContent = fs.readFileSync(path.join(projectsDir, filename), "utf8")
       const { data } = matter(fileContent)
-      return { ...data, slug: filename.replace(".md", ""), id: filename }
+      // Derive slug from filename if missing
+      const slug = data.slug || filename.replace(".md", "")
+      return { ...data, slug, id: filename }
     })
+      // Treat missing `published` as true
       .filter((p: any) => p.published !== false)
 
     if (homeData.selectedProjects && Array.isArray(homeData.selectedProjects) && homeData.selectedProjects.length > 0) {

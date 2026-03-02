@@ -38,7 +38,15 @@ export async function generateStaticParams() {
   }
 }
 
-// We map sections dynamically from projectData.sections now.
+// Original structure mapping
+const caseSections = [
+  { key: "overview", label: "Overview", number: "01" },
+  { key: "context", label: "Context", number: "02" },
+  { key: "approach", label: "Approach", number: "03" },
+  { key: "system", label: "System", number: "04" },
+  { key: "execution", label: "Execution", number: "05" },
+  { key: "outcome", label: "Outcome", number: "06" },
+] as const
 
 export default async function ProjectDetailPage({ params }: ProjectDetailProps) {
   const { slug } = await params
@@ -126,27 +134,29 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
       </div>
 
       {/* Case Study Sections */}
-      {(projectData?.sections || []).map((section: any, i: number) => {
-        if (!section.content) return null
+      {caseSections.map((section, i) => {
+        const cmsSection = (projectData.sections || []).find((s: any) => s.type === section.key)
+        const content = cmsSection?.content || projectData[section.key]
+
+        if (!content) return null
 
         // Insert images between certain sections
         const showImageAfter = i === 1 || i === 3
-        const sectionNumber = String(i + 1).padStart(2, '0')
 
         return (
-          <div key={section.type || i}>
+          <div key={section.key}>
             <div className="mb-20 md:mb-28 max-w-[900px]">
               <div className="flex items-center gap-4 mb-8 md:mb-10">
                 <span className="font-sans font-light text-[12px] tracking-[0.25em] text-muted-foreground uppercase">
-                  {sectionNumber}
+                  {section.number}
                 </span>
                 <span className="w-8 h-px bg-muted-foreground" />
                 <span className="font-sans font-medium text-[12px] md:text-[13px] tracking-[0.15em] text-foreground uppercase">
-                  {section.heading || section.type}
+                  {section.label}
                 </span>
               </div>
               <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                {typeof section.content === "string" ? section.content : <TinaMarkdown content={section.content} />}
+                {typeof content === "string" ? content : <TinaMarkdown content={content} />}
               </div>
             </div>
 
