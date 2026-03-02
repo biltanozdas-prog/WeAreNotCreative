@@ -14,20 +14,8 @@ const homeSizes = [
 const homeOffsets = ["self-end", "self-start", "self-center", "self-end"]
 
 export function SelectedProjects({ projects }: { projects: any[] }) {
-  const selectedProjects = projects.slice(0, 4)
-
-  if (!selectedProjects || selectedProjects.length === 0) {
-    return (
-      <section className="w-full bg-background min-h-[50vh] md:min-h-[80vh] flex flex-col">
-        <div className="flex items-center gap-4 px-8 md:px-[60px] pt-12 md:pt-16 mb-8 md:mb-12">
-          <span className="font-sans font-light text-[13px] md:text-[14px] uppercase tracking-[0.2em] text-muted-foreground">
-            Selected Work
-          </span>
-          <span className="w-6 h-px bg-muted-foreground" />
-        </div>
-      </section>
-    )
-  }
+  const validProjects = Array.isArray(projects) ? projects : []
+  const selectedProjects = validProjects.slice(0, 4)
 
   return (
     <>
@@ -43,6 +31,7 @@ export function SelectedProjects({ projects }: { projects: any[] }) {
     </>
   )
 }
+
 
 function DesktopSelectedProjects({ selectedProjects }: { selectedProjects: any[] }) {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -81,6 +70,19 @@ function DesktopSelectedProjects({ selectedProjects }: { selectedProjects: any[]
   }, [sectionHeight])
 
   const translateX = scrollProgress * (trackWidth - (typeof window !== "undefined" ? window.innerWidth : 0))
+
+  if (selectedProjects.length === 0) {
+    return (
+      <section className="relative bg-background md:min-h-[80vh] w-full flex flex-col">
+        <div className="flex items-center gap-4 px-8 md:px-[60px] pt-12 md:pt-16 mb-8 md:mb-12">
+          <span className="font-sans font-light text-[13px] md:text-[14px] uppercase tracking-[0.2em] text-muted-foreground">
+            Selected Work
+          </span>
+          <span className="w-6 h-px bg-muted-foreground" />
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section
@@ -164,6 +166,19 @@ function DesktopSelectedProjects({ selectedProjects }: { selectedProjects: any[]
 
 function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] }) {
   const [scrollProgress, setScrollProgress] = useState(0)
+
+  if (selectedProjects.length === 0) {
+    return (
+      <section className="relative bg-background min-h-[50vh] w-full flex flex-col">
+        <div className="flex items-center gap-4 px-8 pt-12 mb-8 relative z-10 bg-background">
+          <span className="font-sans font-light text-[13px] uppercase tracking-[0.2em] text-muted-foreground">
+            Selected Work
+          </span>
+          <span className="w-6 h-px bg-muted-foreground" />
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="relative bg-background w-full flex flex-col">

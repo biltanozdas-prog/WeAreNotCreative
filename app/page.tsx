@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 }
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function HomePage() {
   const homeDataPath = path.join(process.cwd(), "content", "homepage.json")
@@ -48,10 +49,18 @@ export default async function HomePage() {
 
       // Fallback if all referenced projects are filtered out
       if (selectedProjects.length === 0) {
-        selectedProjects = projects.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, 4);
+        selectedProjects = projects.sort((a: any, b: any) => {
+          const orderA = typeof a.order === 'number' ? a.order : 999;
+          const orderB = typeof b.order === 'number' ? b.order : 999;
+          return orderA - orderB;
+        }).slice(0, 4);
       }
     } else {
-      selectedProjects = projects.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, 4);
+      selectedProjects = projects.sort((a: any, b: any) => {
+        const orderA = typeof a.order === 'number' ? a.order : 999;
+        const orderB = typeof b.order === 'number' ? b.order : 999;
+        return orderA - orderB;
+      }).slice(0, 4);
     }
   } catch (e) { }
 
