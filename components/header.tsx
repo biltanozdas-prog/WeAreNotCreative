@@ -25,9 +25,9 @@ export function Header() {
       <div className="pointer-events-auto">
         <Link
           href="/"
-          className="text-[#ffffff] no-underline font-sans font-black uppercase leading-[0.8] tracking-[-0.05em] text-[24px] md:text-[40px] lg:text-[60px]"
+          className="text-[#ffffff] no-underline font-sans font-black leading-[0.8] tracking-[-0.05em] text-[24px] md:text-[40px] lg:text-[60px]"
         >
-          WEARENOTCREATIVE
+          WeAreNotCreative
         </Link>
       </div>
     </header>
