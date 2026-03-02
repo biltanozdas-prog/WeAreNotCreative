@@ -44,30 +44,21 @@ export default async function HomePage() {
       return orderA - orderB;
     });
 
-    const selectedList = homeData.selectedProjectSlugs || homeData.selectedProjects;
-    if (selectedList && Array.isArray(selectedList) && selectedList.length > 0) {
-      selectedProjects = selectedList
-        .map((item: any) => {
-          const ref = typeof item === 'string' ? item : item.project;
-          if (!ref) return null;
-          const slug = ref.split('/').pop()?.replace('.md', '');
-          return safeProjects.find(p => p.slug === slug);
-        })
-        .filter(Boolean);
+    if (homeData?.selectedProjectSlugs?.length) {
+      selectedProjects = homeData.selectedProjectSlugs
+        .map((slug: string) => safeProjects.find(p => p.slug === slug))
+        .filter(Boolean)
+    }
 
-      // Fallback if result is empty
-      if (selectedProjects.length === 0) {
-        selectedProjects = safeProjects.slice(0, 4);
-      }
-    } else {
-      selectedProjects = safeProjects.slice(0, 4);
+    if (!selectedProjects.length) {
+      selectedProjects = safeProjects.slice(0, 4)
     }
   } catch (e) {
-    selectedProjects = safeProjects.slice(0, 4);
+    selectedProjects = safeProjects.slice(0, 4)
   }
 
-  // Ensure selectedProjects is NEVER undefined
-  selectedProjects = selectedProjects || []
+  // Ensure selectedProjects is ALWAYS an array
+  selectedProjects = selectedProjects || [];
 
   return (
     <main>
