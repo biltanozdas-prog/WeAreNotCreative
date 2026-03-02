@@ -7,13 +7,13 @@ import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata: Metadata = {
   title: "WEARENOTCREATIVE | Design as a Cultural Practice",
   description: "A multidisciplinary creative studio working across brand identity, art direction, visual systems and product thinking. Istanbul / Global.",
 }
-
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 export default async function HomePage() {
   const homeDataPath = path.join(process.cwd(), "content", "homepage.json")
@@ -23,11 +23,11 @@ export default async function HomePage() {
   } catch (e) { }
 
   const projectsDir = path.join(process.cwd(), "content", "projects")
-  let projects: any[] = []
+  let safeProjects: any[] = []
   let selectedProjects: any[] = []
   try {
     const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
-    projects = files.map(filename => {
+    const projects = files.map(filename => {
       const fileContent = fs.readFileSync(path.join(projectsDir, filename), "utf8")
       const { data } = matter(fileContent)
       // Derive slug from filename if missing
@@ -37,32 +37,37 @@ export default async function HomePage() {
       // Treat missing `published` as true
       .filter((p: any) => p.published !== false)
 
-    if (homeData.selectedProjects && Array.isArray(homeData.selectedProjects) && homeData.selectedProjects.length > 0) {
-      selectedProjects = homeData.selectedProjects
+    // Sort by order ascending
+    safeProjects = projects.sort((a: any, b: any) => {
+      const orderA = typeof a.order === 'number' ? a.order : 999;
+      const orderB = typeof b.order === 'number' ? b.order : 999;
+      return orderA - orderB;
+    });
+
+    const selectedList = homeData.selectedProjectSlugs || homeData.selectedProjects;
+    if (selectedList && Array.isArray(selectedList) && selectedList.length > 0) {
+      selectedProjects = selectedList
         .map((item: any) => {
-          const ref = item.project;
+          const ref = typeof item === 'string' ? item : item.project;
           if (!ref) return null;
           const slug = ref.split('/').pop()?.replace('.md', '');
-          return projects.find(p => p.slug === slug);
+          return safeProjects.find(p => p.slug === slug);
         })
         .filter(Boolean);
 
-      // Fallback if all referenced projects are filtered out
+      // Fallback if result is empty
       if (selectedProjects.length === 0) {
-        selectedProjects = projects.sort((a: any, b: any) => {
-          const orderA = typeof a.order === 'number' ? a.order : 999;
-          const orderB = typeof b.order === 'number' ? b.order : 999;
-          return orderA - orderB;
-        }).slice(0, 4);
+        selectedProjects = safeProjects.slice(0, 4);
       }
     } else {
-      selectedProjects = projects.sort((a: any, b: any) => {
-        const orderA = typeof a.order === 'number' ? a.order : 999;
-        const orderB = typeof b.order === 'number' ? b.order : 999;
-        return orderA - orderB;
-      }).slice(0, 4);
+      selectedProjects = safeProjects.slice(0, 4);
     }
-  } catch (e) { }
+  } catch (e) {
+    selectedProjects = safeProjects.slice(0, 4);
+  }
+
+  // Ensure selectedProjects is NEVER undefined
+  selectedProjects = selectedProjects || []
 
   return (
     <main>

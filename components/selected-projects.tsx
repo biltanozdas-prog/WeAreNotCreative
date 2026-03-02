@@ -73,7 +73,7 @@ function DesktopSelectedProjects({ selectedProjects }: { selectedProjects: any[]
 
   if (selectedProjects.length === 0) {
     return (
-      <section className="relative bg-background md:min-h-[80vh] w-full flex flex-col">
+      <section className="relative bg-background min-h-[50vh] md:min-h-[80vh] w-full flex flex-col">
         <div className="flex items-center gap-4 px-8 md:px-[60px] pt-12 md:pt-16 mb-8 md:mb-12">
           <span className="font-sans font-light text-[13px] md:text-[14px] uppercase tracking-[0.2em] text-muted-foreground">
             Selected Work
@@ -169,7 +169,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
 
   if (selectedProjects.length === 0) {
     return (
-      <section className="relative bg-background min-h-[50vh] w-full flex flex-col">
+      <section className="relative bg-background min-h-[50vh] md:min-h-[80vh] w-full flex flex-col">
         <div className="flex items-center gap-4 px-8 pt-12 mb-8 relative z-10 bg-background">
           <span className="font-sans font-light text-[13px] uppercase tracking-[0.2em] text-muted-foreground">
             Selected Work
