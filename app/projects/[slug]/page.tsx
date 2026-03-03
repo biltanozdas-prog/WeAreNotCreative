@@ -83,13 +83,13 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
       {/* Header */}
       <header className="mb-24 md:mb-32">
         <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-          {projectData.category}
+          {projectData.industry || projectData.category}
         </p>
         <h1 className="font-sans font-black text-[12vw] md:text-[8vw] leading-[0.8] uppercase text-foreground mb-8 md:mb-10 whitespace-pre-line tracking-[-0.04em]">
           {projectData.title}
         </h1>
         <p className="font-sans font-light text-[16px] md:text-[20px] text-foreground/70 max-w-[600px] leading-[1.6]">
-          {projectData.description}
+          {projectData.excerpt || projectData.description}
         </p>
 
         {/* Meta Grid */}
@@ -100,7 +100,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           </div>
           <div>
             <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Industry</span>
-            <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.industry}</span>
+            <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.industry || projectData.category}</span>
           </div>
           <div>
             <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Year</span>
@@ -116,7 +116,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
       {/* Full Width Hero Image */}
       <div className="w-full h-[50vh] md:h-[85vh] bg-muted relative overflow-hidden mb-28 md:mb-36">
         <Image
-          src={projectData.image || ""}
+          src={projectData.heroImage || projectData.image || ""}
           alt={`${projectData.title} - Full view`}
           fill
           className="object-cover"

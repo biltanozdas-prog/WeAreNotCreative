@@ -486,19 +486,58 @@ export type TeamConnection = Connection & {
   edges?: Maybe<Array<Maybe<TeamConnectionEdges>>>;
 };
 
+export type BlogBlocksHeroOverride = {
+  __typename?: 'BlogBlocksHeroOverride';
+  title?: Maybe<Scalars['String']['output']>;
+  image?: Maybe<Scalars['String']['output']>;
+};
+
+export type BlogBlocksFullImage = {
+  __typename?: 'BlogBlocksFullImage';
+  image?: Maybe<Scalars['String']['output']>;
+  caption?: Maybe<Scalars['String']['output']>;
+};
+
+export type BlogBlocksTextBlock = {
+  __typename?: 'BlogBlocksTextBlock';
+  heading?: Maybe<Scalars['String']['output']>;
+  body?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type BlogBlocksTwoColumn = {
+  __typename?: 'BlogBlocksTwoColumn';
+  leftContent?: Maybe<Scalars['JSON']['output']>;
+  rightImage?: Maybe<Scalars['String']['output']>;
+};
+
+export type BlogBlocksGallery = {
+  __typename?: 'BlogBlocksGallery';
+  images?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+};
+
+export type BlogBlocksQuote = {
+  __typename?: 'BlogBlocksQuote';
+  quoteText?: Maybe<Scalars['String']['output']>;
+  author?: Maybe<Scalars['String']['output']>;
+};
+
+export type BlogBlocksSpacer = {
+  __typename?: 'BlogBlocksSpacer';
+  size?: Maybe<Scalars['String']['output']>;
+};
+
+export type BlogBlocks = BlogBlocksHeroOverride | BlogBlocksFullImage | BlogBlocksTextBlock | BlogBlocksTwoColumn | BlogBlocksGallery | BlogBlocksQuote | BlogBlocksSpacer;
+
 export type Blog = Node & Document & {
   __typename?: 'Blog';
+  title: Scalars['String']['output'];
+  slug?: Maybe<Scalars['String']['output']>;
+  date: Scalars['String']['output'];
+  coverImage: Scalars['String']['output'];
+  excerpt: Scalars['String']['output'];
   published?: Maybe<Scalars['Boolean']['output']>;
   order?: Maybe<Scalars['Float']['output']>;
-  title: Scalars['String']['output'];
-  excerpt: Scalars['String']['output'];
-  date: Scalars['String']['output'];
-  category: Scalars['String']['output'];
-  image: Scalars['String']['output'];
-  readTime: Scalars['String']['output'];
-  pullQuote?: Maybe<Scalars['String']['output']>;
-  contentImages?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  body?: Maybe<Scalars['JSON']['output']>;
+  blocks?: Maybe<Array<Maybe<BlogBlocks>>>;
   id: Scalars['ID']['output'];
   _sys: SystemInfo;
   _values: Scalars['JSON']['output'];
@@ -519,18 +558,58 @@ export type NumberFilter = {
   in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
 };
 
+export type BlogBlocksHeroOverrideFilter = {
+  title?: InputMaybe<StringFilter>;
+  image?: InputMaybe<ImageFilter>;
+};
+
+export type BlogBlocksFullImageFilter = {
+  image?: InputMaybe<ImageFilter>;
+  caption?: InputMaybe<StringFilter>;
+};
+
+export type BlogBlocksTextBlockFilter = {
+  heading?: InputMaybe<StringFilter>;
+  body?: InputMaybe<RichTextFilter>;
+};
+
+export type BlogBlocksTwoColumnFilter = {
+  leftContent?: InputMaybe<RichTextFilter>;
+  rightImage?: InputMaybe<ImageFilter>;
+};
+
+export type BlogBlocksGalleryFilter = {
+  images?: InputMaybe<ImageFilter>;
+};
+
+export type BlogBlocksQuoteFilter = {
+  quoteText?: InputMaybe<StringFilter>;
+  author?: InputMaybe<StringFilter>;
+};
+
+export type BlogBlocksSpacerFilter = {
+  size?: InputMaybe<StringFilter>;
+};
+
+export type BlogBlocksFilter = {
+  heroOverride?: InputMaybe<BlogBlocksHeroOverrideFilter>;
+  fullImage?: InputMaybe<BlogBlocksFullImageFilter>;
+  textBlock?: InputMaybe<BlogBlocksTextBlockFilter>;
+  twoColumn?: InputMaybe<BlogBlocksTwoColumnFilter>;
+  gallery?: InputMaybe<BlogBlocksGalleryFilter>;
+  quote?: InputMaybe<BlogBlocksQuoteFilter>;
+  spacer?: InputMaybe<BlogBlocksSpacerFilter>;
+};
+
 export type BlogFilter = {
+  title?: InputMaybe<StringFilter>;
+  slug?: InputMaybe<StringFilter>;
+  date?: InputMaybe<StringFilter>;
+  coverImage?: InputMaybe<ImageFilter>;
+  excerpt?: InputMaybe<StringFilter>;
   published?: InputMaybe<BooleanFilter>;
   order?: InputMaybe<NumberFilter>;
-  title?: InputMaybe<StringFilter>;
-  excerpt?: InputMaybe<StringFilter>;
-  date?: InputMaybe<StringFilter>;
-  category?: InputMaybe<StringFilter>;
-  image?: InputMaybe<ImageFilter>;
-  readTime?: InputMaybe<StringFilter>;
-  pullQuote?: InputMaybe<StringFilter>;
-  contentImages?: InputMaybe<ImageFilter>;
-  body?: InputMaybe<RichTextFilter>;
+  blocks?: InputMaybe<BlogBlocksFilter>;
 };
 
 export type BlogConnectionEdges = {
@@ -546,45 +625,121 @@ export type BlogConnection = Connection & {
   edges?: Maybe<Array<Maybe<BlogConnectionEdges>>>;
 };
 
-export type ProjectsSections = {
-  __typename?: 'ProjectsSections';
-  type?: Maybe<Scalars['String']['output']>;
-  heading?: Maybe<Scalars['String']['output']>;
-  content?: Maybe<Scalars['JSON']['output']>;
+export type ProjectsBlocksHeroOverride = {
+  __typename?: 'ProjectsBlocksHeroOverride';
+  title?: Maybe<Scalars['String']['output']>;
+  image?: Maybe<Scalars['String']['output']>;
 };
+
+export type ProjectsBlocksFullImage = {
+  __typename?: 'ProjectsBlocksFullImage';
+  image?: Maybe<Scalars['String']['output']>;
+  caption?: Maybe<Scalars['String']['output']>;
+};
+
+export type ProjectsBlocksTextBlock = {
+  __typename?: 'ProjectsBlocksTextBlock';
+  heading?: Maybe<Scalars['String']['output']>;
+  body?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type ProjectsBlocksTwoColumn = {
+  __typename?: 'ProjectsBlocksTwoColumn';
+  leftContent?: Maybe<Scalars['JSON']['output']>;
+  rightImage?: Maybe<Scalars['String']['output']>;
+};
+
+export type ProjectsBlocksGallery = {
+  __typename?: 'ProjectsBlocksGallery';
+  images?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+};
+
+export type ProjectsBlocksQuote = {
+  __typename?: 'ProjectsBlocksQuote';
+  quoteText?: Maybe<Scalars['String']['output']>;
+  author?: Maybe<Scalars['String']['output']>;
+};
+
+export type ProjectsBlocksSpacer = {
+  __typename?: 'ProjectsBlocksSpacer';
+  size?: Maybe<Scalars['String']['output']>;
+};
+
+export type ProjectsBlocks = ProjectsBlocksHeroOverride | ProjectsBlocksFullImage | ProjectsBlocksTextBlock | ProjectsBlocksTwoColumn | ProjectsBlocksGallery | ProjectsBlocksQuote | ProjectsBlocksSpacer;
 
 export type Projects = Node & Document & {
   __typename?: 'Projects';
   title: Scalars['String']['output'];
-  client?: Maybe<Scalars['String']['output']>;
-  year?: Maybe<Scalars['String']['output']>;
-  category?: Maybe<Scalars['String']['output']>;
+  slug?: Maybe<Scalars['String']['output']>;
+  client: Scalars['String']['output'];
+  industry: Scalars['String']['output'];
+  year: Scalars['Float']['output'];
+  services: Array<Scalars['String']['output']>;
+  excerpt: Scalars['String']['output'];
+  heroImage: Scalars['String']['output'];
   published?: Maybe<Scalars['Boolean']['output']>;
   order?: Maybe<Scalars['Float']['output']>;
-  thumbnail?: Maybe<Scalars['String']['output']>;
-  heroImage?: Maybe<Scalars['String']['output']>;
-  sections?: Maybe<Array<Maybe<ProjectsSections>>>;
+  blocks?: Maybe<Array<Maybe<ProjectsBlocks>>>;
   id: Scalars['ID']['output'];
   _sys: SystemInfo;
   _values: Scalars['JSON']['output'];
 };
 
-export type ProjectsSectionsFilter = {
-  type?: InputMaybe<StringFilter>;
+export type ProjectsBlocksHeroOverrideFilter = {
+  title?: InputMaybe<StringFilter>;
+  image?: InputMaybe<ImageFilter>;
+};
+
+export type ProjectsBlocksFullImageFilter = {
+  image?: InputMaybe<ImageFilter>;
+  caption?: InputMaybe<StringFilter>;
+};
+
+export type ProjectsBlocksTextBlockFilter = {
   heading?: InputMaybe<StringFilter>;
-  content?: InputMaybe<RichTextFilter>;
+  body?: InputMaybe<RichTextFilter>;
+};
+
+export type ProjectsBlocksTwoColumnFilter = {
+  leftContent?: InputMaybe<RichTextFilter>;
+  rightImage?: InputMaybe<ImageFilter>;
+};
+
+export type ProjectsBlocksGalleryFilter = {
+  images?: InputMaybe<ImageFilter>;
+};
+
+export type ProjectsBlocksQuoteFilter = {
+  quoteText?: InputMaybe<StringFilter>;
+  author?: InputMaybe<StringFilter>;
+};
+
+export type ProjectsBlocksSpacerFilter = {
+  size?: InputMaybe<StringFilter>;
+};
+
+export type ProjectsBlocksFilter = {
+  heroOverride?: InputMaybe<ProjectsBlocksHeroOverrideFilter>;
+  fullImage?: InputMaybe<ProjectsBlocksFullImageFilter>;
+  textBlock?: InputMaybe<ProjectsBlocksTextBlockFilter>;
+  twoColumn?: InputMaybe<ProjectsBlocksTwoColumnFilter>;
+  gallery?: InputMaybe<ProjectsBlocksGalleryFilter>;
+  quote?: InputMaybe<ProjectsBlocksQuoteFilter>;
+  spacer?: InputMaybe<ProjectsBlocksSpacerFilter>;
 };
 
 export type ProjectsFilter = {
   title?: InputMaybe<StringFilter>;
+  slug?: InputMaybe<StringFilter>;
   client?: InputMaybe<StringFilter>;
-  year?: InputMaybe<StringFilter>;
-  category?: InputMaybe<StringFilter>;
+  industry?: InputMaybe<StringFilter>;
+  year?: InputMaybe<NumberFilter>;
+  services?: InputMaybe<StringFilter>;
+  excerpt?: InputMaybe<StringFilter>;
+  heroImage?: InputMaybe<ImageFilter>;
   published?: InputMaybe<BooleanFilter>;
   order?: InputMaybe<NumberFilter>;
-  thumbnail?: InputMaybe<ImageFilter>;
-  heroImage?: InputMaybe<ImageFilter>;
-  sections?: InputMaybe<ProjectsSectionsFilter>;
+  blocks?: InputMaybe<ProjectsBlocksFilter>;
 };
 
 export type ProjectsConnectionEdges = {
@@ -810,39 +965,118 @@ export type TeamMutation = {
   members?: InputMaybe<Array<InputMaybe<TeamMembersMutation>>>;
 };
 
-export type BlogMutation = {
-  published?: InputMaybe<Scalars['Boolean']['input']>;
-  order?: InputMaybe<Scalars['Float']['input']>;
+export type BlogBlocksHeroOverrideMutation = {
   title?: InputMaybe<Scalars['String']['input']>;
-  excerpt?: InputMaybe<Scalars['String']['input']>;
-  date?: InputMaybe<Scalars['String']['input']>;
-  category?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
-  readTime?: InputMaybe<Scalars['String']['input']>;
-  pullQuote?: InputMaybe<Scalars['String']['input']>;
-  contentImages?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type BlogBlocksFullImageMutation = {
+  image?: InputMaybe<Scalars['String']['input']>;
+  caption?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BlogBlocksTextBlockMutation = {
+  heading?: InputMaybe<Scalars['String']['input']>;
   body?: InputMaybe<Scalars['JSON']['input']>;
 };
 
-export type ProjectsSectionsMutation = {
-  type?: InputMaybe<Scalars['String']['input']>;
+export type BlogBlocksTwoColumnMutation = {
+  leftContent?: InputMaybe<Scalars['JSON']['input']>;
+  rightImage?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BlogBlocksGalleryMutation = {
+  images?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type BlogBlocksQuoteMutation = {
+  quoteText?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BlogBlocksSpacerMutation = {
+  size?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BlogBlocksMutation = {
+  heroOverride?: InputMaybe<BlogBlocksHeroOverrideMutation>;
+  fullImage?: InputMaybe<BlogBlocksFullImageMutation>;
+  textBlock?: InputMaybe<BlogBlocksTextBlockMutation>;
+  twoColumn?: InputMaybe<BlogBlocksTwoColumnMutation>;
+  gallery?: InputMaybe<BlogBlocksGalleryMutation>;
+  quote?: InputMaybe<BlogBlocksQuoteMutation>;
+  spacer?: InputMaybe<BlogBlocksSpacerMutation>;
+};
+
+export type BlogMutation = {
+  title?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
+  coverImage?: InputMaybe<Scalars['String']['input']>;
+  excerpt?: InputMaybe<Scalars['String']['input']>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
+  order?: InputMaybe<Scalars['Float']['input']>;
+  blocks?: InputMaybe<Array<InputMaybe<BlogBlocksMutation>>>;
+};
+
+export type ProjectsBlocksHeroOverrideMutation = {
+  title?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProjectsBlocksFullImageMutation = {
+  image?: InputMaybe<Scalars['String']['input']>;
+  caption?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProjectsBlocksTextBlockMutation = {
   heading?: InputMaybe<Scalars['String']['input']>;
-  content?: InputMaybe<Scalars['JSON']['input']>;
+  body?: InputMaybe<Scalars['JSON']['input']>;
+};
+
+export type ProjectsBlocksTwoColumnMutation = {
+  leftContent?: InputMaybe<Scalars['JSON']['input']>;
+  rightImage?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProjectsBlocksGalleryMutation = {
+  images?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type ProjectsBlocksQuoteMutation = {
+  quoteText?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProjectsBlocksSpacerMutation = {
+  size?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProjectsBlocksMutation = {
+  heroOverride?: InputMaybe<ProjectsBlocksHeroOverrideMutation>;
+  fullImage?: InputMaybe<ProjectsBlocksFullImageMutation>;
+  textBlock?: InputMaybe<ProjectsBlocksTextBlockMutation>;
+  twoColumn?: InputMaybe<ProjectsBlocksTwoColumnMutation>;
+  gallery?: InputMaybe<ProjectsBlocksGalleryMutation>;
+  quote?: InputMaybe<ProjectsBlocksQuoteMutation>;
+  spacer?: InputMaybe<ProjectsBlocksSpacerMutation>;
 };
 
 export type ProjectsMutation = {
   title?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
   client?: InputMaybe<Scalars['String']['input']>;
-  year?: InputMaybe<Scalars['String']['input']>;
-  category?: InputMaybe<Scalars['String']['input']>;
+  industry?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['Float']['input']>;
+  services?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  excerpt?: InputMaybe<Scalars['String']['input']>;
+  heroImage?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   order?: InputMaybe<Scalars['Float']['input']>;
-  thumbnail?: InputMaybe<Scalars['String']['input']>;
-  heroImage?: InputMaybe<Scalars['String']['input']>;
-  sections?: InputMaybe<Array<InputMaybe<ProjectsSectionsMutation>>>;
+  blocks?: InputMaybe<Array<InputMaybe<ProjectsBlocksMutation>>>;
 };
 
-export type HomepagePartsFragment = { __typename: 'Homepage', hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null, selectedProjects?: Array<{ __typename: 'HomepageSelectedProjects', project?: { __typename: 'Projects', title: string, client?: string | null, year?: string | null, category?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, id: string, sections?: Array<{ __typename: 'ProjectsSections', type?: string | null, heading?: string | null, content?: any | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null };
+export type HomepagePartsFragment = { __typename: 'Homepage', hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null, selectedProjects?: Array<{ __typename: 'HomepageSelectedProjects', project?: { __typename: 'Projects', title: string, slug?: string | null, client: string, industry: string, year: number, services: Array<string>, excerpt: string, heroImage: string, published?: boolean | null, order?: number | null, id: string, blocks?: Array<{ __typename: 'ProjectsBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'ProjectsBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'ProjectsBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'ProjectsBlocksGallery', images?: Array<string | null> | null } | { __typename: 'ProjectsBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'ProjectsBlocksSpacer', size?: string | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null };
 
 export type ServicesPartsFragment = { __typename: 'Services', headline?: string | null, intro?: string | null, disciplines?: Array<{ __typename: 'ServicesDisciplines', number?: string | null, label?: string | null, statement?: string | null, deliverables?: Array<string | null> | null } | null> | null, process?: Array<{ __typename: 'ServicesProcess', step?: string | null, title?: string | null, text?: string | null } | null> | null };
 
@@ -850,16 +1084,16 @@ export type AboutPartsFragment = { __typename: 'About', headline?: string | null
 
 export type TeamPartsFragment = { __typename: 'Team', members?: Array<{ __typename: 'TeamMembers', name?: string | null, title?: string | null, image?: string | null, shortBio?: string | null, fullBio?: string | null } | null> | null };
 
-export type BlogPartsFragment = { __typename: 'Blog', published?: boolean | null, order?: number | null, title: string, excerpt: string, date: string, category: string, image: string, readTime: string, pullQuote?: string | null, contentImages?: Array<string | null> | null, body?: any | null };
+export type BlogPartsFragment = { __typename: 'Blog', title: string, slug?: string | null, date: string, coverImage: string, excerpt: string, published?: boolean | null, order?: number | null, blocks?: Array<{ __typename: 'BlogBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'BlogBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'BlogBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'BlogBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'BlogBlocksGallery', images?: Array<string | null> | null } | { __typename: 'BlogBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'BlogBlocksSpacer', size?: string | null } | null> | null };
 
-export type ProjectsPartsFragment = { __typename: 'Projects', title: string, client?: string | null, year?: string | null, category?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, sections?: Array<{ __typename: 'ProjectsSections', type?: string | null, heading?: string | null, content?: any | null } | null> | null };
+export type ProjectsPartsFragment = { __typename: 'Projects', title: string, slug?: string | null, client: string, industry: string, year: number, services: Array<string>, excerpt: string, heroImage: string, published?: boolean | null, order?: number | null, blocks?: Array<{ __typename: 'ProjectsBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'ProjectsBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'ProjectsBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'ProjectsBlocksGallery', images?: Array<string | null> | null } | { __typename: 'ProjectsBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'ProjectsBlocksSpacer', size?: string | null } | null> | null };
 
 export type HomepageQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
 }>;
 
 
-export type HomepageQuery = { __typename?: 'Query', homepage: { __typename: 'Homepage', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null, selectedProjects?: Array<{ __typename: 'HomepageSelectedProjects', project?: { __typename: 'Projects', title: string, client?: string | null, year?: string | null, category?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, id: string, sections?: Array<{ __typename: 'ProjectsSections', type?: string | null, heading?: string | null, content?: any | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type HomepageQuery = { __typename?: 'Query', homepage: { __typename: 'Homepage', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null, selectedProjects?: Array<{ __typename: 'HomepageSelectedProjects', project?: { __typename: 'Projects', title: string, slug?: string | null, client: string, industry: string, year: number, services: Array<string>, excerpt: string, heroImage: string, published?: boolean | null, order?: number | null, id: string, blocks?: Array<{ __typename: 'ProjectsBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'ProjectsBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'ProjectsBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'ProjectsBlocksGallery', images?: Array<string | null> | null } | { __typename: 'ProjectsBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'ProjectsBlocksSpacer', size?: string | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export type HomepageConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -871,7 +1105,7 @@ export type HomepageConnectionQueryVariables = Exact<{
 }>;
 
 
-export type HomepageConnectionQuery = { __typename?: 'Query', homepageConnection: { __typename?: 'HomepageConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'HomepageConnectionEdges', cursor: string, node?: { __typename: 'Homepage', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null, selectedProjects?: Array<{ __typename: 'HomepageSelectedProjects', project?: { __typename: 'Projects', title: string, client?: string | null, year?: string | null, category?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, id: string, sections?: Array<{ __typename: 'ProjectsSections', type?: string | null, heading?: string | null, content?: any | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } | null } | null> | null } };
+export type HomepageConnectionQuery = { __typename?: 'Query', homepageConnection: { __typename?: 'HomepageConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'HomepageConnectionEdges', cursor: string, node?: { __typename: 'Homepage', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, hero?: { __typename: 'HomepageHero', title?: string | null, subtitle?: string | null, videoUrl?: string | null } | null, intro?: { __typename: 'HomepageIntro', kicker?: string | null, title?: string | null, body?: any | null } | null, selectedProjects?: Array<{ __typename: 'HomepageSelectedProjects', project?: { __typename: 'Projects', title: string, slug?: string | null, client: string, industry: string, year: number, services: Array<string>, excerpt: string, heroImage: string, published?: boolean | null, order?: number | null, id: string, blocks?: Array<{ __typename: 'ProjectsBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'ProjectsBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'ProjectsBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'ProjectsBlocksGallery', images?: Array<string | null> | null } | { __typename: 'ProjectsBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'ProjectsBlocksSpacer', size?: string | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } | null } | null> | null } };
 
 export type ServicesQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -935,7 +1169,7 @@ export type BlogQueryVariables = Exact<{
 }>;
 
 
-export type BlogQuery = { __typename?: 'Query', blog: { __typename: 'Blog', id: string, published?: boolean | null, order?: number | null, title: string, excerpt: string, date: string, category: string, image: string, readTime: string, pullQuote?: string | null, contentImages?: Array<string | null> | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type BlogQuery = { __typename?: 'Query', blog: { __typename: 'Blog', id: string, title: string, slug?: string | null, date: string, coverImage: string, excerpt: string, published?: boolean | null, order?: number | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, blocks?: Array<{ __typename: 'BlogBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'BlogBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'BlogBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'BlogBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'BlogBlocksGallery', images?: Array<string | null> | null } | { __typename: 'BlogBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'BlogBlocksSpacer', size?: string | null } | null> | null } };
 
 export type BlogConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -947,14 +1181,14 @@ export type BlogConnectionQueryVariables = Exact<{
 }>;
 
 
-export type BlogConnectionQuery = { __typename?: 'Query', blogConnection: { __typename?: 'BlogConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'BlogConnectionEdges', cursor: string, node?: { __typename: 'Blog', id: string, published?: boolean | null, order?: number | null, title: string, excerpt: string, date: string, category: string, image: string, readTime: string, pullQuote?: string | null, contentImages?: Array<string | null> | null, body?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type BlogConnectionQuery = { __typename?: 'Query', blogConnection: { __typename?: 'BlogConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'BlogConnectionEdges', cursor: string, node?: { __typename: 'Blog', id: string, title: string, slug?: string | null, date: string, coverImage: string, excerpt: string, published?: boolean | null, order?: number | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, blocks?: Array<{ __typename: 'BlogBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'BlogBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'BlogBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'BlogBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'BlogBlocksGallery', images?: Array<string | null> | null } | { __typename: 'BlogBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'BlogBlocksSpacer', size?: string | null } | null> | null } | null } | null> | null } };
 
 export type ProjectsQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
 }>;
 
 
-export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, title: string, client?: string | null, year?: string | null, category?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, sections?: Array<{ __typename: 'ProjectsSections', type?: string | null, heading?: string | null, content?: any | null } | null> | null } };
+export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, title: string, slug?: string | null, client: string, industry: string, year: number, services: Array<string>, excerpt: string, heroImage: string, published?: boolean | null, order?: number | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, blocks?: Array<{ __typename: 'ProjectsBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'ProjectsBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'ProjectsBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'ProjectsBlocksGallery', images?: Array<string | null> | null } | { __typename: 'ProjectsBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'ProjectsBlocksSpacer', size?: string | null } | null> | null } };
 
 export type ProjectsConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -966,7 +1200,7 @@ export type ProjectsConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, title: string, client?: string | null, year?: string | null, category?: string | null, published?: boolean | null, order?: number | null, thumbnail?: string | null, heroImage?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, sections?: Array<{ __typename: 'ProjectsSections', type?: string | null, heading?: string | null, content?: any | null } | null> | null } | null } | null> | null } };
+export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, title: string, slug?: string | null, client: string, industry: string, year: number, services: Array<string>, excerpt: string, heroImage: string, published?: boolean | null, order?: number | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, blocks?: Array<{ __typename: 'ProjectsBlocksHeroOverride', title?: string | null, image?: string | null } | { __typename: 'ProjectsBlocksFullImage', image?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksTextBlock', heading?: string | null, body?: any | null } | { __typename: 'ProjectsBlocksTwoColumn', leftContent?: any | null, rightImage?: string | null } | { __typename: 'ProjectsBlocksGallery', images?: Array<string | null> | null } | { __typename: 'ProjectsBlocksQuote', quoteText?: string | null, author?: string | null } | { __typename: 'ProjectsBlocksSpacer', size?: string | null } | null> | null } | null } | null> | null } };
 
 export const HomepagePartsFragmentDoc = gql`
     fragment HomepageParts on Homepage {
@@ -989,18 +1223,43 @@ export const HomepagePartsFragmentDoc = gql`
       ... on Projects {
         __typename
         title
+        slug
         client
+        industry
         year
-        category
+        services
+        excerpt
+        heroImage
         published
         order
-        thumbnail
-        heroImage
-        sections {
+        blocks {
           __typename
-          type
-          heading
-          content
+          ... on ProjectsBlocksHeroOverride {
+            title
+            image
+          }
+          ... on ProjectsBlocksFullImage {
+            image
+            caption
+          }
+          ... on ProjectsBlocksTextBlock {
+            heading
+            body
+          }
+          ... on ProjectsBlocksTwoColumn {
+            leftContent
+            rightImage
+          }
+          ... on ProjectsBlocksGallery {
+            images
+          }
+          ... on ProjectsBlocksQuote {
+            quoteText
+            author
+          }
+          ... on ProjectsBlocksSpacer {
+            size
+          }
         }
       }
       ... on Document {
@@ -1067,35 +1326,85 @@ export const TeamPartsFragmentDoc = gql`
 export const BlogPartsFragmentDoc = gql`
     fragment BlogParts on Blog {
   __typename
+  title
+  slug
+  date
+  coverImage
+  excerpt
   published
   order
-  title
-  excerpt
-  date
-  category
-  image
-  readTime
-  pullQuote
-  contentImages
-  body
+  blocks {
+    __typename
+    ... on BlogBlocksHeroOverride {
+      title
+      image
+    }
+    ... on BlogBlocksFullImage {
+      image
+      caption
+    }
+    ... on BlogBlocksTextBlock {
+      heading
+      body
+    }
+    ... on BlogBlocksTwoColumn {
+      leftContent
+      rightImage
+    }
+    ... on BlogBlocksGallery {
+      images
+    }
+    ... on BlogBlocksQuote {
+      quoteText
+      author
+    }
+    ... on BlogBlocksSpacer {
+      size
+    }
+  }
 }
     `;
 export const ProjectsPartsFragmentDoc = gql`
     fragment ProjectsParts on Projects {
   __typename
   title
+  slug
   client
+  industry
   year
-  category
+  services
+  excerpt
+  heroImage
   published
   order
-  thumbnail
-  heroImage
-  sections {
+  blocks {
     __typename
-    type
-    heading
-    content
+    ... on ProjectsBlocksHeroOverride {
+      title
+      image
+    }
+    ... on ProjectsBlocksFullImage {
+      image
+      caption
+    }
+    ... on ProjectsBlocksTextBlock {
+      heading
+      body
+    }
+    ... on ProjectsBlocksTwoColumn {
+      leftContent
+      rightImage
+    }
+    ... on ProjectsBlocksGallery {
+      images
+    }
+    ... on ProjectsBlocksQuote {
+      quoteText
+      author
+    }
+    ... on ProjectsBlocksSpacer {
+      size
+    }
   }
 }
     `;

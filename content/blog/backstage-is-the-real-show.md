@@ -1,15 +1,20 @@
 ---
-title: "Backstage Is the Real Show"
+title: Backstage Is the Real Show
 excerpt: >
-  Why the process of making is more interesting than the final product, and how we document the work behind the work.
-date: "Dec 2025"
-category: "Process"
-image: "/images/blog-03.jpg"
-readTime: "6 min read"
-pullQuote: "The polished result is just the surface. The real story is in the mess, the doubt, the revision."
-contentImages: 
-  - "/images/blog-03.jpg"
-  - "/images/project-01.jpg"
+  Why the process of making is more interesting than the final product, and how
+  we document the work behind the work.
+date: Dec 2025
+category: Process
+readTime: 6 min read
+pullQuote: >-
+  The polished result is just the surface. The real story is in the mess, the
+  doubt, the revision.
+contentImages:
+  - /images/blog-03.jpg
+  - /images/project-01.jpg
+published: true
+order: 1
+coverImage: /images/blog-03.jpg
 ---
 
 There is a growing hunger for authenticity in creative culture. People don't just want to see the final campaign — they want to see the mood boards, the rejected drafts, the moments of uncertainty.

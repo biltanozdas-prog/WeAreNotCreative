@@ -1,15 +1,20 @@
 ---
-title: "Typography as Architecture"
+title: Typography as Architecture
 excerpt: >
-  Exploring how letterforms build space, create rhythm and establish the structural foundation of visual communication.
-date: "Nov 2025"
-category: "Typography"
-image: "/images/blog-04.jpg"
-readTime: "5 min read"
-pullQuote: "A typeface is not a font choice. It's an architectural decision that defines the space everything else occupies."
-contentImages: 
-  - "/images/blog-04.jpg"
-  - "/images/project-03.jpg"
+  Exploring how letterforms build space, create rhythm and establish the
+  structural foundation of visual communication.
+date: Nov 2025
+category: Typography
+readTime: 5 min read
+pullQuote: >-
+  A typeface is not a font choice. It's an architectural decision that defines
+  the space everything else occupies.
+contentImages:
+  - /images/blog-04.jpg
+  - /images/project-03.jpg
+published: true
+order: 4
+coverImage: /images/blog-04.jpg
 ---
 
 We think of typography the way an architect thinks of structure. Before anything else — before color, before imagery, before layout — there is the letter. And the letter defines everything.

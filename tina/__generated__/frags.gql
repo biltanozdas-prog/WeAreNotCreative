@@ -18,18 +18,43 @@ fragment HomepageParts on Homepage {
       ... on Projects {
         __typename
         title
+        slug
         client
+        industry
         year
-        category
+        services
+        excerpt
+        heroImage
         published
         order
-        thumbnail
-        heroImage
-        sections {
+        blocks {
           __typename
-          type
-          heading
-          content
+          ... on ProjectsBlocksHeroOverride {
+            title
+            image
+          }
+          ... on ProjectsBlocksFullImage {
+            image
+            caption
+          }
+          ... on ProjectsBlocksTextBlock {
+            heading
+            body
+          }
+          ... on ProjectsBlocksTwoColumn {
+            leftContent
+            rightImage
+          }
+          ... on ProjectsBlocksGallery {
+            images
+          }
+          ... on ProjectsBlocksQuote {
+            quoteText
+            author
+          }
+          ... on ProjectsBlocksSpacer {
+            size
+          }
         }
       }
       ... on Document {
@@ -92,33 +117,83 @@ fragment TeamParts on Team {
 
 fragment BlogParts on Blog {
   __typename
+  title
+  slug
+  date
+  coverImage
+  excerpt
   published
   order
-  title
-  excerpt
-  date
-  category
-  image
-  readTime
-  pullQuote
-  contentImages
-  body
+  blocks {
+    __typename
+    ... on BlogBlocksHeroOverride {
+      title
+      image
+    }
+    ... on BlogBlocksFullImage {
+      image
+      caption
+    }
+    ... on BlogBlocksTextBlock {
+      heading
+      body
+    }
+    ... on BlogBlocksTwoColumn {
+      leftContent
+      rightImage
+    }
+    ... on BlogBlocksGallery {
+      images
+    }
+    ... on BlogBlocksQuote {
+      quoteText
+      author
+    }
+    ... on BlogBlocksSpacer {
+      size
+    }
+  }
 }
 
 fragment ProjectsParts on Projects {
   __typename
   title
+  slug
   client
+  industry
   year
-  category
+  services
+  excerpt
+  heroImage
   published
   order
-  thumbnail
-  heroImage
-  sections {
+  blocks {
     __typename
-    type
-    heading
-    content
+    ... on ProjectsBlocksHeroOverride {
+      title
+      image
+    }
+    ... on ProjectsBlocksFullImage {
+      image
+      caption
+    }
+    ... on ProjectsBlocksTextBlock {
+      heading
+      body
+    }
+    ... on ProjectsBlocksTwoColumn {
+      leftContent
+      rightImage
+    }
+    ... on ProjectsBlocksGallery {
+      images
+    }
+    ... on ProjectsBlocksQuote {
+      quoteText
+      author
+    }
+    ... on ProjectsBlocksSpacer {
+      size
+    }
   }
 }

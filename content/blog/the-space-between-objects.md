@@ -1,15 +1,20 @@
 ---
-title: "The Space Between Objects"
+title: The Space Between Objects
 excerpt: >
-  On spatial awareness in product design and how the gaps between things tell us more than the things themselves.
-date: "Jan 2026"
-category: "Objects"
-image: "/images/blog-02.jpg"
-readTime: "4 min read"
-pullQuote: "The most important part of any composition is the empty space. It's where meaning breathes."
-contentImages: 
-  - "/images/blog-02.jpg"
-  - "/images/project-02.jpg"
+  On spatial awareness in product design and how the gaps between things tell us
+  more than the things themselves.
+date: Jan 2026
+category: Objects
+readTime: 4 min read
+pullQuote: >-
+  The most important part of any composition is the empty space. It's where
+  meaning breathes.
+contentImages:
+  - /images/blog-02.jpg
+  - /images/project-02.jpg
+published: true
+order: 3
+coverImage: /images/blog-02.jpg
 ---
 
 In product design, we are often obsessed with the object itself — its form, its material, its function. But what if the real design lives in the space around it?

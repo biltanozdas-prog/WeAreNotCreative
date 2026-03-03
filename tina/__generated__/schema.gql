@@ -314,18 +314,50 @@ type TeamConnection implements Connection {
   edges: [TeamConnectionEdges]
 }
 
+type BlogBlocksHeroOverride {
+  title: String
+  image: String
+}
+
+type BlogBlocksFullImage {
+  image: String
+  caption: String
+}
+
+type BlogBlocksTextBlock {
+  heading: String
+  body: JSON
+}
+
+type BlogBlocksTwoColumn {
+  leftContent: JSON
+  rightImage: String
+}
+
+type BlogBlocksGallery {
+  images: [String]
+}
+
+type BlogBlocksQuote {
+  quoteText: String
+  author: String
+}
+
+type BlogBlocksSpacer {
+  size: String
+}
+
+union BlogBlocks = BlogBlocksHeroOverride | BlogBlocksFullImage | BlogBlocksTextBlock | BlogBlocksTwoColumn | BlogBlocksGallery | BlogBlocksQuote | BlogBlocksSpacer
+
 type Blog implements Node & Document {
+  title: String!
+  slug: String
+  date: String!
+  coverImage: String!
+  excerpt: String!
   published: Boolean
   order: Float
-  title: String!
-  excerpt: String!
-  date: String!
-  category: String!
-  image: String!
-  readTime: String!
-  pullQuote: String
-  contentImages: [String]
-  body: JSON
+  blocks: [BlogBlocks]
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
@@ -346,18 +378,58 @@ input NumberFilter {
   in: [Float]
 }
 
+input BlogBlocksHeroOverrideFilter {
+  title: StringFilter
+  image: ImageFilter
+}
+
+input BlogBlocksFullImageFilter {
+  image: ImageFilter
+  caption: StringFilter
+}
+
+input BlogBlocksTextBlockFilter {
+  heading: StringFilter
+  body: RichTextFilter
+}
+
+input BlogBlocksTwoColumnFilter {
+  leftContent: RichTextFilter
+  rightImage: ImageFilter
+}
+
+input BlogBlocksGalleryFilter {
+  images: ImageFilter
+}
+
+input BlogBlocksQuoteFilter {
+  quoteText: StringFilter
+  author: StringFilter
+}
+
+input BlogBlocksSpacerFilter {
+  size: StringFilter
+}
+
+input BlogBlocksFilter {
+  heroOverride: BlogBlocksHeroOverrideFilter
+  fullImage: BlogBlocksFullImageFilter
+  textBlock: BlogBlocksTextBlockFilter
+  twoColumn: BlogBlocksTwoColumnFilter
+  gallery: BlogBlocksGalleryFilter
+  quote: BlogBlocksQuoteFilter
+  spacer: BlogBlocksSpacerFilter
+}
+
 input BlogFilter {
+  title: StringFilter
+  slug: StringFilter
+  date: StringFilter
+  coverImage: ImageFilter
+  excerpt: StringFilter
   published: BooleanFilter
   order: NumberFilter
-  title: StringFilter
-  excerpt: StringFilter
-  date: StringFilter
-  category: StringFilter
-  image: ImageFilter
-  readTime: StringFilter
-  pullQuote: StringFilter
-  contentImages: ImageFilter
-  body: RichTextFilter
+  blocks: BlogBlocksFilter
 }
 
 type BlogConnectionEdges {
@@ -371,43 +443,113 @@ type BlogConnection implements Connection {
   edges: [BlogConnectionEdges]
 }
 
-type ProjectsSections {
-  type: String
-  heading: String
-  content: JSON
+type ProjectsBlocksHeroOverride {
+  title: String
+  image: String
 }
+
+type ProjectsBlocksFullImage {
+  image: String
+  caption: String
+}
+
+type ProjectsBlocksTextBlock {
+  heading: String
+  body: JSON
+}
+
+type ProjectsBlocksTwoColumn {
+  leftContent: JSON
+  rightImage: String
+}
+
+type ProjectsBlocksGallery {
+  images: [String]
+}
+
+type ProjectsBlocksQuote {
+  quoteText: String
+  author: String
+}
+
+type ProjectsBlocksSpacer {
+  size: String
+}
+
+union ProjectsBlocks = ProjectsBlocksHeroOverride | ProjectsBlocksFullImage | ProjectsBlocksTextBlock | ProjectsBlocksTwoColumn | ProjectsBlocksGallery | ProjectsBlocksQuote | ProjectsBlocksSpacer
 
 type Projects implements Node & Document {
   title: String!
-  client: String
-  year: String
-  category: String
+  slug: String
+  client: String!
+  industry: String!
+  year: Float!
+  services: [String!]!
+  excerpt: String!
+  heroImage: String!
   published: Boolean
   order: Float
-  thumbnail: String
-  heroImage: String
-  sections: [ProjectsSections]
+  blocks: [ProjectsBlocks]
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
 }
 
-input ProjectsSectionsFilter {
-  type: StringFilter
+input ProjectsBlocksHeroOverrideFilter {
+  title: StringFilter
+  image: ImageFilter
+}
+
+input ProjectsBlocksFullImageFilter {
+  image: ImageFilter
+  caption: StringFilter
+}
+
+input ProjectsBlocksTextBlockFilter {
   heading: StringFilter
-  content: RichTextFilter
+  body: RichTextFilter
+}
+
+input ProjectsBlocksTwoColumnFilter {
+  leftContent: RichTextFilter
+  rightImage: ImageFilter
+}
+
+input ProjectsBlocksGalleryFilter {
+  images: ImageFilter
+}
+
+input ProjectsBlocksQuoteFilter {
+  quoteText: StringFilter
+  author: StringFilter
+}
+
+input ProjectsBlocksSpacerFilter {
+  size: StringFilter
+}
+
+input ProjectsBlocksFilter {
+  heroOverride: ProjectsBlocksHeroOverrideFilter
+  fullImage: ProjectsBlocksFullImageFilter
+  textBlock: ProjectsBlocksTextBlockFilter
+  twoColumn: ProjectsBlocksTwoColumnFilter
+  gallery: ProjectsBlocksGalleryFilter
+  quote: ProjectsBlocksQuoteFilter
+  spacer: ProjectsBlocksSpacerFilter
 }
 
 input ProjectsFilter {
   title: StringFilter
+  slug: StringFilter
   client: StringFilter
-  year: StringFilter
-  category: StringFilter
+  industry: StringFilter
+  year: NumberFilter
+  services: StringFilter
+  excerpt: StringFilter
+  heroImage: ImageFilter
   published: BooleanFilter
   order: NumberFilter
-  thumbnail: ImageFilter
-  heroImage: ImageFilter
-  sections: ProjectsSectionsFilter
+  blocks: ProjectsBlocksFilter
 }
 
 type ProjectsConnectionEdges {
@@ -525,36 +667,115 @@ input TeamMutation {
   members: [TeamMembersMutation]
 }
 
-input BlogMutation {
-  published: Boolean
-  order: Float
+input BlogBlocksHeroOverrideMutation {
   title: String
-  excerpt: String
-  date: String
-  category: String
   image: String
-  readTime: String
-  pullQuote: String
-  contentImages: [String]
+}
+
+input BlogBlocksFullImageMutation {
+  image: String
+  caption: String
+}
+
+input BlogBlocksTextBlockMutation {
+  heading: String
   body: JSON
 }
 
-input ProjectsSectionsMutation {
-  type: String
+input BlogBlocksTwoColumnMutation {
+  leftContent: JSON
+  rightImage: String
+}
+
+input BlogBlocksGalleryMutation {
+  images: [String]
+}
+
+input BlogBlocksQuoteMutation {
+  quoteText: String
+  author: String
+}
+
+input BlogBlocksSpacerMutation {
+  size: String
+}
+
+input BlogBlocksMutation {
+  heroOverride: BlogBlocksHeroOverrideMutation
+  fullImage: BlogBlocksFullImageMutation
+  textBlock: BlogBlocksTextBlockMutation
+  twoColumn: BlogBlocksTwoColumnMutation
+  gallery: BlogBlocksGalleryMutation
+  quote: BlogBlocksQuoteMutation
+  spacer: BlogBlocksSpacerMutation
+}
+
+input BlogMutation {
+  title: String
+  slug: String
+  date: String
+  coverImage: String
+  excerpt: String
+  published: Boolean
+  order: Float
+  blocks: [BlogBlocksMutation]
+}
+
+input ProjectsBlocksHeroOverrideMutation {
+  title: String
+  image: String
+}
+
+input ProjectsBlocksFullImageMutation {
+  image: String
+  caption: String
+}
+
+input ProjectsBlocksTextBlockMutation {
   heading: String
-  content: JSON
+  body: JSON
+}
+
+input ProjectsBlocksTwoColumnMutation {
+  leftContent: JSON
+  rightImage: String
+}
+
+input ProjectsBlocksGalleryMutation {
+  images: [String]
+}
+
+input ProjectsBlocksQuoteMutation {
+  quoteText: String
+  author: String
+}
+
+input ProjectsBlocksSpacerMutation {
+  size: String
+}
+
+input ProjectsBlocksMutation {
+  heroOverride: ProjectsBlocksHeroOverrideMutation
+  fullImage: ProjectsBlocksFullImageMutation
+  textBlock: ProjectsBlocksTextBlockMutation
+  twoColumn: ProjectsBlocksTwoColumnMutation
+  gallery: ProjectsBlocksGalleryMutation
+  quote: ProjectsBlocksQuoteMutation
+  spacer: ProjectsBlocksSpacerMutation
 }
 
 input ProjectsMutation {
   title: String
+  slug: String
   client: String
-  year: String
-  category: String
+  industry: String
+  year: Float
+  services: [String]
+  excerpt: String
+  heroImage: String
   published: Boolean
   order: Float
-  thumbnail: String
-  heroImage: String
-  sections: [ProjectsSectionsMutation]
+  blocks: [ProjectsBlocksMutation]
 }
 
 schema {

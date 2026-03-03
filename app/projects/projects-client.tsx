@@ -117,7 +117,7 @@ function DesktopProjectsClient({ projects }: { projects: any[] }) {
                 >
                   <div className={`w-full ${size.h} bg-muted overflow-hidden relative`}>
                     <Image
-                      src={project.image}
+                      src={project.heroImage || project.image || ""}
                       alt={project.title}
                       fill
                       className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-[1.03]"
@@ -137,7 +137,7 @@ function DesktopProjectsClient({ projects }: { projects: any[] }) {
                     </div>
                     <div className="text-right shrink-0 ml-4">
                       <span className="font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase block">
-                        {project.category}
+                        {project.industry || project.category}
                       </span>
                     </div>
                   </div>
@@ -213,7 +213,7 @@ function MobileProjectsClient({ projects }: { projects: any[] }) {
               >
                 <div className={`w-full ${size.h} bg-muted overflow-hidden relative`}>
                   <Image
-                    src={project.image}
+                    src={project.heroImage || project.image || ""}
                     alt={project.title}
                     fill
                     className="object-cover grayscale transition-all duration-500"
@@ -233,7 +233,7 @@ function MobileProjectsClient({ projects }: { projects: any[] }) {
                   </div>
                   <div className="text-right shrink-0 ml-4">
                     <span className="font-sans font-light text-[11px] text-muted-foreground tracking-[0.15em] uppercase block">
-                      {project.category}
+                      {project.industry || project.category}
                     </span>
                   </div>
                 </div>

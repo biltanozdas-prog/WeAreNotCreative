@@ -9,49 +9,64 @@ const branch =
 
 const blockTemplates: any[] = [
     {
+        name: "heroOverride",
+        label: "Hero Section",
+        ui: { itemProps: (item: any) => ({ label: `Hero Override • ${item?.title || 'No title'}` }) },
+        fields: [
+            { type: "string", name: "title", label: "Title", description: "Overrides default hero title" },
+            { type: "image", name: "image", label: "Background Image" }
+        ]
+    },
+    {
         name: "fullImage",
         label: "Full Image",
+        ui: { itemProps: (item: any) => ({ label: `Full Image • ${item?.caption || 'Image'}` }) },
         fields: [
-            { type: "image", name: "image", label: "Image" },
-            { type: "string", name: "caption", label: "Caption" }
+            { type: "image", name: "image", label: "Image", description: "Upload a high quality full width image." },
+            { type: "string", name: "caption", label: "Caption", description: "Optional image caption." }
         ]
     },
     {
         name: "textBlock",
         label: "Text Block",
+        ui: { itemProps: (item: any) => ({ label: `Text Block • ${item?.heading || 'Text'}` }) },
         fields: [
-            { type: "string", name: "heading", label: "Heading" },
-            { type: "rich-text", name: "body", label: "Body" }
+            { type: "string", name: "heading", label: "Heading", description: "Optional section heading." },
+            { type: "rich-text", name: "body", label: "Body", description: "Rich text content." }
         ]
     },
     {
         name: "twoColumn",
         label: "Two Column",
+        ui: { itemProps: (item: any) => ({ label: "Two Column (Text + Image)" }) },
         fields: [
-            { type: "rich-text", name: "leftContent", label: "Left Content" },
-            { type: "image", name: "rightImage", label: "Right Image" }
+            { type: "rich-text", name: "leftContent", label: "Left Content", description: "Text content for the left column." },
+            { type: "image", name: "rightImage", label: "Right Image", description: "Image for the right column." }
         ]
     },
     {
         name: "gallery",
-        label: "Gallery",
+        label: "Image Grid",
+        ui: { itemProps: (item: any) => ({ label: `Image Grid • ${item?.images?.length || 0} images` }) },
         fields: [
-            { type: "image", name: "images", label: "Images", list: true }
+            { type: "image", name: "images", label: "Images", list: true, description: "Upload 2-4 images for the grid." }
         ]
     },
     {
         name: "quote",
         label: "Quote",
+        ui: { itemProps: (item: any) => ({ label: `Quote • ${item?.author || 'Quote'}` }) },
         fields: [
-            { type: "string", name: "quoteText", label: "Quote Text", ui: { component: "textarea" } },
-            { type: "string", name: "author", label: "Author" }
+            { type: "string", name: "quoteText", label: "Quote Text", ui: { component: "textarea" }, description: "The quote text." },
+            { type: "string", name: "author", label: "Author", description: "Person being quoted." }
         ]
     },
     {
         name: "spacer",
         label: "Spacer",
+        ui: { itemProps: (item: any) => ({ label: `Spacer • ${item?.size || 'medium'}` }) },
         fields: [
-            { type: "string", name: "size", label: "Size", options: ["small", "medium", "large"] }
+            { type: "string", name: "size", label: "Size", options: ["small", "medium", "large"], description: "Vertical spacing size." }
         ]
     }
 ];
@@ -255,19 +270,50 @@ export default defineConfig({
                 label: "Blog Posts",
                 path: "content/blog",
                 format: "md",
+                ui: {
+                    filename: {
+                        readonly: true,
+                        slugify: (values: any) => {
+                            if (values?.title) {
+                                return values.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                            }
+                            return '';
+                        },
+                    },
+                    beforeSubmit: async ({ values }: { values: any }) => {
+                        let newValues = { ...values };
+                        if (!newValues.slug && newValues.title) {
+                            newValues.slug = newValues.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                        }
+                        return newValues;
+                    },
+                },
                 fields: [
                     { type: "string", name: "title", label: "Title", isTitle: true, required: true },
-                    { type: "string", name: "slug", label: "Slug" },
+                    {
+                        type: "string",
+                        name: "slug",
+                        label: "Slug",
+                        ui: {
+                            validate: (val) => {
+                                if (val && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(val)) return "Slug must be lowercase and hyphen-separated.";
+                            }
+                        }
+                    },
                     { type: "string", name: "date", label: "Date String (e.g. Feb 2026)", required: true },
                     { type: "image", name: "coverImage", label: "Cover Image", required: true },
-                    { type: "string", name: "excerpt", label: "Excerpt", ui: { component: "textarea" } },
+                    { type: "string", name: "excerpt", label: "Excerpt", required: true, ui: { component: "textarea" } },
                     { type: "boolean", name: "published", label: "Published" },
                     { type: "number", name: "order", label: "Sort Order" },
                     {
                         type: "object",
                         name: "blocks",
                         label: "Blocks",
+                        description: "Add content blocks below",
                         list: true,
+                        ui: {
+                            visualSelector: true,
+                        },
                         templates: blockTemplates,
                     },
                 ],
@@ -277,22 +323,75 @@ export default defineConfig({
                 label: "Projects",
                 path: "content/projects",
                 format: "md",
+                ui: {
+                    filename: {
+                        readonly: true,
+                        slugify: (values: any) => {
+                            if (values?.title) {
+                                return values.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                            }
+                            return '';
+                        },
+                    },
+                    beforeSubmit: async ({ values }: { values: any }) => {
+                        let newValues = { ...values };
+                        if (!newValues.slug && newValues.title) {
+                            newValues.slug = newValues.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                        }
+                        return newValues;
+                    },
+                },
                 fields: [
                     { type: "string", name: "title", label: "Title", isTitle: true, required: true },
-                    { type: "string", name: "slug", label: "Slug" },
-                    { type: "string", name: "client", label: "Client" },
+                    {
+                        type: "string",
+                        name: "slug",
+                        label: "Slug",
+                        ui: {
+                            validate: (val) => {
+                                if (val && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(val)) return "Slug must be lowercase and hyphen-separated.";
+                            }
+                        }
+                    },
+                    { type: "string", name: "client", label: "Client", required: true },
                     { type: "string", name: "industry", label: "Industry", required: true },
-                    { type: "number", name: "year", label: "Year", required: true },
-                    { type: "string", name: "services", label: "Services", list: true },
-                    { type: "string", name: "excerpt", label: "Excerpt", ui: { component: "textarea" } },
-                    { type: "image", name: "heroImage", label: "Hero Image" },
+                    {
+                        type: "number",
+                        name: "year",
+                        label: "Year",
+                        required: true,
+                        ui: {
+                            validate: (val) => {
+                                if (val === undefined || val === null) return "Year is required";
+                                if (typeof val !== "number") return "Year must be numeric";
+                            }
+                        }
+                    },
+                    {
+                        type: "string",
+                        name: "services",
+                        label: "Services",
+                        list: true,
+                        required: true,
+                        ui: {
+                            validate: (val) => {
+                                if (!val || val.length === 0) return "Services cannot be empty";
+                            }
+                        }
+                    },
+                    { type: "string", name: "excerpt", label: "Excerpt", required: true, ui: { component: "textarea" } },
+                    { type: "image", name: "heroImage", label: "Hero Image", required: true },
                     { type: "boolean", name: "published", label: "Published" },
                     { type: "number", name: "order", label: "Order" },
                     {
                         type: "object",
                         name: "blocks",
                         label: "Blocks",
+                        description: "Add content blocks below",
                         list: true,
+                        ui: {
+                            visualSelector: true,
+                        },
                         templates: blockTemplates,
                     },
                 ]

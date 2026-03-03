@@ -1,15 +1,20 @@
 ---
-title: "Design as Cultural Practice"
+title: Design as Cultural Practice
 excerpt: >
-  How we approach design not as decoration, but as a way to shape cultural narratives and challenge the boundaries between art, commerce and identity.
-date: "Feb 2026"
-category: "Perspective"
-image: "/images/blog-01.jpg"
-readTime: "5 min read"
-pullQuote: "Design is not what it looks like. Design is how it positions itself within culture."
-contentImages: 
-  - "/images/blog-01.jpg"
-  - "/images/project-04.jpg"
+  How we approach design not as decoration, but as a way to shape cultural
+  narratives and challenge the boundaries between art, commerce and identity.
+date: Feb 2026
+category: Perspective
+readTime: 5 min read
+pullQuote: >-
+  Design is not what it looks like. Design is how it positions itself within
+  culture.
+contentImages:
+  - /images/blog-01.jpg
+  - /images/project-04.jpg
+published: true
+order: 2
+coverImage: /images/blog-01.jpg
 ---
 
 There is a persistent myth that design exists to make things look better. We reject that entirely. Design, when practiced with intention, is a cultural act. It shapes how people perceive brands, spaces, objects and each other.
