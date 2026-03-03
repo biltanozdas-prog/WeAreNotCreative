@@ -132,7 +132,7 @@ function DesktopProjectsClient({ projects }: { projects: any[] }) {
                         {project.title.replace("\n", " ")}
                       </h3>
                       <span className="font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase mt-2 block">
-                        {project.client} / {project.year}
+                        {project.client}
                       </span>
                     </div>
                     <div className="text-right shrink-0 ml-4">
@@ -228,7 +228,7 @@ function MobileProjectsClient({ projects }: { projects: any[] }) {
                       {project.title.replace("\n", " ")}
                     </h3>
                     <span className="font-sans font-light text-[11px] text-muted-foreground tracking-[0.15em] uppercase mt-2 block">
-                      {project.client} / {project.year}
+                      {project.client}
                     </span>
                   </div>
                   <div className="text-right shrink-0 ml-4">

@@ -356,18 +356,6 @@ export default defineConfig({
                     { type: "string", name: "client", label: "Client", required: true },
                     { type: "string", name: "industry", label: "Industry", required: true },
                     {
-                        type: "number",
-                        name: "year",
-                        label: "Year",
-                        required: true,
-                        ui: {
-                            validate: (val) => {
-                                if (val === undefined || val === null) return "Year is required";
-                                if (typeof val !== "number") return "Year must be numeric";
-                            }
-                        }
-                    },
-                    {
                         type: "string",
                         name: "services",
                         label: "Services",

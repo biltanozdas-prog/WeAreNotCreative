@@ -483,7 +483,6 @@ type Projects implements Node & Document {
   slug: String
   client: String!
   industry: String!
-  year: Float!
   services: [String!]!
   excerpt: String!
   heroImage: String!
@@ -543,7 +542,6 @@ input ProjectsFilter {
   slug: StringFilter
   client: StringFilter
   industry: StringFilter
-  year: NumberFilter
   services: StringFilter
   excerpt: StringFilter
   heroImage: ImageFilter
@@ -769,7 +767,6 @@ input ProjectsMutation {
   slug: String
   client: String
   industry: String
-  year: Float
   services: [String]
   excerpt: String
   heroImage: String

@@ -21,7 +21,6 @@ fragment HomepageParts on Homepage {
         slug
         client
         industry
-        year
         services
         excerpt
         heroImage
@@ -161,7 +160,6 @@ fragment ProjectsParts on Projects {
   slug
   client
   industry
-  year
   services
   excerpt
   heroImage

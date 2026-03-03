@@ -74,8 +74,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
   const nextProject = nextEdge ? {
     slug: nextEdge.filename,
     title: nextEdge.title,
-    client: nextEdge.client,
-    year: nextEdge.year
+    client: nextEdge.client
   } : null
 
   return (
@@ -93,7 +92,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
         </p>
 
         {/* Meta Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 md:mt-24 border-t border-secondary pt-8 md:pt-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-16 md:mt-24 border-t border-secondary pt-8 md:pt-10">
           <div>
             <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Client</span>
             <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.client}</span>
@@ -101,10 +100,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           <div>
             <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Industry</span>
             <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.industry || projectData.category}</span>
-          </div>
-          <div>
-            <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Year</span>
-            <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.year}</span>
           </div>
           <div>
             <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Services</span>
@@ -223,7 +218,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
               {nextProject.title.replace("\n", " ")}
             </h3>
             <span className="font-sans font-light text-[13px] md:text-[14px] text-muted-foreground tracking-[0.15em] uppercase mt-3 block">
-              {nextProject.client} / {nextProject.year}
+              {nextProject.client}
             </span>
           </Link>
         </div>
