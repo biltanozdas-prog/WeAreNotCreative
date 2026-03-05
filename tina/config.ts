@@ -71,6 +71,8 @@ const blockTemplates: any[] = [
     }
 ];
 
+console.log("Tina indexing projects collection")
+
 export default defineConfig({
     branch,
     // Get this from tina.io
@@ -324,51 +326,25 @@ export default defineConfig({
                 path: "content/projects",
                 format: "md",
                 ui: {
-                    filename: {
-                        readonly: true,
-                        slugify: (values: any) => {
-                            if (values?.title) {
-                                return values.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                            }
-                            return '';
-                        },
-                    },
-                    beforeSubmit: async ({ values }: { values: any }) => {
-                        let newValues = { ...values };
-                        if (!newValues.slug && newValues.title) {
-                            newValues.slug = newValues.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                        }
-                        return newValues;
-                    },
+                    // Disabled ui.filename.slugify and strict slug validation for legacy support
                 },
                 fields: [
-                    { type: "string", name: "title", label: "Title", isTitle: true, required: true },
+                    { type: "string", name: "title", label: "Title", isTitle: true, required: true, ui: { component: "textarea" } },
                     {
                         type: "string",
                         name: "slug",
-                        label: "Slug",
-                        ui: {
-                            validate: (val) => {
-                                if (val && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(val)) return "Slug must be lowercase and hyphen-separated.";
-                            }
-                        }
+                        label: "Slug"
                     },
-                    { type: "string", name: "client", label: "Client", required: true },
-                    { type: "string", name: "industry", label: "Industry", required: true },
+                    { type: "string", name: "client", label: "Client" },
+                    { type: "string", name: "industry", label: "Industry" },
                     {
                         type: "string",
                         name: "services",
                         label: "Services",
-                        list: true,
-                        required: true,
-                        ui: {
-                            validate: (val) => {
-                                if (!val || val.length === 0) return "Services cannot be empty";
-                            }
-                        }
+                        list: true
                     },
-                    { type: "string", name: "excerpt", label: "Excerpt", required: true, ui: { component: "textarea" } },
-                    { type: "image", name: "heroImage", label: "Hero Image", required: true },
+                    { type: "string", name: "excerpt", label: "Excerpt", ui: { component: "textarea" } },
+                    { type: "image", name: "heroImage", label: "Hero Image" },
                     { type: "boolean", name: "published", label: "Published" },
                     { type: "number", name: "order", label: "Order" },
                     {
