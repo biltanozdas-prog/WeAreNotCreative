@@ -2,8 +2,8 @@
 
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import { TinaMarkdown } from "tinacms/dist/rich-text"
-
+import { PortableText } from "@portabletext/react"
+import { components } from "@/lib/sanity/portableText"
 export function BlogClient({ blogPosts }: { blogPosts: any[] }) {
   const [activePost, setActivePost] = useState<any | null>(null)
 
@@ -159,7 +159,7 @@ function ReaderPanel({
             </h1>
 
             <div className="w-full h-[30vh] md:h-[45vh] bg-muted relative overflow-hidden mb-10 md:mb-14">
-              <Image src={post.coverImage || post.image || ""} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
+              <Image src={post.coverImage?.asset ? "" : (typeof post.coverImage === 'string' ? post.coverImage : "")} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
             </div>
 
             <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-8">
@@ -190,7 +190,7 @@ function ReaderPanel({
                           </div>
                         )}
                         <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                          <TinaMarkdown content={block.body} />
+                          {block.body && String(block.body)}
                         </div>
                       </div>
                     )
@@ -198,7 +198,7 @@ function ReaderPanel({
                     return (
                       <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16 items-start">
                         <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                          <TinaMarkdown content={block.leftContent} />
+                          {block.leftContent && String(block.leftContent)}
                         </div>
                         {block.rightImage && (
                           <div className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
@@ -241,7 +241,11 @@ function ReaderPanel({
 
             {(!post.blocks || post.blocks.length === 0) && (
               <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-6">
-                {post.body ? <TinaMarkdown content={post.body} /> : "Blog content coming soon."}
+                {(post.content || post.body) ? (
+                  Array.isArray(post.content || post.body)
+                    ? <PortableText value={post.content || post.body} components={components} />
+                    : String(post.content || post.body)
+                ) : "Blog content coming soon."}
               </div>
             )}
 

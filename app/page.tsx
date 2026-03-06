@@ -3,9 +3,8 @@ import { HeroVideo } from "@/components/hero-video"
 import { ManifestoSection } from "@/components/manifesto-section"
 import { SelectedProjects } from "@/components/selected-projects"
 import Link from "next/link"
-import fs from "fs"
-import path from "path"
-import matter from "gray-matter"
+import { client } from "@/lib/sanity/client"
+import { groq } from "next-sanity"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -16,57 +15,81 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const homeDataPath = path.join(process.cwd(), "content", "homepage.json")
-  let homeData: any = {}
-  try {
-    homeData = JSON.parse(fs.readFileSync(homeDataPath, "utf8"))
-  } catch (e) { }
-
-  const projectsDir = path.join(process.cwd(), "content", "projects")
-  let safeProjects: any[] = []
-  let selectedProjects: any[] = []
-  try {
-    const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
-    const projects = files.map(filename => {
-      const fileContent = fs.readFileSync(path.join(projectsDir, filename), "utf8")
-      const { data } = matter(fileContent)
-      // Derive slug from filename if missing
-      const slug = data.slug || filename.replace(".md", "")
-      return { ...data, slug, id: filename }
-    })
-      // Treat missing `published` as true
-      .filter((p: any) => p.published !== false)
-
-    // Sort by order ascending
-    safeProjects = projects.sort((a: any, b: any) => {
-      const orderA = typeof a.order === 'number' ? a.order : 999;
-      const orderB = typeof b.order === 'number' ? b.order : 999;
-      return orderA - orderB;
-    });
-
-    if (homeData?.selectedProjectSlugs?.length) {
-      selectedProjects = homeData.selectedProjectSlugs
-        .map((slug: string) => safeProjects.find(p => p.slug === slug))
-        .filter(Boolean)
+  const query = groq`
+    *[_type == "homepage"][0] {
+      heroVideo,
+      introText,
+      aboutText,
+      selectedProjects[]->{
+        _id,
+        "slug": slug,
+        title,
+        client,
+        industry,
+        services,
+        excerpt,
+        "heroImage": heroImage,
+        "image": heroImage,
+        order
+      }
     }
-
-    if (!selectedProjects.length) {
-      selectedProjects = safeProjects.slice(0, 4)
-    }
+  `
+  let homeData: any = null
+  try {
+    homeData = await client.fetch(query)
   } catch (e) {
-    selectedProjects = safeProjects.slice(0, 4)
+    console.warn("Sanity fetch failed for homepage.", e)
+  }
+
+  const projectsQuery = groq`
+    *[_type == "project" && published == true] | order(order asc) {
+      _id,
+      "slug": slug,
+      title,
+      client,
+      industry,
+      services,
+      excerpt,
+      "heroImage": heroImage,
+      "image": heroImage,
+      order
+    }[0...4]
+  `
+
+  // Format data equivalent to old structure
+  const formattedHomeData = {
+    hero: {
+      videoUrl: homeData?.heroVideo
+    },
+    intro: {
+      body: homeData?.introText
+    }
+  }
+
+  let selectedProjects = homeData?.selectedProjects || []
+
+  if (!selectedProjects.length || !homeData) {
+    try {
+      selectedProjects = await client.fetch(projectsQuery)
+    } catch (e) {
+      console.warn("Sanity fetch failed for fallback projects.", e)
+      selectedProjects = []
+    }
   }
 
   // Ensure selectedProjects is ALWAYS an array
-  selectedProjects = selectedProjects || [];
+  selectedProjects = selectedProjects.map((p: any) => ({
+    ...p,
+    id: p._id,
+  })) || [];
 
   return (
     <main>
-      <HeroVideo videoUrl={homeData.hero?.videoUrl || homeData.heroVideo} {...homeData.hero} />
+      <HeroVideo videoUrl={formattedHomeData.hero?.videoUrl} />
       {/* Spacer for the video hero area */}
       <div className="h-screen" />
       {/* Content starts after the video */}
-      <ManifestoSection {...homeData.intro} />
+      <ManifestoSection />
       <SelectedProjects projects={selectedProjects as any} />
 
       {/* Footer CTA */}

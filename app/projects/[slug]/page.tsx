@@ -2,10 +2,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import fs from "fs"
-import path from "path"
-import matter from "gray-matter"
-import { TinaMarkdown } from "tinacms/dist/rich-text"
+import { client } from "@/lib/sanity/client"
+import { groq } from "next-sanity"
+import { PortableText } from "@portabletext/react"
+import { components } from "@/lib/sanity/portableText"
 
 interface ProjectDetailProps {
   params: Promise<{ slug: string }>
@@ -14,12 +14,13 @@ interface ProjectDetailProps {
 export async function generateMetadata({ params }: ProjectDetailProps): Promise<Metadata> {
   const { slug } = await params
   try {
-    const projectPath = path.join(process.cwd(), "content", "projects", `${slug}.md`)
-    const fileContent = fs.readFileSync(projectPath, "utf8")
-    const { data } = matter(fileContent)
+    const query = groq`*[_type == "project" && slug == $slug][0]{ title, excerpt }`
+    const project = await client.fetch(query, { slug })
+    if (!project) return { title: "Project Not Found" }
+
     return {
-      title: `${data.title?.replace("\n", " ")} | WEARENOTCREATIVE`,
-      description: data.description,
+      title: `${project.title?.replace("\n", " ")} | WEARENOTCREATIVE`,
+      description: project.excerpt,
     }
   } catch (e) {
     return { title: "Project Not Found" }
@@ -27,55 +28,45 @@ export async function generateMetadata({ params }: ProjectDetailProps): Promise<
 }
 
 export async function generateStaticParams() {
-  const projectsDir = path.join(process.cwd(), "content", "projects")
+  const query = groq`*[_type == "project" && defined(slug)]{ "slug": slug }`
   try {
-    const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
-    return files.map((filename) => ({
-      slug: filename.replace(".md", ""),
+    const projects = await client.fetch(query)
+    return projects.map((project: { slug: string }) => ({
+      slug: project.slug,
     }))
   } catch (e) {
     return []
   }
 }
 
-
-
 export default async function ProjectDetailPage({ params }: ProjectDetailProps) {
   const { slug } = await params
 
   let projectData: any = null
-  let allEdges: any[] = []
+  let nextProject: any = null
 
   try {
-    const projectPath = path.join(process.cwd(), "content", "projects", `${slug}.md`)
-    const fileContent = fs.readFileSync(projectPath, "utf8")
-    const { data } = matter(fileContent)
-    projectData = data
+    const query = groq`*[_type == "project" && slug == $slug][0] {
+      ...,
+      "heroImage": heroImage,
+      "image": heroImage
+    }`
+    projectData = await client.fetch(query, { slug })
 
-    // Fetch all to find the "next" project
-    const projectsDir = path.join(process.cwd(), "content", "projects")
-    const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
-    allEdges = files.map(filename => {
-      const fContent = fs.readFileSync(path.join(projectsDir, filename), "utf8")
-      const parsed = matter(fContent)
-      return { ...parsed.data, filename: filename.replace(".md", "") }
-    })
+    if (!projectData) {
+      notFound()
+    }
+
+    // Find next project for navigation
+    const allQuery = groq`*[_type == "project" && published == true] | order(order asc) { slug, title, client }`
+    const allEdges = await client.fetch(allQuery)
+    const currentIndex = allEdges.findIndex((e: any) => e.slug === slug)
+    if (currentIndex !== -1 && allEdges.length > 0) {
+      nextProject = allEdges[(currentIndex + 1) % allEdges.length]
+    }
   } catch (e) {
     notFound()
   }
-
-  if (!projectData) {
-    notFound()
-  }
-
-  // Find next project for navigation
-  const currentIndex = allEdges.findIndex((e) => e.filename === slug)
-  const nextEdge = allEdges[(currentIndex + 1) % allEdges.length]
-  const nextProject = nextEdge ? {
-    slug: nextEdge.filename,
-    title: nextEdge.title,
-    client: nextEdge.client
-  } : null
 
   return (
     <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
@@ -109,94 +100,23 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
       </header>
 
       {/* Full Width Hero Image */}
-      <div className="w-full h-[50vh] md:h-[85vh] bg-muted relative overflow-hidden mb-28 md:mb-36">
-        <Image
-          src={projectData.heroImage || projectData.image || ""}
-          alt={`${projectData.title} - Full view`}
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
-        />
-      </div>
+      {projectData.heroImage && (
+        <div className="w-full h-[50vh] md:h-[85vh] bg-muted relative overflow-hidden mb-28 md:mb-36">
+          <Image
+            src={projectData.heroImage.asset ? "" : (typeof projectData.heroImage === 'string' ? projectData.heroImage : "")} // We'll patch this properly once Sanity data comes. For now, graceful fail.
+            alt={`${projectData.title} - Full view`}
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </div>
+      )}
 
-      {/* Project Blocks */}
-      {(projectData.blocks || []).map((block: any, i: number) => {
-        switch (block._template) {
-          case "fullImage":
-            return (
-              <div key={i} className="w-full mb-20 md:mb-28 relative overflow-hidden">
-                <div className="w-full h-[50vh] md:h-[85vh] bg-muted relative">
-                  <Image src={block.image || ""} alt={block.caption || "Full Image"} fill className="object-cover" sizes="100vw" />
-                </div>
-                {block.caption && (
-                  <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase text-center">
-                    {block.caption}
-                  </p>
-                )}
-              </div>
-            )
-          case "textBlock":
-            return (
-              <div key={i} className="mb-20 md:mb-28 max-w-[900px]">
-                {block.heading && (
-                  <div className="flex items-center gap-4 mb-8 md:mb-10">
-                    <span className="w-8 h-px bg-muted-foreground" />
-                    <span className="font-sans font-medium text-[12px] md:text-[13px] tracking-[0.15em] text-foreground uppercase">
-                      {block.heading}
-                    </span>
-                  </div>
-                )}
-                <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                  <TinaMarkdown content={block.body} />
-                </div>
-              </div>
-            )
-          case "twoColumn":
-            return (
-              <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-20 md:mb-28 items-start">
-                <div className="font-sans font-light text-[16px] md:text-[20px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                  <TinaMarkdown content={block.leftContent} />
-                </div>
-                {block.rightImage && (
-                  <div className="w-full h-[40vh] md:h-[60vh] relative bg-muted">
-                    <Image src={block.rightImage} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
-                  </div>
-                )}
-              </div>
-            )
-          case "gallery":
-            return (
-              <div key={i} className={`grid gap-4 md:gap-8 mb-20 md:mb-28 ${block.images?.length === 1 ? 'grid-cols-1' : block.images?.length === 2 ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
-                {(block.images || []).slice(0, 4).map((img: string, idx: number) => (
-                  <div key={idx} className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
-                    <Image src={img} alt={`Gallery ${idx}`} fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
-                  </div>
-                ))}
-              </div>
-            )
-          case "quote":
-            return (
-              <div key={i} className="mb-20 md:mb-28 max-w-[900px] border-l-2 md:border-l-4 border-foreground pl-6 md:pl-10">
-                <blockquote className="font-sans font-black text-[clamp(24px,5vw,48px)] leading-[1.1] text-foreground uppercase tracking-[-0.03em] mb-6">
-                  "{block.quoteText}"
-                </blockquote>
-                {block.author && (
-                  <cite className="font-sans font-light text-[12px] md:text-[14px] text-muted-foreground tracking-[0.2em] uppercase block not-italic">
-                    — {block.author}
-                  </cite>
-                )}
-              </div>
-            )
-          case "spacer":
-            const h = block.size === "small" ? "h-16 md:h-24" : block.size === "large" ? "h-32 md:h-48" : "h-24 md:h-32"
-            return <div key={i} className={`w-full ${h}`} />
-          default:
-            return null
-        }
-      })}
-
-      {(!projectData.blocks || projectData.blocks.length === 0) && (
+      {/* Project Blocks Using PortableText Map */}
+      {projectData.blocks && projectData.blocks.length > 0 ? (
+        <PortableText value={projectData.blocks} components={components} />
+      ) : (
         <div className="mb-24 max-w-[900px]">
           <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
             {projectData.excerpt || projectData.description || "Project details coming soon."}
@@ -215,7 +135,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
             className="group no-underline text-foreground block"
           >
             <h3 className="font-sans font-black text-[clamp(36px,7vw,100px)] leading-[0.85] uppercase text-foreground tracking-[-0.03em] group-hover:opacity-60 transition-opacity">
-              {nextProject.title.replace("\n", " ")}
+              {nextProject.title?.replace("\n", " ")}
             </h3>
             <span className="font-sans font-light text-[13px] md:text-[14px] text-muted-foreground tracking-[0.15em] uppercase mt-3 block">
               {nextProject.client}

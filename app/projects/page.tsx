@@ -1,27 +1,41 @@
 import { ProjectsClient } from "./projects-client"
 import { Metadata } from "next"
-import fs from "fs"
-import path from "path"
-import matter from "gray-matter"
+import { client } from "@/lib/sanity/client"
+import { groq } from "next-sanity"
 
 export const metadata: Metadata = {
-    title: "Projects | WEARENOTCREATIVE",
-    description: "A curated selection across disciplines. Each project is shaped by its own context, scale and ambition."
+  title: "Projects | WEARENOTCREATIVE",
+  description: "A curated selection across disciplines. Each project is shaped by its own context, scale and ambition."
 }
 
 export default async function ProjectsPage() {
-    const projectsDir = path.join(process.cwd(), "content", "projects")
-    let projects: any[] = []
-    try {
-        const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
-        projects = files.map(filename => {
-            const fileContent = fs.readFileSync(path.join(projectsDir, filename), "utf8")
-            const { data } = matter(fileContent)
-            return { ...data, slug: filename.replace(".md", ""), id: filename }
-        })
-            .filter((p: any) => p.published !== false)
-            .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
-    } catch (e) { }
+  const query = groq`
+      *[_type == "project" && published == true] | order(order asc) {
+        id,
+        _id,
+        "slug": slug,
+        title,
+        client,
+        industry,
+        services,
+        excerpt,
+        "heroImage": heroImage,
+        "image": heroImage,
+        order
+      }
+    `
+  let projects = []
+  try {
+    projects = await client.fetch(query)
+  } catch (e) {
+    console.warn("Sanity fetch failed. Returning empty projects.", e)
+  }
 
-    return <ProjectsClient projects={projects} />
+  // Append id since original used id = filename
+  const mappedProjects = projects.map((p: any) => ({
+    ...p,
+    id: p._id,
+  }))
+
+  return <ProjectsClient projects={mappedProjects} />
 }
