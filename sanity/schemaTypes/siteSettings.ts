@@ -9,40 +9,41 @@ export const siteSettings = defineType({
             name: 'email',
             title: 'Contact Email',
             type: 'string',
-            description: 'Primary contact email shown on the Contact page.',
+            description: 'The main contact email address. Shown as a large link on the Contact page.',
+            validation: (Rule) => Rule.required().error('Contact email is required.'),
         }),
         defineField({
             name: 'location',
-            title: 'Location',
+            title: 'Studio Location',
             type: 'string',
-            description: 'Studio location shown on the Contact page (e.g. "Istanbul / Global").',
+            description: 'Short location text shown at the bottom of the Contact page, e.g. "Istanbul / Global".',
         }),
         defineField({
             name: 'instagramUrl',
-            title: 'Instagram URL',
+            title: 'Instagram Link',
             type: 'string',
-            description: 'Full Instagram profile URL.',
+            description: 'Full URL to the Instagram profile, e.g. "https://instagram.com/wearenotcreative".',
         }),
         defineField({
             name: 'inquiryCategories',
             title: 'Inquiry Categories',
             type: 'array',
-            description: 'Contact category columns shown below the email address.',
+            description: 'Three columns shown on the Contact page explaining different types of inquiries.',
             of: [
                 {
                     type: 'object',
                     fields: [
                         defineField({
                             name: 'label',
-                            title: 'Label',
+                            title: 'Category Name',
                             type: 'string',
-                            description: 'Category heading (e.g. "New Projects").',
+                            description: 'e.g. "New Projects", "Collaborations", "General".',
                         }),
                         defineField({
                             name: 'description',
-                            title: 'Description',
+                            title: 'Category Description',
                             type: 'text',
-                            description: 'Short description shown below the label.',
+                            description: 'Short text explaining what kind of inquiry this covers.',
                         }),
                     ],
                     preview: {

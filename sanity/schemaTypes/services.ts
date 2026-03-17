@@ -7,21 +7,22 @@ export const services = defineType({
     fields: [
         defineField({
             name: 'headline',
-            title: 'Headline',
+            title: 'Page Headline',
             type: 'string',
-            description: 'Main heading displayed on the Services page (e.g. "SERVICES").',
+            description: 'The large heading shown at the top of the Services page. Usually "SERVICES".',
+            validation: (Rule) => Rule.required().error('Headline is required.'),
         }),
         defineField({
             name: 'intro',
             title: 'Intro Text',
             type: 'text',
-            description: 'Short paragraph shown below the headline.',
+            description: 'A short paragraph shown below the headline. Describes what the studio offers.',
         }),
         defineField({
             name: 'disciplines',
-            title: 'Disciplines',
+            title: 'Services',
             type: 'array',
-            description: 'List of service disciplines shown as expandable rows.',
+            description: 'Each service is displayed as an expandable row. Click [ + ] to add or reorder services.',
             of: [
                 {
                     type: 'object',
@@ -30,38 +31,39 @@ export const services = defineType({
                             name: 'number',
                             title: 'Number',
                             type: 'string',
-                            description: 'Display number (e.g. "01").',
+                            description: 'Display label, e.g. "01", "02". Used for visual ordering only.',
                         }),
                         defineField({
                             name: 'label',
-                            title: 'Label',
+                            title: 'Service Name',
                             type: 'string',
-                            description: 'Service name shown in the accordion header.',
+                            description: 'The name shown in the expandable row header.',
+                            validation: (Rule) => Rule.required().error('Service name is required.'),
                         }),
                         defineField({
                             name: 'statement',
-                            title: 'Statement',
+                            title: 'Short Description',
                             type: 'text',
-                            description: 'One-line description shown when expanded.',
+                            description: 'One sentence describing this service. Shown when the row is expanded.',
                         }),
                         defineField({
                             name: 'deliverables',
                             title: 'Deliverables',
                             type: 'array',
                             of: [{ type: 'string' }],
-                            description: 'List of deliverables shown as tags when expanded.',
+                            description: 'List of specific outputs for this service. Shown as tags when expanded.',
                         }),
                         defineField({
                             name: 'order',
-                            title: 'Order',
+                            title: 'Sort Order',
                             type: 'number',
-                            description: 'Sort order (ascending). Lower numbers appear first.',
+                            description: 'Controls display order. Lower numbers appear first (1, 2, 3...).',
                         }),
                     ],
                     preview: {
                         select: { title: 'label', subtitle: 'number' },
                         prepare({ title, subtitle }: any) {
-                            return { title: title || 'Discipline', subtitle: subtitle || '' }
+                            return { title: title || 'Service', subtitle: subtitle || '' }
                         },
                     },
                 },

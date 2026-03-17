@@ -7,27 +7,38 @@ export const about = defineType({
     fields: [
         defineField({
             name: 'headline',
-            title: 'Headline',
+            title: 'Page Headline',
             type: 'string',
-            description: 'Main heading displayed on the About page (e.g. "ABOUT").',
+            description: 'The large heading shown at the top of the About page. Usually "ABOUT".',
+            validation: (Rule) => Rule.required().error('Headline is required.'),
         }),
         defineField({
             name: 'intro',
-            title: 'Intro Text',
+            title: 'Studio Introduction',
             type: 'text',
-            description: 'Studio introduction paragraph.',
+            description: 'A short paragraph introducing the studio. Shown below the headline.',
         }),
         defineField({
             name: 'positioning',
             title: 'Positioning Columns',
             type: 'array',
-            description: 'Three short positioning statements shown below the intro.',
+            description: 'Three short statements that define the studio\'s positioning. Shown in columns below the intro text.',
             of: [
                 {
                     type: 'object',
                     fields: [
-                        defineField({ name: 'title', title: 'Column Title', type: 'string' }),
-                        defineField({ name: 'text', title: 'Column Text', type: 'text' }),
+                        defineField({
+                            name: 'title',
+                            title: 'Column Heading',
+                            type: 'string',
+                            description: 'e.g. "We Work With", "Philosophy"',
+                        }),
+                        defineField({
+                            name: 'text',
+                            title: 'Column Text',
+                            type: 'text',
+                            description: 'Short description for this positioning column.',
+                        }),
                     ],
                     preview: {
                         select: { title: 'title' },
@@ -40,8 +51,8 @@ export const about = defineType({
         }),
         defineField({
             name: 'galleryImages',
-            title: 'Studio Gallery Images',
-            description: 'Interior photos shown in the slider on the About page.',
+            title: 'Studio Gallery',
+            description: 'Photos displayed in the image slider on the right side of the About page. Upload multiple images — they will cycle automatically.',
             type: 'array',
             of: [
                 {
@@ -49,21 +60,21 @@ export const about = defineType({
                     fields: [
                         defineField({
                             name: 'image',
-                            title: 'Image',
+                            title: 'Photo',
                             type: 'image',
                             options: { hotspot: true },
                         }),
                         defineField({
                             name: 'alt',
-                            title: 'Alt Text',
+                            title: 'Image Description',
                             type: 'string',
-                            description: 'Optional description for accessibility.',
+                            description: 'Describe the photo briefly (for accessibility). Optional.',
                         }),
                     ],
                     preview: {
                         select: { title: 'alt', media: 'image' },
                         prepare({ title, media }: any) {
-                            return { title: title || 'Gallery Image', media }
+                            return { title: title || 'Gallery Photo', media }
                         },
                     },
                 },
@@ -73,7 +84,7 @@ export const about = defineType({
             name: 'showTeamSection',
             title: 'Show Team Section',
             type: 'boolean',
-            description: 'Toggle the Team section on the About page. Team data is preserved when hidden.',
+            description: 'Turn on to display the team member list on the About page.',
             initialValue: true,
         }),
     ],
