@@ -5,6 +5,7 @@ import { blogPost } from './schemaTypes/blogPost'
 import { homepage } from './schemaTypes/homepage'
 import { about } from './schemaTypes/about'
 import { services } from './schemaTypes/services'
+import { siteSettings } from './schemaTypes/siteSettings'
 import {
     heroOverride,
     fullImage,
@@ -22,6 +23,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
         homepage,
         about,
         services,
+        siteSettings,
         heroOverride,
         fullImage,
         textBlock,
