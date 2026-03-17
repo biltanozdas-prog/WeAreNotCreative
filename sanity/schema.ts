@@ -3,6 +3,7 @@ import { type SchemaTypeDefinition } from 'sanity'
 import { project } from './schemaTypes/project'
 import { blogPost } from './schemaTypes/blogPost'
 import { homepage } from './schemaTypes/homepage'
+import { about } from './schemaTypes/about'
 import {
     heroOverride,
     fullImage,
@@ -18,6 +19,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
         project,
         blogPost,
         homepage,
+        about,
         heroOverride,
         fullImage,
         textBlock,

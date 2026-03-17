@@ -19,8 +19,8 @@ export default async function ProjectsPage() {
         industry,
         services,
         excerpt,
-        "heroImage": heroImage,
-        "image": heroImage,
+        "heroImage": heroImage.asset->url,
+        "image": heroImage.asset->url,
         order
       }
     `

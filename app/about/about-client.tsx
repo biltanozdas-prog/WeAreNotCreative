@@ -3,109 +3,154 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { AboutGallerySlider } from "@/components/about-gallery-slider"
 
-export default function AboutClient({ aboutData, teamData }: { aboutData: any, teamData: any }) {
+interface LightboxImage {
+    src: string
+    alt: string
+}
+
+interface AboutClientProps {
+    aboutData: any
+    teamData: any
+    galleryImages: LightboxImage[]
+    showTeamSection: boolean
+}
+
+export default function AboutClient({
+    aboutData,
+    teamData,
+    galleryImages,
+    showTeamSection,
+}: AboutClientProps) {
     const [expandedPerson, setExpandedPerson] = useState<number | null>(null)
+    const hasGallery = galleryImages && galleryImages.length > 0
 
     return (
         <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
-            <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-                Who We Are
-            </p>
-            <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-12 md:mb-16">
-                {aboutData.headline || "ABOUT"}
-            </h1>
 
-            <p className="font-sans font-light text-[18px] md:text-[22px] leading-[1.55] text-foreground max-w-[800px] mb-16 md:mb-24">
-                {aboutData.intro}
-            </p>
+            {/* Two-column intro section */}
+            <div className={`grid grid-cols-1 gap-10 mb-28 md:mb-[160px] ${
+                hasGallery ? "md:grid-cols-[3fr_2fr] md:gap-10 lg:gap-12 items-start" : ""
+            }`}>
 
-            {/* Positioning details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 mb-28 md:mb-[160px] max-w-[1000px]">
-                {aboutData.positioning?.map((pos: any, idx: number) => (
-                    <div key={idx}>
-                        <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-4">
-                            {pos.title}
-                        </span>
-                        <p className="font-sans font-light text-[14px] md:text-[15px] text-foreground leading-[1.6]">
-                            {pos.text}
+                {/* Left column — text content */}
+                <div>
+                    <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
+                        Who We Are
+                    </p>
+                    <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-12 md:mb-16">
+                        {aboutData.headline || "ABOUT"}
+                    </h1>
+
+                    <p className="font-sans font-light text-[18px] md:text-[22px] leading-[1.55] text-foreground max-w-[600px] mb-16 md:mb-24">
+                        {aboutData.intro}
+                    </p>
+
+                    {/* Positioning columns */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 max-w-[800px]">
+                        {aboutData.positioning?.map((pos: any, idx: number) => (
+                            <div key={idx}>
+                                <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-4">
+                                    {pos.title}
+                                </span>
+                                <p className="font-sans font-light text-[14px] md:text-[15px] text-foreground leading-[1.6]">
+                                    {pos.text}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Right column — gallery slider (hidden on mobile, stacks below) */}
+                {hasGallery && (
+                    <div>
+                        <AboutGallerySlider images={galleryImages} />
+                    </div>
+                )}
+            </div>
+
+            {/* Mobile gallery — stacks below text on small screens */}
+            {/* (handled by grid-cols-1 default above — no separate element needed) */}
+
+            {/* Team section — conditionally rendered */}
+            {showTeamSection && (
+                <div className="mb-28 md:mb-[140px]">
+                    <div className="mb-8">
+                        <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
+                            The Team
                         </p>
                     </div>
-                ))}
-            </div>
 
-            {/* Team */}
-            <div className="mb-8">
-                <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
-                    The Team
-                </p>
-            </div>
-
-            <div className="border-t-2 border-foreground mb-28 md:mb-[140px]">
-                {teamData?.members?.map((person: any, index: number) => (
-                    <div
-                        key={person.name}
-                        className="border-b border-secondary py-10 md:py-14"
-                    >
-                        <button
-                            onClick={() =>
-                                setExpandedPerson(expandedPerson === index ? null : index)
-                            }
-                            className="w-full text-left bg-transparent border-none cursor-pointer p-0 group"
-                        >
-                            <div className="flex items-start justify-between gap-6">
-                                {/* Portrait */}
-                                <div className="relative w-[56px] h-[72px] md:w-[72px] md:h-[96px] shrink-0 overflow-hidden bg-muted">
-                                    <Image
-                                        src={person.image}
-                                        alt={person.name}
-                                        fill
-                                        className="object-cover grayscale"
-                                        sizes="96px"
-                                    />
-                                </div>
-
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-baseline justify-between gap-4">
-                                        <div>
-                                            <h3 className="font-sans font-black text-[20px] md:text-[26px] uppercase text-foreground tracking-[-0.02em]">
-                                                {person.name}
-                                            </h3>
-                                            <span className="font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase mt-2 block">
-                                                {person.title}
-                                            </span>
+                    <div className="border-t-2 border-foreground">
+                        {teamData?.members?.map((person: any, index: number) => (
+                            <div
+                                key={person.name}
+                                className="border-b border-secondary py-10 md:py-14"
+                            >
+                                <button
+                                    onClick={() =>
+                                        setExpandedPerson(expandedPerson === index ? null : index)
+                                    }
+                                    className="w-full text-left bg-transparent border-none cursor-pointer p-0 group"
+                                >
+                                    <div className="flex items-start justify-between gap-6">
+                                        {/* Portrait */}
+                                        <div className="relative w-[56px] h-[72px] md:w-[72px] md:h-[96px] shrink-0 overflow-hidden bg-muted">
+                                            {person.image && (
+                                                <Image
+                                                    src={person.image}
+                                                    alt={person.name}
+                                                    fill
+                                                    className="object-cover grayscale"
+                                                    sizes="96px"
+                                                />
+                                            )}
                                         </div>
-                                        <span className="font-sans font-light text-[14px] text-muted-foreground shrink-0 transition-transform">
-                                            {expandedPerson === index ? "[ - ]" : "[ + ]"}
-                                        </span>
+
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-baseline justify-between gap-4">
+                                                <div>
+                                                    <h3 className="font-sans font-black text-[20px] md:text-[26px] uppercase text-foreground tracking-[-0.02em]">
+                                                        {person.name}
+                                                    </h3>
+                                                    <span className="font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase mt-2 block">
+                                                        {person.title}
+                                                    </span>
+                                                </div>
+                                                <span className="font-sans font-light text-[14px] text-muted-foreground shrink-0 transition-transform">
+                                                    {expandedPerson === index ? "[ - ]" : "[ + ]"}
+                                                </span>
+                                            </div>
+                                            <p className="font-sans font-light text-[14px] md:text-[15px] text-foreground/70 max-w-[600px] mt-5 leading-[1.6]">
+                                                {person.shortBio}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <p className="font-sans font-light text-[14px] md:text-[15px] text-foreground/70 max-w-[600px] mt-5 leading-[1.6]">
-                                        {person.shortBio}
-                                    </p>
-                                </div>
-                            </div>
-                        </button>
+                                </button>
 
-                        <div
-                            className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.85,0,0.15,1)] ${expandedPerson === index
-                                    ? "max-h-[1000px] opacity-100 mt-8"
-                                    : "max-h-0 opacity-0 mt-0"
-                                }`}
-                        >
-                            <div className="flex gap-6">
-                                {/* Spacer matching portrait width */}
-                                <div className="w-[56px] md:w-[72px] shrink-0" />
-                                <div className="font-sans font-light text-[14px] md:text-[15px] text-foreground/60 max-w-[600px] leading-[1.7] whitespace-pre-line">
-                                    {person.fullBio}
+                                <div
+                                    className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.85,0,0.15,1)] ${
+                                        expandedPerson === index
+                                            ? "max-h-[1000px] opacity-100 mt-8"
+                                            : "max-h-0 opacity-0 mt-0"
+                                    }`}
+                                >
+                                    <div className="flex gap-6">
+                                        <div className="w-[56px] md:w-[72px] shrink-0" />
+                                        <div className="font-sans font-light text-[14px] md:text-[15px] text-foreground/60 max-w-[600px] leading-[1.7] whitespace-pre-line">
+                                            {person.fullBio}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+                </div>
+            )}
 
-            {/* CTA */}
+            {/* Work With Us CTA */}
             <div className="border-t border-secondary pt-16 md:pt-24">
                 <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
                     Collaborate

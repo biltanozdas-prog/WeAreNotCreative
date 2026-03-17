@@ -16,8 +16,8 @@ export default async function BlogPage() {
         title,
         date,
         excerpt,
-        "coverImage": coverImage,
-        "image": coverImage,
+        "coverImage": coverImage.asset->url,
+        "image": coverImage.asset->url,
         blocks,
         order
       }

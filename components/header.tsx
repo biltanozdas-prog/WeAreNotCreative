@@ -22,7 +22,7 @@ export function Header() {
           <span className="block w-full h-[4px] md:h-[8px] bg-[#ffffff]" />
         </button>
       </div>
-      <div className="pointer-events-auto">
+      <div className="pointer-events-auto header-logo-container transition-opacity duration-500">
         <Link
           href="/"
           className="text-[#ffffff] no-underline font-sans font-black leading-[0.8] tracking-[-0.05em] text-[24px] md:text-[40px] lg:text-[60px]"

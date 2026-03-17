@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { HeroVideo } from "@/components/hero-video"
 import { ManifestoSection } from "@/components/manifesto-section"
-import { SelectedProjects } from "@/components/selected-projects"
+import { ProjectShowcaseSlider } from "@/components/project-showcase-slider"
 import Link from "next/link"
 import { client } from "@/lib/sanity/client"
 import { groq } from "next-sanity"
@@ -28,8 +28,8 @@ export default async function HomePage() {
         industry,
         services,
         excerpt,
-        "heroImage": heroImage,
-        "image": heroImage,
+        "heroImage": heroImage.asset->url,
+        "image": heroImage.asset->url,
         order
       }
     }
@@ -50,8 +50,8 @@ export default async function HomePage() {
       industry,
       services,
       excerpt,
-      "heroImage": heroImage,
-      "image": heroImage,
+      "heroImage": heroImage.asset->url,
+      "image": heroImage.asset->url,
       order
     }[0...4]
   `
@@ -90,7 +90,7 @@ export default async function HomePage() {
       <div className="h-screen" />
       {/* Content starts after the video */}
       <ManifestoSection />
-      <SelectedProjects projects={selectedProjects as any} />
+      <ProjectShowcaseSlider projects={selectedProjects as any} />
 
       {/* Footer CTA */}
       <section className="bg-background relative z-10 px-8 py-32 md:px-[60px] md:py-[180px] border-t border-secondary">

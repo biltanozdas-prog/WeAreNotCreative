@@ -77,34 +77,6 @@ export default function ServicesClient({ servicesData }: { servicesData: any }) 
                 ))}
             </div>
 
-            {/* Process / Method Section */}
-            <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-                How We Work
-            </p>
-            <h2 className="font-sans font-black text-[clamp(48px,10vw,140px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-10 md:mb-14">
-                METHOD
-            </h2>
-            <p className="font-sans font-light text-[15px] md:text-[17px] text-muted-foreground leading-[1.6] max-w-[480px] mb-20 md:mb-28">
-                Every project follows the same philosophy, adapted to its own scale.
-                Not a formula. A way of thinking.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-8 mb-32 md:mb-[160px]">
-                {servicesData?.process?.map((step: any) => (
-                    <div key={step.step}>
-                        <span className="font-sans font-light text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-4">
-                            {step.step}
-                        </span>
-                        <h4 className="font-sans font-black text-[20px] md:text-[22px] uppercase text-foreground tracking-[-0.02em] mb-3">
-                            {step.title}
-                        </h4>
-                        <p className="font-sans font-light text-[13px] md:text-[14px] text-muted-foreground leading-[1.6]">
-                            {step.text}
-                        </p>
-                    </div>
-                ))}
-            </div>
-
             {/* CTA */}
             <div className="border-t border-secondary pt-16 md:pt-24">
                 <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
