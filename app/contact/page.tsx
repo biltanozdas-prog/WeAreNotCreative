@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { client } from "@/lib/sanity/client"
+import { draftMode } from "next/headers"
+import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
 export const dynamic = "force-dynamic"
@@ -24,6 +25,9 @@ const FALLBACK_CATEGORIES = [
 ]
 
 export default async function ContactPage() {
+  const { isEnabled: preview } = await draftMode()
+  const client = getClient(preview)
+
   let email = FALLBACK_EMAIL
   let location = FALLBACK_LOCATION
   let instagramUrl = FALLBACK_INSTAGRAM

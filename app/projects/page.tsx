@@ -1,6 +1,7 @@
 import { ProjectsClient } from "./projects-client"
 import { Metadata } from "next"
-import { client } from "@/lib/sanity/client"
+import { draftMode } from "next/headers"
+import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
 export const metadata: Metadata = {
@@ -9,6 +10,9 @@ export const metadata: Metadata = {
 }
 
 export default async function ProjectsPage() {
+  const { isEnabled: preview } = await draftMode()
+  const client = getClient(preview)
+
   const query = groq`
       *[_type == "project" && published == true] | order(order asc) {
         id,

@@ -1,6 +1,7 @@
 import fs from "fs"
 import path from "path"
-import { client } from "@/lib/sanity/client"
+import { draftMode } from "next/headers"
+import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 import ServicesClient from "./services-client"
 
@@ -13,6 +14,9 @@ export default async function ServicesPage() {
   try {
     servicesJsonData = JSON.parse(fs.readFileSync(servicesPath, "utf8"))
   } catch (e) {}
+
+  const { isEnabled: preview } = await draftMode()
+  const client = getClient(preview)
 
   let servicesData: any = servicesJsonData
 

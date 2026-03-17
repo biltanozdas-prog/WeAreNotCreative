@@ -1,6 +1,7 @@
 import { BlogClient } from "./blog-client"
 import type { Metadata } from "next"
-import { client } from "@/lib/sanity/client"
+import { draftMode } from "next/headers"
+import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
 export const metadata: Metadata = {
@@ -9,6 +10,9 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
+  const { isEnabled: preview } = await draftMode()
+  const client = getClient(preview)
+
   const query = groq`
       *[_type == "blogPost" && published == true] | order(order asc) {
         _id,

@@ -2,7 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { client } from "@/lib/sanity/client"
+import { draftMode } from "next/headers"
+import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 import { urlFor } from "@/lib/sanity/image"
 import { LightboxProvider, type LightboxImage } from "@/components/lightbox-provider"
@@ -17,8 +18,9 @@ interface ProjectDetailProps {
 export async function generateMetadata({ params }: ProjectDetailProps): Promise<Metadata> {
   const { slug } = await params
   try {
+    const { isEnabled: preview } = await draftMode()
     const query = groq`*[_type == "project" && slug == $slug][0]{ title, excerpt }`
-    const project = await client.fetch(query, { slug })
+    const project = await getClient(preview).fetch(query, { slug })
     if (!project) return { title: "Project Not Found" }
     return {
       title: `${project.title?.replace("\n", " ")} | WEARENOTCREATIVE`,
@@ -32,7 +34,7 @@ export async function generateMetadata({ params }: ProjectDetailProps): Promise<
 export async function generateStaticParams() {
   const query = groq`*[_type == "project" && defined(slug)]{ "slug": slug }`
   try {
-    const projects = await client.fetch(query)
+    const projects = await getClient(false).fetch(query)
     return projects.map((project: { slug: string }) => ({ slug: project.slug }))
   } catch (e) {
     return []
@@ -70,6 +72,8 @@ function collectImages(projectData: any): LightboxImage[] {
 
 export default async function ProjectDetailPage({ params }: ProjectDetailProps) {
   const { slug } = await params
+  const { isEnabled: preview } = await draftMode()
+  const client = getClient(preview)
 
   let projectData: any = null
   let nextProject: any = null

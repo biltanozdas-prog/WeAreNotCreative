@@ -1,8 +1,8 @@
 import fs from "fs"
 import path from "path"
-import { client } from "@/lib/sanity/client"
+import { draftMode } from "next/headers"
+import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
-import { urlFor } from "@/lib/sanity/image"
 import { LightboxProvider, type LightboxImage } from "@/components/lightbox-provider"
 import { LightboxOverlay } from "@/components/lightbox-overlay"
 import AboutClient from "./about-client"
@@ -24,6 +24,9 @@ export default async function AboutPage() {
   } catch (e) {}
 
   // All About fields — fetched from Sanity, fallback to JSON
+  const { isEnabled: preview } = await draftMode()
+  const client = getClient(preview)
+
   let galleryImages: LightboxImage[] = []
   let showTeamSection = true
   let aboutData: any = aboutJsonData

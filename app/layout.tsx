@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { Header } from '@/components/header'
 import { MenuOverlay } from '@/components/menu-overlay'
 import { MenuProvider } from '@/lib/menu-context'
+import { PreviewBanner } from '@/components/preview-banner'
 import './globals.css'
 
 const montserrat = Montserrat({
@@ -34,6 +35,7 @@ export default function RootLayout({
           <MenuOverlay />
           {children}
         </MenuProvider>
+        <PreviewBanner />
         <Analytics />
       </body>
     </html>

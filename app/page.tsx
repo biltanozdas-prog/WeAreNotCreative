@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
+import { draftMode } from "next/headers"
 import { HeroVideo } from "@/components/hero-video"
 import { ManifestoSection } from "@/components/manifesto-section"
 import { ProjectShowcaseSlider } from "@/components/project-showcase-slider"
 import Link from "next/link"
-import { client } from "@/lib/sanity/client"
+import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
 export const dynamic = 'force-dynamic'
@@ -15,6 +16,9 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
+  const { isEnabled: preview } = await draftMode()
+  const client = getClient(preview)
+
   const query = groq`
     *[_type == "homepage"][0] {
       heroVideo,
