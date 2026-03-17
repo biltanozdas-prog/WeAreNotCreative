@@ -6,6 +6,39 @@ export const about = defineType({
     type: 'document',
     fields: [
         defineField({
+            name: 'headline',
+            title: 'Headline',
+            type: 'string',
+            description: 'Main heading displayed on the About page (e.g. "ABOUT").',
+        }),
+        defineField({
+            name: 'intro',
+            title: 'Intro Text',
+            type: 'text',
+            description: 'Studio introduction paragraph.',
+        }),
+        defineField({
+            name: 'positioning',
+            title: 'Positioning Columns',
+            type: 'array',
+            description: 'Three short positioning statements shown below the intro.',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        defineField({ name: 'title', title: 'Column Title', type: 'string' }),
+                        defineField({ name: 'text', title: 'Column Text', type: 'text' }),
+                    ],
+                    preview: {
+                        select: { title: 'title' },
+                        prepare({ title }: any) {
+                            return { title: title || 'Positioning Item' }
+                        },
+                    },
+                },
+            ],
+        }),
+        defineField({
             name: 'galleryImages',
             title: 'Studio Gallery Images',
             description: 'Interior photos shown in the slider on the About page.',

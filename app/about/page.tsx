@@ -10,11 +10,11 @@ import AboutClient from "./about-client"
 export const dynamic = "force-dynamic"
 
 export default async function AboutPage() {
-  // Text content — stays in JSON
+  // Text content — JSON fallback (used if Sanity fields are empty)
   const aboutPath = path.join(process.cwd(), "content", "about.json")
-  let aboutData: any = {}
+  let aboutJsonData: any = {}
   try {
-    aboutData = JSON.parse(fs.readFileSync(aboutPath, "utf8"))
+    aboutJsonData = JSON.parse(fs.readFileSync(aboutPath, "utf8"))
   } catch (e) {}
 
   const teamPath = path.join(process.cwd(), "content", "team.json")
@@ -23,13 +23,17 @@ export default async function AboutPage() {
     teamData = JSON.parse(fs.readFileSync(teamPath, "utf8"))
   } catch (e) {}
 
-  // Gallery + team visibility — fetched from Sanity
+  // All About fields — fetched from Sanity, fallback to JSON
   let galleryImages: LightboxImage[] = []
   let showTeamSection = true
+  let aboutData: any = aboutJsonData
 
   try {
     const aboutDoc = await client.fetch(
       groq`*[_type == "about"][0]{
+        headline,
+        intro,
+        positioning,
         showTeamSection,
         "galleryImages": galleryImages[]{
           "src": image.asset->url,
@@ -39,11 +43,16 @@ export default async function AboutPage() {
     )
     if (aboutDoc) {
       galleryImages = (aboutDoc.galleryImages || []).filter((img: any) => img.src)
-      // Default showTeamSection to true if the field isn't set yet
       showTeamSection = aboutDoc.showTeamSection !== false
+      // Merge Sanity fields over JSON fallback — only override if Sanity has a value
+      aboutData = {
+        headline: aboutDoc.headline || aboutJsonData.headline,
+        intro: aboutDoc.intro || aboutJsonData.intro,
+        positioning: aboutDoc.positioning?.length ? aboutDoc.positioning : aboutJsonData.positioning,
+      }
     }
   } catch (e) {
-    // CMS unavailable — use defaults (no gallery, team shown)
+    // CMS unavailable — use JSON fallback for all text fields
   }
 
   // DEV PREVIEW: fallback placeholder when no Sanity images exist yet.
@@ -56,9 +65,6 @@ export default async function AboutPage() {
       },
     ]
   }
-
-  // DEV PREVIEW: force team section hidden. Revert by removing this line.
-  showTeamSection = false
 
   return (
     <LightboxProvider images={galleryImages}>
