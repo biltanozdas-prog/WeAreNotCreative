@@ -13,8 +13,7 @@ export default async function BlogPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
-  const query = groq`
-      *[_type == "blogPost" && published == true] | order(order asc) {
+  const fields = `{
         _id,
         "slug": slug,
         title,
@@ -24,8 +23,12 @@ export default async function BlogPage() {
         "image": coverImage.asset->url,
         blocks,
         order
-      }
-    `
+      }`
+
+  const query = preview
+    ? groq`*[_type == "blogPost"] | order(order asc) ${fields}`
+    : groq`*[_type == "blogPost" && published == true] | order(order asc) ${fields}`
+
   let rawPosts = []
   try {
     rawPosts = await client.fetch(query)

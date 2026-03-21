@@ -13,6 +13,12 @@ export const siteSettings = defineType({
             validation: (Rule) => Rule.required().error('Contact email is required.'),
         }),
         defineField({
+            name: 'phone',
+            title: 'Phone Number',
+            type: 'string',
+            description: 'Optional phone number displayed on the Contact page.',
+        }),
+        defineField({
             name: 'location',
             title: 'Studio Location',
             type: 'string',

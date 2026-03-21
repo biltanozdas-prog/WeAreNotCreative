@@ -13,8 +13,7 @@ export default async function ProjectsPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
-  const query = groq`
-      *[_type == "project" && published == true] | order(order asc) {
+  const fields = `{
         id,
         _id,
         "slug": slug,
@@ -26,8 +25,12 @@ export default async function ProjectsPage() {
         "heroImage": heroImage.asset->url,
         "image": heroImage.asset->url,
         order
-      }
-    `
+      }`
+
+  const query = preview
+    ? groq`*[_type == "project"] | order(order asc) ${fields}`
+    : groq`*[_type == "project" && published == true] | order(order asc) ${fields}`
+
   let projects = []
   try {
     projects = await client.fetch(query)
@@ -35,7 +38,6 @@ export default async function ProjectsPage() {
     console.warn("Sanity fetch failed. Returning empty projects.", e)
   }
 
-  // Append id since original used id = filename
   const mappedProjects = projects.map((p: any) => ({
     ...p,
     id: p._id,

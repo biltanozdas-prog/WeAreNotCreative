@@ -21,8 +21,9 @@ export default async function HomePage() {
 
   const query = groq`
     *[_type == "homepage"][0] {
-      heroVideo,
-      introText,
+      "heroVideoUrl": heroVideo.asset->url,
+      headline,
+      manifestoText,
       aboutText,
       selectedProjects[]->{
         _id,
@@ -45,8 +46,7 @@ export default async function HomePage() {
     console.warn("Sanity fetch failed for homepage.", e)
   }
 
-  const projectsQuery = groq`
-    *[_type == "project" && published == true] | order(order asc) {
+  const projectFields = `{
       _id,
       "slug": slug,
       title,
@@ -57,18 +57,11 @@ export default async function HomePage() {
       "heroImage": heroImage.asset->url,
       "image": heroImage.asset->url,
       order
-    }[0...4]
-  `
+    }`
 
-  // Format data equivalent to old structure
-  const formattedHomeData = {
-    hero: {
-      videoUrl: homeData?.heroVideo
-    },
-    intro: {
-      body: homeData?.introText
-    }
-  }
+  const projectsQuery = preview
+    ? groq`*[_type == "project"] | order(order asc) ${projectFields}[0...4]`
+    : groq`*[_type == "project" && published == true] | order(order asc) ${projectFields}[0...4]`
 
   let selectedProjects = homeData?.selectedProjects || []
 
@@ -81,19 +74,21 @@ export default async function HomePage() {
     }
   }
 
-  // Ensure selectedProjects is ALWAYS an array
   selectedProjects = selectedProjects.map((p: any) => ({
     ...p,
     id: p._id,
-  })) || [];
+  })) || []
 
   return (
     <main>
-      <HeroVideo videoUrl={formattedHomeData.hero?.videoUrl} />
+      <HeroVideo videoUrl={homeData?.heroVideoUrl} />
       {/* Spacer for the video hero area */}
       <div className="h-screen" />
       {/* Content starts after the video */}
-      <ManifestoSection />
+      <ManifestoSection
+        headline={homeData?.headline}
+        body={homeData?.manifestoText}
+      />
       <ProjectShowcaseSlider projects={selectedProjects as any} />
 
       {/* Footer CTA */}
