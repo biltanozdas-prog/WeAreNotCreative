@@ -118,10 +118,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
 
       <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
         {/* Floating Close Button */}
-        <div className="fixed top-24 md:top-32 right-8 md:right-[60px] z-[90]">
+        <div className="fixed top-24 md:top-32 right-8 md:right-[60px] z-[90] mix-blend-difference">
           <Link
             href="/projects"
-            className="font-sans font-bold text-[16px] md:text-[20px] text-foreground tracking-[0.1em] uppercase hover:opacity-60 transition-opacity no-underline bg-background/50 backdrop-blur-md px-3 py-2 rounded-sm"
+            className="font-sans font-black text-[20px] md:text-[24px] text-white tracking-[0.1em] uppercase hover:opacity-60 transition-opacity no-underline bg-transparent"
             aria-label="Back to projects"
           >
             {'[ X ]'}
