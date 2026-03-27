@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     // Validate secret
     const expectedSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || process.env.SANITY_PREVIEW_SECRET
     if (!secret || secret !== expectedSecret) {
-        return new Response("Invalid or missing preview secret.", { status: 401 })
+        return new Response(`Invalid preview secret. Vercel Server Expected: "${expectedSecret}". Browser Sent: "${secret}". Check your Vercel Environment Variables.`, { status: 401 })
     }
 
     const dm = await draftMode()

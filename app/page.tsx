@@ -92,9 +92,9 @@ export default async function HomePage() {
     ? groq`*[_type == "project"] | order(order asc) ${projectFields}[0...4]`
     : groq`*[_type == "project" && coalesce(published, true) == true] | order(order asc) ${projectFields}[0...4]`
 
-  let selectedProjects = homeData?.selectedProjects || []
+  let selectedProjects = (homeData?.selectedProjects || []).filter(Boolean)
 
-  if (!selectedProjects.length || !homeData) {
+  if (!selectedProjects.length) {
     try {
       selectedProjects = await client.fetch(projectsQuery, {}, { next: { tags: ["project"] } })
     } catch (e) {

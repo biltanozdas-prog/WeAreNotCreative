@@ -1,0 +1,21 @@
+﻿All projects: [
+  'NOIR\nIDENTITY: published=true',
+  'Test Automations: published=true',
+  'RAW\nCULTURE: published=true',
+  'CONCRETE\nOBJECTS: published=true',
+  'GIO-TELLI: published=true',
+  'TYPE\nMANIFEST: published=true'
+]
+Projects matching coalesce: [
+  'NOIR\nIDENTITY',
+  'Test Automations',
+  'RAW\nCULTURE',
+  'CONCRETE\nOBJECTS',
+  'GIO-TELLI',
+  'TYPE\nMANIFEST'
+]
+Homepage selectedProjects Raw: [
+  null,
+  null,
+  null
+]

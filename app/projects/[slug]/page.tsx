@@ -121,7 +121,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
         <div className="fixed top-24 md:top-32 right-8 md:right-[60px] z-[90]">
           <Link
             href="/projects"
-            className="font-sans font-light text-[14px] md:text-[16px] text-muted-foreground tracking-[0.15em] uppercase hover:text-foreground transition-colors no-underline"
+            className="font-sans font-bold text-[16px] md:text-[20px] text-foreground tracking-[0.1em] uppercase hover:opacity-60 transition-opacity no-underline bg-background/50 backdrop-blur-md px-3 py-2 rounded-sm"
             aria-label="Back to projects"
           >
             {'[ X ]'}
@@ -193,13 +193,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
               </Link>
             </div>
 
-            <Link 
-              href="/projects" 
-              className="font-sans font-light text-[13px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors no-underline shrink-0"
-              aria-label="Return to all projects"
-            >
-              {'[ Return to Projects ]'}
-            </Link>
+            {/* Bottom navigation removed as per user request */}
           </div>
         )}
       </main>
