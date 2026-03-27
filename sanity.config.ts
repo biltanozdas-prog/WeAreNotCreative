@@ -11,7 +11,7 @@ const SINGLETONS = ['homepage', 'siteSettings', 'about', 'services']
 
 // ── Preview URL resolver ───────────────────────────────────────────────────
 const secret = process.env.SANITY_PREVIEW_SECRET ?? ''
-const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://wearenotcreative.com'
+const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.wearenotcreativestudio.com'
 
 function previewUrl(slug: string) {
     return `${siteOrigin}/api/draft?secret=${secret}&slug=${slug}`

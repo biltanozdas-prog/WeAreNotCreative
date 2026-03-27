@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 
 const SITE_ORIGIN =
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://wearenotcreative.com'
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.wearenotcreativestudio.com'
 
 const SECRET = process.env.SANITY_PREVIEW_SECRET ?? ''
 

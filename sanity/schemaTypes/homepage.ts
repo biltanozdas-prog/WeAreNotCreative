@@ -40,6 +40,26 @@ export const homepage = defineType({
             of: [{ type: 'reference', to: [{ type: 'project' }] }],
         }),
 
+        // ── Footer CTA ────────────────────────────────────────────
+        defineField({
+            name: 'ctaLabel',
+            title: 'CTA Section — Eyebrow Label',
+            type: 'string',
+            description: 'Small uppercase label above the CTA heading at the bottom of the page. Default appearance: "Next Step".',
+        }),
+        defineField({
+            name: 'ctaHeadline',
+            title: 'CTA Section — Headline',
+            type: 'string',
+            description: 'Large heading in the footer CTA block. Default appearance: "LET\'S TALK."',
+        }),
+        defineField({
+            name: 'ctaButtonText',
+            title: 'CTA Section — Button Text',
+            type: 'string',
+            description: 'Link text in the CTA block. Default appearance: "Start a Conversation".',
+        }),
+
         // ── Optional ──────────────────────────────────────────────
         defineField({
             name: 'aboutText',

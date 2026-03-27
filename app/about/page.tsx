@@ -10,7 +10,7 @@ import AboutClient from "./about-client"
 export const dynamic = "force-dynamic"
 
 export default async function AboutPage() {
-  // JSON used only when Sanity document is entirely absent (null)
+  // JSON used only when Sanity document is entirely absent
   const aboutPath = path.join(process.cwd(), "content", "about.json")
   let aboutJsonData: any = {}
   try {
@@ -27,17 +27,20 @@ export default async function AboutPage() {
   const client = getClient(preview)
 
   let galleryImages: LightboxImage[] = []
-  // Default: show team. Only overridden once the Sanity document exists.
   let showTeamSection = true
   let aboutData: any = null
 
   try {
     const aboutDoc = await client.fetch(
       groq`*[_type == "about"][0]{
+        eyebrowLabel,
         headline,
         intro,
         positioning,
         showTeamSection,
+        ctaLabel,
+        ctaHeadline,
+        ctaButtonText,
         "galleryImages": galleryImages[]{
           "src": image.asset->url,
           "alt": coalesce(alt, "Studio interior")
@@ -46,40 +49,28 @@ export default async function AboutPage() {
     )
 
     if (aboutDoc) {
-      // Sanity document exists — it is the source of truth.
-      // Fields that are null/empty in Sanity render as empty (no JSON override).
+      // Sanity document exists — it is the authoritative source.
       galleryImages = (aboutDoc.galleryImages ?? []).filter((img: any) => img.src)
-
-      // Step 3: strict toggle — if doc exists, use its value exactly.
-      // Only fall back to true if the field was never set (null/undefined = not yet configured).
       showTeamSection = aboutDoc.showTeamSection ?? true
-
       aboutData = {
+        eyebrowLabel: aboutDoc.eyebrowLabel,
         headline: aboutDoc.headline,
         intro: aboutDoc.intro,
         positioning: aboutDoc.positioning ?? [],
+        ctaLabel: aboutDoc.ctaLabel,
+        ctaHeadline: aboutDoc.ctaHeadline,
+        ctaButtonText: aboutDoc.ctaButtonText,
       }
     } else {
-      // Sanity document does not exist yet — use JSON as placeholder.
       console.warn("[About] Sanity 'about' document not found. Using local JSON fallback. Populate the About Page in Studio.")
       aboutData = aboutJsonData
     }
   } catch (e) {
-    // CMS unreachable — use JSON as last resort.
     console.warn("[About] Sanity fetch failed:", e)
     aboutData = aboutJsonData
   }
 
-  // Gallery placeholder — only when no Sanity images exist AND doc is absent.
-  // Once the About doc is published with images, this never runs.
-  if (galleryImages.length === 0) {
-    galleryImages = [
-      {
-        src: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200&q=80",
-        alt: "Studio placeholder",
-      },
-    ]
-  }
+  // No Unsplash placeholder — if gallery is empty in CMS, gallery is empty on site.
 
   return (
     <LightboxProvider images={galleryImages}>

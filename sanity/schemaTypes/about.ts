@@ -6,6 +6,12 @@ export const about = defineType({
     type: 'document',
     fields: [
         defineField({
+            name: 'eyebrowLabel',
+            title: 'Page Eyebrow Label',
+            type: 'string',
+            description: 'Small uppercase label shown above the headline. Default appearance: "Who We Are".',
+        }),
+        defineField({
             name: 'headline',
             title: 'Page Headline',
             type: 'string',
@@ -86,6 +92,26 @@ export const about = defineType({
             type: 'boolean',
             description: 'Turn on to display the team member list on the About page.',
             initialValue: true,
+        }),
+
+        // ── Footer CTA ────────────────────────────────────────────
+        defineField({
+            name: 'ctaLabel',
+            title: 'CTA Section — Eyebrow Label',
+            type: 'string',
+            description: 'Small label above the CTA heading at the bottom of the page. Default appearance: "Collaborate".',
+        }),
+        defineField({
+            name: 'ctaHeadline',
+            title: 'CTA Section — Headline',
+            type: 'string',
+            description: 'Large CTA heading. Default appearance: "WORK WITH US."',
+        }),
+        defineField({
+            name: 'ctaButtonText',
+            title: 'CTA Section — Button Text',
+            type: 'string',
+            description: 'Link text in the CTA block. Default appearance: "Start a Conversation".',
         }),
     ],
 })

@@ -11,6 +11,10 @@ import { LightboxOverlay } from "@/components/lightbox-overlay"
 import { ProjectBlocks } from "@/components/project-blocks-client"
 import { HeroImageClickable } from "@/components/hero-image-clickable"
 
+// Force server-render on every request so deleted/unpublished projects
+// immediately return 404 without waiting for the next build.
+export const dynamic = 'force-dynamic'
+
 interface ProjectDetailProps {
   params: Promise<{ slug: string }>
 }
@@ -79,11 +83,17 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
   let nextProject: any = null
 
   try {
-    const query = groq`*[_type == "project" && slug == $slug][0] {
-      ...,
-      "heroImage": heroImage.asset->url,
-      "image": heroImage.asset->url
-    }`
+    const query = preview
+      ? groq`*[_type == "project" && slug == $slug][0] {
+          ...,
+          "heroImage": heroImage.asset->url,
+          "image": heroImage.asset->url
+        }`
+      : groq`*[_type == "project" && slug == $slug && published == true][0] {
+          ...,
+          "heroImage": heroImage.asset->url,
+          "image": heroImage.asset->url
+        }`
     projectData = await client.fetch(query, { slug })
     if (!projectData) notFound()
 

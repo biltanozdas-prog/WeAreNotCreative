@@ -36,33 +36,45 @@ export default function AboutClient({
 
                 {/* Left column — text content */}
                 <div>
-                    <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-                        Who We Are
-                    </p>
-                    <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-12 md:mb-16">
-                        {aboutData.headline || "ABOUT"}
-                    </h1>
+                    {aboutData?.eyebrowLabel && (
+                        <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
+                            {aboutData.eyebrowLabel}
+                        </p>
+                    )}
+                    {aboutData?.headline && (
+                        <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-12 md:mb-16">
+                            {aboutData.headline}
+                        </h1>
+                    )}
 
-                    <p className="font-sans font-light text-[18px] md:text-[22px] leading-[1.55] text-foreground max-w-[600px] mb-16 md:mb-24">
-                        {aboutData.intro}
-                    </p>
+                    {aboutData?.intro && (
+                        <p className="font-sans font-light text-[18px] md:text-[22px] leading-[1.55] text-foreground max-w-[600px] mb-16 md:mb-24">
+                            {aboutData.intro}
+                        </p>
+                    )}
 
                     {/* Positioning columns */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 max-w-[800px]">
-                        {aboutData.positioning?.map((pos: any, idx: number) => (
-                            <div key={idx}>
-                                <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-4">
-                                    {pos.title}
-                                </span>
-                                <p className="font-sans font-light text-[14px] md:text-[15px] text-foreground leading-[1.6]">
-                                    {pos.text}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
+                    {aboutData?.positioning?.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 max-w-[800px]">
+                            {aboutData.positioning.map((pos: any, idx: number) => (
+                                <div key={idx}>
+                                    {pos.title && (
+                                        <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-4">
+                                            {pos.title}
+                                        </span>
+                                    )}
+                                    {pos.text && (
+                                        <p className="font-sans font-light text-[14px] md:text-[15px] text-foreground leading-[1.6]">
+                                            {pos.text}
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                {/* Right column — gallery slider (hidden on mobile, stacks below) */}
+                {/* Right column — gallery slider */}
                 {hasGallery && (
                     <div>
                         <AboutGallerySlider images={galleryImages} />
@@ -70,10 +82,7 @@ export default function AboutClient({
                 )}
             </div>
 
-            {/* Mobile gallery — stacks below text on small screens */}
-            {/* (handled by grid-cols-1 default above — no separate element needed) */}
-
-            {/* Team section — conditionally rendered */}
+            {/* Team section — controlled by CMS toggle */}
             {showTeamSection && (
                 <div className="mb-28 md:mb-[140px]">
                     <div className="mb-8">
@@ -95,7 +104,6 @@ export default function AboutClient({
                                     className="w-full text-left bg-transparent border-none cursor-pointer p-0 group"
                                 >
                                     <div className="flex items-start justify-between gap-6">
-                                        {/* Portrait */}
                                         <div className="relative w-[56px] h-[72px] md:w-[72px] md:h-[96px] shrink-0 overflow-hidden bg-muted">
                                             {person.image && (
                                                 <Image
@@ -107,8 +115,6 @@ export default function AboutClient({
                                                 />
                                             )}
                                         </div>
-
-                                        {/* Info */}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-baseline justify-between gap-4">
                                                 <div>
@@ -150,19 +156,23 @@ export default function AboutClient({
                 </div>
             )}
 
-            {/* Work With Us CTA */}
+            {/* CTA section */}
             <div className="border-t border-secondary pt-16 md:pt-24">
-                <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-                    Collaborate
-                </p>
-                <h3 className="font-sans font-black text-[clamp(32px,6vw,80px)] leading-[0.88] uppercase text-foreground tracking-[-0.03em] mb-8 md:mb-12">
-                    WORK WITH US.
-                </h3>
+                {aboutData?.ctaLabel && (
+                    <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
+                        {aboutData.ctaLabel}
+                    </p>
+                )}
+                {aboutData?.ctaHeadline && (
+                    <h3 className="font-sans font-black text-[clamp(32px,6vw,80px)] leading-[0.88] uppercase text-foreground tracking-[-0.03em] mb-8 md:mb-12">
+                        {aboutData.ctaHeadline}
+                    </h3>
+                )}
                 <Link
                     href="/contact"
                     className="font-sans font-medium text-[13px] md:text-[14px] uppercase tracking-[0.15em] text-foreground no-underline border-b-2 border-foreground pb-1 hover:opacity-60 transition-opacity"
                 >
-                    Start a Conversation
+                    {aboutData?.ctaButtonText ?? "Start a Conversation"}
                 </Link>
             </div>
         </main>

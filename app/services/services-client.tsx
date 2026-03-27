@@ -9,15 +9,21 @@ export default function ServicesClient({ servicesData }: { servicesData: any }) 
     return (
         <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
             {/* Header */}
-            <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-                What We Do
-            </p>
-            <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-10 md:mb-14">
-                {servicesData?.headline || "SERVICES"}
-            </h1>
-            <p className="font-sans font-light text-[16px] md:text-[19px] text-muted-foreground leading-[1.6] max-w-[560px] mb-28 md:mb-[160px]">
-                {servicesData?.intro}
-            </p>
+            {servicesData?.eyebrowLabel && (
+                <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
+                    {servicesData.eyebrowLabel}
+                </p>
+            )}
+            {servicesData?.headline && (
+                <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-10 md:mb-14">
+                    {servicesData.headline}
+                </h1>
+            )}
+            {servicesData?.intro && (
+                <p className="font-sans font-light text-[16px] md:text-[19px] text-muted-foreground leading-[1.6] max-w-[560px] mb-28 md:mb-[160px]">
+                    {servicesData.intro}
+                </p>
+            )}
 
             {/* Core Domains */}
             <div className="border-t-2 border-foreground mb-32 md:mb-[180px]">
@@ -79,17 +85,21 @@ export default function ServicesClient({ servicesData }: { servicesData: any }) 
 
             {/* CTA */}
             <div className="border-t border-secondary pt-16 md:pt-24">
-                <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-                    Ready?
-                </p>
-                <h3 className="font-sans font-black text-[clamp(32px,6vw,80px)] leading-[0.88] uppercase text-foreground tracking-[-0.03em] mb-8 md:mb-12">
-                    {"LET'S BUILD\nSOMETHING."}
-                </h3>
+                {servicesData?.ctaLabel && (
+                    <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
+                        {servicesData.ctaLabel}
+                    </p>
+                )}
+                {servicesData?.ctaHeadline && (
+                    <h3 className="font-sans font-black text-[clamp(32px,6vw,80px)] leading-[0.88] uppercase text-foreground tracking-[-0.03em] mb-8 md:mb-12">
+                        {servicesData.ctaHeadline}
+                    </h3>
+                )}
                 <Link
                     href="/contact"
                     className="font-sans font-medium text-[13px] md:text-[14px] uppercase tracking-[0.15em] text-foreground no-underline border-b-2 border-foreground pb-1 hover:opacity-60 transition-opacity"
                 >
-                    Start a Project
+                    {servicesData?.ctaButtonText ?? "Start a Project"}
                 </Link>
             </div>
         </main>

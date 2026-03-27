@@ -6,6 +6,12 @@ export const services = defineType({
     type: 'document',
     fields: [
         defineField({
+            name: 'eyebrowLabel',
+            title: 'Page Eyebrow Label',
+            type: 'string',
+            description: 'Small uppercase label shown above the headline. Default appearance: "What We Do".',
+        }),
+        defineField({
             name: 'headline',
             title: 'Page Headline',
             type: 'string',
@@ -68,6 +74,26 @@ export const services = defineType({
                     },
                 },
             ],
+        }),
+
+        // ── Footer CTA ────────────────────────────────────────────
+        defineField({
+            name: 'ctaLabel',
+            title: 'CTA Section — Eyebrow Label',
+            type: 'string',
+            description: 'Small label above the CTA heading at the bottom of the page. Default appearance: "Ready?".',
+        }),
+        defineField({
+            name: 'ctaHeadline',
+            title: 'CTA Section — Headline',
+            type: 'string',
+            description: 'Large CTA heading. Default appearance: "LET\'S BUILD SOMETHING."',
+        }),
+        defineField({
+            name: 'ctaButtonText',
+            title: 'CTA Section — Button Text',
+            type: 'string',
+            description: 'Link text in the CTA block. Default appearance: "Start a Project".',
         }),
     ],
 })

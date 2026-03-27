@@ -6,11 +6,23 @@ export const siteSettings = defineType({
     type: 'document',
     fields: [
         defineField({
+            name: 'contactEyebrow',
+            title: 'Contact Page — Eyebrow Label',
+            type: 'string',
+            description: 'Small label shown above the email address. Default appearance: "Start a Project".',
+        }),
+        defineField({
+            name: 'contactDescription',
+            title: 'Contact Page — Description',
+            type: 'text',
+            rows: 3,
+            description: 'Short paragraph shown below the email address on the Contact page.',
+        }),
+        defineField({
             name: 'email',
             title: 'Contact Email',
             type: 'string',
             description: 'The main contact email address. Shown as a large link on the Contact page.',
-            validation: (Rule) => Rule.required().error('Contact email is required.'),
         }),
         defineField({
             name: 'phone',

@@ -73,21 +73,6 @@ export function AboutGallerySlider({ images }: { images: GalleryImage[] }) {
                 ))}
             </div>
 
-            {/* Dot indicators */}
-            {images.length > 1 && (
-                <div className="flex gap-[6px] mt-4 justify-start">
-                    {images.map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={(e) => { e.stopPropagation(); setActiveIndex(i) }}
-                            className={`w-[5px] h-[5px] rounded-full transition-colors duration-300 ${
-                                i === activeIndex ? "bg-foreground" : "bg-foreground/25"
-                            }`}
-                            aria-label={`Go to image ${i + 1}`}
-                        />
-                    ))}
-                </div>
-            )}
         </div>
     )
 }

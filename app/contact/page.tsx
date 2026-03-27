@@ -8,6 +8,8 @@ export const dynamic = "force-dynamic"
 const FALLBACK_EMAIL = "hello@wearenotcreative.com"
 const FALLBACK_LOCATION = "Istanbul / Global"
 const FALLBACK_INSTAGRAM = "https://www.instagram.com/wearenotcreativestudio/"
+const FALLBACK_EYEBROW = "Start a Project"
+const FALLBACK_DESCRIPTION = "For new projects, collaborations, or conversations about what we might build together. Tell us about your brand, your challenge, and your timeline."
 const FALLBACK_CATEGORIES = [
   {
     label: "New Projects",
@@ -30,11 +32,15 @@ export default async function ContactPage() {
   let email = FALLBACK_EMAIL
   let location = FALLBACK_LOCATION
   let instagramUrl = FALLBACK_INSTAGRAM
+  let contactEyebrow = FALLBACK_EYEBROW
+  let contactDescription = FALLBACK_DESCRIPTION
   let inquiryCategories = FALLBACK_CATEGORIES
 
   try {
     const settings = await client.fetch(
       groq`*[_type == "siteSettings"][0]{
+        contactEyebrow,
+        contactDescription,
         email,
         location,
         instagramUrl,
@@ -43,11 +49,11 @@ export default async function ContactPage() {
     )
 
     if (settings) {
-      // Sanity document exists — use its values. Only fall back if a specific
-      // field was never set (null/undefined), not when it is empty string.
       email = settings.email ?? FALLBACK_EMAIL
       location = settings.location ?? FALLBACK_LOCATION
       instagramUrl = settings.instagramUrl ?? FALLBACK_INSTAGRAM
+      contactEyebrow = settings.contactEyebrow ?? FALLBACK_EYEBROW
+      contactDescription = settings.contactDescription ?? FALLBACK_DESCRIPTION
       inquiryCategories = settings.inquiryCategories ?? FALLBACK_CATEGORIES
     } else {
       console.warn("[Contact] Sanity 'siteSettings' document not found. Using hardcoded fallback. Populate Site Settings in Studio.")
@@ -58,9 +64,11 @@ export default async function ContactPage() {
 
   return (
     <main className="bg-background min-h-screen flex flex-col justify-center px-8 md:px-[60px] py-32">
-      <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-8 md:mb-10">
-        Start a Project
-      </p>
+      {contactEyebrow && (
+        <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-8 md:mb-10">
+          {contactEyebrow}
+        </p>
+      )}
       <a
         href={`mailto:${email}`}
         className="font-sans font-black text-[clamp(20px,4.5vw,72px)] text-foreground no-underline border-b-[3px] md:border-b-[5px] border-foreground w-fit leading-[1.1] hover:opacity-60 transition-opacity uppercase tracking-[-0.02em]"
@@ -68,11 +76,11 @@ export default async function ContactPage() {
         {email.toUpperCase()}
       </a>
 
-      <p className="font-sans font-light text-[15px] md:text-[17px] text-muted-foreground mt-10 md:mt-16 max-w-[460px] leading-[1.65]">
-        For new projects, collaborations, or conversations about what we
-        might build together. Tell us about your brand, your challenge,
-        and your timeline.
-      </p>
+      {contactDescription && (
+        <p className="font-sans font-light text-[15px] md:text-[17px] text-muted-foreground mt-10 md:mt-16 max-w-[460px] leading-[1.65]">
+          {contactDescription}
+        </p>
+      )}
 
       {/* Inquiry structure */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 mt-16 md:mt-24 max-w-[900px]">

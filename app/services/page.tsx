@@ -23,9 +23,13 @@ export default async function ServicesPage() {
   try {
     const servicesDoc = await client.fetch(
       groq`*[_type == "services"][0]{
+        eyebrowLabel,
         headline,
         intro,
-        disciplines
+        disciplines,
+        ctaLabel,
+        ctaHeadline,
+        ctaButtonText
       }`
     )
 
@@ -38,9 +42,13 @@ export default async function ServicesPage() {
         : rawDisciplines
 
       servicesData = {
+        eyebrowLabel: servicesDoc.eyebrowLabel,
         headline: servicesDoc.headline,
         intro: servicesDoc.intro,
         disciplines: sorted,
+        ctaLabel: servicesDoc.ctaLabel,
+        ctaHeadline: servicesDoc.ctaHeadline,
+        ctaButtonText: servicesDoc.ctaButtonText,
       }
     } else {
       // Sanity document does not exist yet — use JSON as placeholder.

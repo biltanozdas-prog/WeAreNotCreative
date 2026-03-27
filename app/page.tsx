@@ -19,26 +19,55 @@ export default async function HomePage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
-  const query = groq`
-    *[_type == "homepage"][0] {
-      "heroVideoUrl": heroVideo.asset->url,
-      headline,
-      manifestoText,
-      aboutText,
-      selectedProjects[]->{
-        _id,
-        "slug": slug,
-        title,
-        client,
-        industry,
-        services,
-        excerpt,
-        "heroImage": heroImage.asset->url,
-        "image": heroImage.asset->url,
-        order
-      }
-    }
-  `
+  // In non-preview mode, filter selectedProjects to only published ones.
+  // In preview mode, include drafts and unpublished projects.
+  const query = preview
+    ? groq`
+        *[_type == "homepage"][0] {
+          "heroVideoUrl": heroVideo.asset->url,
+          headline,
+          manifestoText,
+          aboutText,
+          ctaLabel,
+          ctaHeadline,
+          ctaButtonText,
+          selectedProjects[]->{
+            _id,
+            "slug": slug,
+            title,
+            client,
+            industry,
+            services,
+            excerpt,
+            "heroImage": heroImage.asset->url,
+            "image": heroImage.asset->url,
+            order
+          }
+        }
+      `
+    : groq`
+        *[_type == "homepage"][0] {
+          "heroVideoUrl": heroVideo.asset->url,
+          headline,
+          manifestoText,
+          aboutText,
+          ctaLabel,
+          ctaHeadline,
+          ctaButtonText,
+          "selectedProjects": selectedProjects[]->{
+            _id,
+            "slug": slug,
+            title,
+            client,
+            industry,
+            services,
+            excerpt,
+            "heroImage": heroImage.asset->url,
+            "image": heroImage.asset->url,
+            order
+          }[published == true]
+        }
+      `
   let homeData: any = null
   try {
     homeData = await client.fetch(query)
@@ -93,17 +122,21 @@ export default async function HomePage() {
 
       {/* Footer CTA */}
       <section className="bg-background relative z-10 px-8 py-32 md:px-[60px] md:py-[180px] border-t border-secondary">
-        <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-8 md:mb-12">
-          Next Step
-        </p>
-        <h2 className="font-sans font-black text-[clamp(36px,7vw,120px)] leading-[0.85] uppercase text-foreground tracking-[-0.03em] mb-10 md:mb-16">
-          {"LET'S TALK."}
-        </h2>
+        {homeData?.ctaLabel && (
+          <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-8 md:mb-12">
+            {homeData.ctaLabel}
+          </p>
+        )}
+        {homeData?.ctaHeadline && (
+          <h2 className="font-sans font-black text-[clamp(36px,7vw,120px)] leading-[0.85] uppercase text-foreground tracking-[-0.03em] mb-10 md:mb-16">
+            {homeData.ctaHeadline}
+          </h2>
+        )}
         <Link
           href="/contact"
           className="font-sans font-medium text-[14px] md:text-[16px] uppercase tracking-[0.15em] text-foreground no-underline border-b-2 border-foreground pb-1 hover:opacity-60 transition-opacity"
         >
-          Start a Conversation
+          {homeData?.ctaButtonText ?? "Start a Conversation"}
         </Link>
       </section>
     </main>
