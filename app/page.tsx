@@ -70,7 +70,7 @@ export default async function HomePage() {
       `
   let homeData: any = null
   try {
-    homeData = await client.fetch(query)
+    homeData = await client.fetch(query, {}, { next: { tags: ["homepage"] } })
   } catch (e) {
     console.warn("Sanity fetch failed for homepage.", e)
   }
@@ -96,7 +96,7 @@ export default async function HomePage() {
 
   if (!selectedProjects.length || !homeData) {
     try {
-      selectedProjects = await client.fetch(projectsQuery)
+      selectedProjects = await client.fetch(projectsQuery, {}, { next: { tags: ["project"] } })
     } catch (e) {
       console.warn("Sanity fetch failed for fallback projects.", e)
       selectedProjects = []
@@ -115,8 +115,8 @@ export default async function HomePage() {
       <div className="h-screen" />
       {/* Content starts after the video */}
       <ManifestoSection
-        headline={homeData?.headline}
-        body={homeData?.manifestoText}
+        headline={homeData?.headline ?? ""}
+        body={homeData?.manifestoText ?? ""}
       />
       <ProjectShowcaseSlider projects={selectedProjects as any} />
 

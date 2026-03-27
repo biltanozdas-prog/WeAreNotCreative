@@ -1,0 +1,52 @@
+﻿
+> my-project@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 23.3s
+  Running TypeScript ...
+node.exe : Failed to compile.
+At line:1 char:1
++ & "E:\Uygulamalar/node.exe" "E
+:\Uygulamalar/node_modules/npm/b
+in/npm- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
+    + CategoryInfo          : N 
+   otSpecified: (Failed to com  
+  pile.:String) [], RemoteExc   
+ eption
+    + FullyQualifiedErrorId : N 
+   ativeCommandError
+ 
+
+./app/api/revalidate/route.ts:34
+:5
+Type error: Expected 2 arguments
+, but got 1.
+
+[0m [90m 32 |[39m
+ [90m 33 |[39m     [90m// Rev
+alidate the Next.js cache tag ma
+tching the Sanity document type.
+[39m
+[31m[1m>[22m[39m[90m 34 |[
+39m     revalidateTag(_type)
+ [90m    |[39m     [31m[1m^
+[22m[39m
+ [90m 35 |[39m     
+ [90m 36 |[39m     [90m// Opt
+ionally revalidate slug based pa
+ths for granular cache clearing 
+if we used `revalidatePath`.[39
+m
+ [90m 37 |[39m     [90m// rev
+alidatePath(`/${_type === 'proje
+ct' ? 'projects/' + slug?.curren
+t : _type}`)[39m[0m
+Next.js build worker exited with
+ code: 1 and signal: null

@@ -1,5 +1,4 @@
-import fs from "fs"
-import path from "path"
+
 import { draftMode } from "next/headers"
 import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
@@ -8,12 +7,7 @@ import ServicesClient from "./services-client"
 export const dynamic = "force-dynamic"
 
 export default async function ServicesPage() {
-  // JSON used only when Sanity document is entirely absent (null)
-  const servicesPath = path.join(process.cwd(), "content", "services.json")
-  let servicesJsonData: any = {}
-  try {
-    servicesJsonData = JSON.parse(fs.readFileSync(servicesPath, "utf8"))
-  } catch (e) {}
+
 
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
@@ -27,10 +21,13 @@ export default async function ServicesPage() {
         headline,
         intro,
         disciplines,
+        process,
         ctaLabel,
         ctaHeadline,
         ctaButtonText
-      }`
+      }`,
+      {},
+      { next: { tags: ["services"] } }
     )
 
     if (servicesDoc) {
@@ -46,19 +43,25 @@ export default async function ServicesPage() {
         headline: servicesDoc.headline,
         intro: servicesDoc.intro,
         disciplines: sorted,
+        process: servicesDoc.process ?? [],
         ctaLabel: servicesDoc.ctaLabel,
         ctaHeadline: servicesDoc.ctaHeadline,
         ctaButtonText: servicesDoc.ctaButtonText,
       }
     } else {
-      // Sanity document does not exist yet — use JSON as placeholder.
-      console.warn("[Services] Sanity 'services' document not found. Using local JSON fallback. Populate the Services Page in Studio.")
-      servicesData = servicesJsonData
+      console.warn("[Services] Sanity 'services' document not found.")
     }
   } catch (e) {
-    // CMS unreachable — use JSON as last resort.
+    // CMS unreachable
     console.warn("[Services] Sanity fetch failed:", e)
-    servicesData = servicesJsonData
+  }
+
+  if (!servicesData) {
+    return (
+      <main className="bg-background min-h-screen flex items-center justify-center">
+        <h1 className="font-sans font-light text-[12px] uppercase tracking-[0.25em] text-muted-foreground">Services Page Configuration Missing</h1>
+      </main>
+    )
   }
 
   return <ServicesClient servicesData={servicesData} />

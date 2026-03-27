@@ -45,6 +45,7 @@ export default defineConfig({
     dataset: 'production',
     schema,
     document: {
+        // @ts-ignore Sanity v3 context signature mismatch
         productionUrl: resolvePreviewUrl,
     },
     plugins: [

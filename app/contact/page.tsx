@@ -4,40 +4,16 @@ import { groq } from "next-sanity"
 
 export const dynamic = "force-dynamic"
 
-// Fallback values — used only when Sanity siteSettings document is absent.
-const FALLBACK_EMAIL = "hello@wearenotcreative.com"
-const FALLBACK_LOCATION = "Istanbul / Global"
-const FALLBACK_INSTAGRAM = "https://www.instagram.com/wearenotcreativestudio/"
-const FALLBACK_EYEBROW = "Start a Project"
-const FALLBACK_DESCRIPTION = "For new projects, collaborations, or conversations about what we might build together. Tell us about your brand, your challenge, and your timeline."
-const FALLBACK_CATEGORIES = [
-  {
-    label: "New Projects",
-    description: "Share your brief, budget range and timeline.\nWe respond within 48 hours.",
-  },
-  {
-    label: "Collaborations",
-    description: "Open to editorial features, cultural projects\nand studio partnerships.",
-  },
-  {
-    label: "General",
-    description: "Press inquiries, speaking invitations,\nor just to say hello.",
-  },
-]
+
 
 export default async function ContactPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
-  let email = FALLBACK_EMAIL
-  let location = FALLBACK_LOCATION
-  let instagramUrl = FALLBACK_INSTAGRAM
-  let contactEyebrow = FALLBACK_EYEBROW
-  let contactDescription = FALLBACK_DESCRIPTION
-  let inquiryCategories = FALLBACK_CATEGORIES
+  let settings: any = null
 
   try {
-    const settings = await client.fetch(
+    settings = await client.fetch(
       groq`*[_type == "siteSettings"][0]{
         contactEyebrow,
         contactDescription,
@@ -45,22 +21,28 @@ export default async function ContactPage() {
         location,
         instagramUrl,
         inquiryCategories
-      }`
+      }`,
+      {},
+      { next: { tags: ["siteSettings"] } }
     )
-
-    if (settings) {
-      email = settings.email ?? FALLBACK_EMAIL
-      location = settings.location ?? FALLBACK_LOCATION
-      instagramUrl = settings.instagramUrl ?? FALLBACK_INSTAGRAM
-      contactEyebrow = settings.contactEyebrow ?? FALLBACK_EYEBROW
-      contactDescription = settings.contactDescription ?? FALLBACK_DESCRIPTION
-      inquiryCategories = settings.inquiryCategories ?? FALLBACK_CATEGORIES
-    } else {
-      console.warn("[Contact] Sanity 'siteSettings' document not found. Using hardcoded fallback. Populate Site Settings in Studio.")
-    }
   } catch (e) {
     console.warn("[Contact] Sanity fetch failed:", e)
   }
+
+  if (!settings) {
+    return (
+      <main className="bg-background min-h-screen flex flex-col items-center justify-center px-8">
+        <h1 className="font-sans font-light text-[12px] uppercase tracking-[0.25em] text-muted-foreground">Contact Configuration Missing</h1>
+      </main>
+    )
+  }
+
+  const email = settings.email ?? ""
+  const location = settings.location ?? ""
+  const instagramUrl = settings.instagramUrl ?? ""
+  const contactEyebrow = settings.contactEyebrow ?? ""
+  const contactDescription = settings.contactDescription ?? ""
+  const inquiryCategories = settings.inquiryCategories ?? []
 
   return (
     <main className="bg-background min-h-screen flex flex-col justify-center px-8 md:px-[60px] py-32">
@@ -84,7 +66,7 @@ export default async function ContactPage() {
 
       {/* Inquiry structure */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 mt-16 md:mt-24 max-w-[900px]">
-        {inquiryCategories.map((cat) => (
+        {inquiryCategories.map((cat: any) => (
           <div key={cat.label}>
             <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">
               {cat.label}

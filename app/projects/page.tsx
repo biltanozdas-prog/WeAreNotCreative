@@ -33,7 +33,7 @@ export default async function ProjectsPage() {
 
   let projects = []
   try {
-    projects = await client.fetch(query)
+    projects = await client.fetch(query, {}, { next: { tags: ["project"] } })
   } catch (e) {
     console.warn("Sanity fetch failed. Returning empty projects.", e)
   }

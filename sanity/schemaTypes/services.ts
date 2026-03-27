@@ -75,6 +75,42 @@ export const services = defineType({
                 },
             ],
         }),
+        defineField({
+            name: 'process',
+            title: 'Our Process',
+            type: 'array',
+            description: 'The steps of the studio process shown on the Services page.',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        defineField({
+                            name: 'step',
+                            title: 'Step Number',
+                            type: 'string',
+                            description: 'e.g. "01", "02".',
+                        }),
+                        defineField({
+                            name: 'title',
+                            title: 'Step Title',
+                            type: 'string',
+                            description: 'e.g. "Research", "Concept".',
+                        }),
+                        defineField({
+                            name: 'text',
+                            title: 'Step Description',
+                            type: 'text',
+                        }),
+                    ],
+                    preview: {
+                        select: { title: 'title', subtitle: 'step' },
+                        prepare({ title, subtitle }: any) {
+                            return { title: title || 'Process Step', subtitle: subtitle || '' }
+                        },
+                    },
+                },
+            ],
+        }),
 
         // ── Footer CTA ────────────────────────────────────────────
         defineField({

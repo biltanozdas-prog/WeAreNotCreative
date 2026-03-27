@@ -93,6 +93,50 @@ export const about = defineType({
             description: 'Turn on to display the team member list on the About page.',
             initialValue: true,
         }),
+        defineField({
+            name: 'teamMembers',
+            title: 'Team Members',
+            type: 'array',
+            description: 'List of team members shown on the About page when the Team section is visible.',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        defineField({
+                            name: 'name',
+                            title: 'Name',
+                            type: 'string',
+                        }),
+                        defineField({
+                            name: 'title',
+                            title: 'Job Title',
+                            type: 'string',
+                        }),
+                        defineField({
+                            name: 'image',
+                            title: 'Profile Image',
+                            type: 'image',
+                            options: { hotspot: true },
+                        }),
+                        defineField({
+                            name: 'shortBio',
+                            title: 'Short Bio',
+                            type: 'text',
+                            description: 'Shown directly on the team card.',
+                        }),
+                        defineField({
+                            name: 'fullBio',
+                            title: 'Full Bio',
+                            type: 'text',
+                            description: 'Shown in the expanded lightbox view.',
+                        }),
+                    ],
+                    preview: {
+                        select: { title: 'name', subtitle: 'title', media: 'image' },
+                    },
+                },
+            ],
+        }),
 
         // ── Footer CTA ────────────────────────────────────────────
         defineField({

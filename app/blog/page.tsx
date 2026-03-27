@@ -31,7 +31,7 @@ export default async function BlogPage() {
 
   let rawPosts = []
   try {
-    rawPosts = await client.fetch(query)
+    rawPosts = await client.fetch(query, {}, { next: { tags: ["blogPost"] } })
   } catch (e) {
     console.warn("Sanity fetch failed. Returning empty blog posts.", e)
   }
