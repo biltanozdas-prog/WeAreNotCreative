@@ -117,6 +117,17 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
       <LightboxOverlay />
 
       <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
+        {/* Floating Close Button */}
+        <div className="fixed top-24 md:top-32 right-8 md:right-[60px] z-[90]">
+          <Link
+            href="/projects"
+            className="font-sans font-light text-[14px] md:text-[16px] text-muted-foreground tracking-[0.15em] uppercase hover:text-foreground transition-colors no-underline"
+            aria-label="Back to projects"
+          >
+            {'[ X ]'}
+          </Link>
+        </div>
+
         {/* Header */}
         <header className="mb-24 md:mb-32">
           <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
@@ -165,19 +176,29 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           </div>
         )}
 
-        {/* Next Project */}
+        {/* Next Project & Return */}
         {nextProject && (
-          <div className="border-t border-secondary pt-16 md:pt-24 mt-16 md:mt-24">
-            <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-              Next Project
-            </p>
-            <Link href={`/projects/${nextProject.slug}`} className="group no-underline text-foreground block">
-              <h3 className="font-sans font-black text-[clamp(36px,7vw,100px)] leading-[0.85] uppercase text-foreground tracking-[-0.03em] group-hover:opacity-60 transition-opacity">
-                {nextProject.title?.replace("\n", " ")}
-              </h3>
-              <span className="font-sans font-light text-[13px] md:text-[14px] text-muted-foreground tracking-[0.15em] uppercase mt-3 block">
-                {nextProject.client}
-              </span>
+          <div className="border-t border-secondary pt-16 md:pt-24 mt-16 md:mt-24 flex flex-col md:flex-row md:items-end justify-between gap-12">
+            <div>
+              <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
+                Next Project
+              </p>
+              <Link href={`/projects/${nextProject.slug}`} className="group no-underline text-foreground block">
+                <h3 className="font-sans font-black text-[clamp(36px,7vw,100px)] leading-[0.85] uppercase text-foreground tracking-[-0.03em] group-hover:opacity-60 transition-opacity">
+                  {nextProject.title?.replace("\n", " ")}
+                </h3>
+                <span className="font-sans font-light text-[13px] md:text-[14px] text-muted-foreground tracking-[0.15em] uppercase mt-3 block">
+                  {nextProject.client}
+                </span>
+              </Link>
+            </div>
+
+            <Link 
+              href="/projects" 
+              className="font-sans font-light text-[13px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors no-underline shrink-0"
+              aria-label="Return to all projects"
+            >
+              {'[ Return to Projects ]'}
             </Link>
           </div>
         )}
