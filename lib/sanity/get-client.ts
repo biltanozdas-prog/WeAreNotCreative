@@ -14,7 +14,9 @@ const baseConfig = {
 export function getClient(preview = false) {
     return createClient({
         ...baseConfig,
-        useCdn: !preview,
+        // CDN disabled: changes appear immediately after publishing
+        // without the 1-5 min CDN edge cache delay.
+        useCdn: false,
         perspective: preview ? "previewDrafts" : "published",
         ...(preview && { token: process.env.SANITY_API_TOKEN }),
     })

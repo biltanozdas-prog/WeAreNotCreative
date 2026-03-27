@@ -10,7 +10,7 @@ import AboutClient from "./about-client"
 export const dynamic = "force-dynamic"
 
 export default async function AboutPage() {
-  // Text content — JSON fallback (used if Sanity fields are empty)
+  // JSON used only when Sanity document is entirely absent (null)
   const aboutPath = path.join(process.cwd(), "content", "about.json")
   let aboutJsonData: any = {}
   try {
@@ -23,13 +23,13 @@ export default async function AboutPage() {
     teamData = JSON.parse(fs.readFileSync(teamPath, "utf8"))
   } catch (e) {}
 
-  // All About fields — fetched from Sanity, fallback to JSON
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
   let galleryImages: LightboxImage[] = []
+  // Default: show team. Only overridden once the Sanity document exists.
   let showTeamSection = true
-  let aboutData: any = aboutJsonData
+  let aboutData: any = null
 
   try {
     const aboutDoc = await client.fetch(
@@ -44,22 +44,34 @@ export default async function AboutPage() {
         }
       }`
     )
+
     if (aboutDoc) {
-      galleryImages = (aboutDoc.galleryImages || []).filter((img: any) => img.src)
-      showTeamSection = aboutDoc.showTeamSection !== false
-      // Merge Sanity fields over JSON fallback — only override if Sanity has a value
+      // Sanity document exists — it is the source of truth.
+      // Fields that are null/empty in Sanity render as empty (no JSON override).
+      galleryImages = (aboutDoc.galleryImages ?? []).filter((img: any) => img.src)
+
+      // Step 3: strict toggle — if doc exists, use its value exactly.
+      // Only fall back to true if the field was never set (null/undefined = not yet configured).
+      showTeamSection = aboutDoc.showTeamSection ?? true
+
       aboutData = {
-        headline: aboutDoc.headline || aboutJsonData.headline,
-        intro: aboutDoc.intro || aboutJsonData.intro,
-        positioning: aboutDoc.positioning?.length ? aboutDoc.positioning : aboutJsonData.positioning,
+        headline: aboutDoc.headline,
+        intro: aboutDoc.intro,
+        positioning: aboutDoc.positioning ?? [],
       }
+    } else {
+      // Sanity document does not exist yet — use JSON as placeholder.
+      console.warn("[About] Sanity 'about' document not found. Using local JSON fallback. Populate the About Page in Studio.")
+      aboutData = aboutJsonData
     }
   } catch (e) {
-    // CMS unavailable — use JSON fallback for all text fields
+    // CMS unreachable — use JSON as last resort.
+    console.warn("[About] Sanity fetch failed:", e)
+    aboutData = aboutJsonData
   }
 
-  // DEV PREVIEW: fallback placeholder when no Sanity images exist yet.
-  // Remove this block once real gallery images are added in the CMS.
+  // Gallery placeholder — only when no Sanity images exist AND doc is absent.
+  // Once the About doc is published with images, this never runs.
   if (galleryImages.length === 0) {
     galleryImages = [
       {

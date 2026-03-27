@@ -1,14 +1,13 @@
-import Link from "next/link"
 import { draftMode } from "next/headers"
 import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
 export const dynamic = "force-dynamic"
 
-// Hardcoded fallback values
+// Fallback values — used only when Sanity siteSettings document is absent.
 const FALLBACK_EMAIL = "hello@wearenotcreative.com"
 const FALLBACK_LOCATION = "Istanbul / Global"
-const FALLBACK_INSTAGRAM = "https://instagram.com/wearenotcreative"
+const FALLBACK_INSTAGRAM = "https://www.instagram.com/wearenotcreativestudio/"
 const FALLBACK_CATEGORIES = [
   {
     label: "New Projects",
@@ -42,15 +41,19 @@ export default async function ContactPage() {
         inquiryCategories
       }`
     )
+
     if (settings) {
-      email = settings.email || FALLBACK_EMAIL
-      location = settings.location || FALLBACK_LOCATION
-      instagramUrl = settings.instagramUrl || FALLBACK_INSTAGRAM
-      inquiryCategories =
-        settings.inquiryCategories?.length ? settings.inquiryCategories : FALLBACK_CATEGORIES
+      // Sanity document exists — use its values. Only fall back if a specific
+      // field was never set (null/undefined), not when it is empty string.
+      email = settings.email ?? FALLBACK_EMAIL
+      location = settings.location ?? FALLBACK_LOCATION
+      instagramUrl = settings.instagramUrl ?? FALLBACK_INSTAGRAM
+      inquiryCategories = settings.inquiryCategories ?? FALLBACK_CATEGORIES
+    } else {
+      console.warn("[Contact] Sanity 'siteSettings' document not found. Using hardcoded fallback. Populate Site Settings in Studio.")
     }
   } catch (e) {
-    // CMS unavailable — use hardcoded fallback
+    console.warn("[Contact] Sanity fetch failed:", e)
   }
 
   return (

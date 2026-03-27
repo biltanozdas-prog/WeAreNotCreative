@@ -87,7 +87,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
     projectData = await client.fetch(query, { slug })
     if (!projectData) notFound()
 
-    const allQuery = groq`*[_type == "project" && published == true] | order(order asc) { slug, title, client }`
+    const allQuery = preview
+      ? groq`*[_type == "project"] | order(order asc) { slug, title, client }`
+      : groq`*[_type == "project" && published == true] | order(order asc) { slug, title, client }`
     const allEdges = await client.fetch(allQuery)
     const currentIndex = allEdges.findIndex((e: any) => e.slug === slug)
     if (currentIndex !== -1 && allEdges.length > 0) {

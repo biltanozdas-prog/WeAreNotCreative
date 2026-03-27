@@ -8,7 +8,7 @@ import ServicesClient from "./services-client"
 export const dynamic = "force-dynamic"
 
 export default async function ServicesPage() {
-  // JSON fallback
+  // JSON used only when Sanity document is entirely absent (null)
   const servicesPath = path.join(process.cwd(), "content", "services.json")
   let servicesJsonData: any = {}
   try {
@@ -18,7 +18,7 @@ export default async function ServicesPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
-  let servicesData: any = servicesJsonData
+  let servicesData: any = null
 
   try {
     const servicesDoc = await client.fetch(
@@ -28,21 +28,29 @@ export default async function ServicesPage() {
         disciplines
       }`
     )
+
     if (servicesDoc) {
-      // Sort disciplines by order field ascending; fall back to original array order
-      const rawDisciplines: any[] = servicesDoc.disciplines || []
+      // Sanity document exists — it is the source of truth.
+      // Sort disciplines by order field if all have one set.
+      const rawDisciplines: any[] = servicesDoc.disciplines ?? []
       const sorted = rawDisciplines.every((d) => d.order != null)
         ? [...rawDisciplines].sort((a, b) => a.order - b.order)
         : rawDisciplines
 
       servicesData = {
-        headline: servicesDoc.headline || servicesJsonData.headline,
-        intro: servicesDoc.intro || servicesJsonData.intro,
-        disciplines: sorted.length ? sorted : servicesJsonData.disciplines,
+        headline: servicesDoc.headline,
+        intro: servicesDoc.intro,
+        disciplines: sorted,
       }
+    } else {
+      // Sanity document does not exist yet — use JSON as placeholder.
+      console.warn("[Services] Sanity 'services' document not found. Using local JSON fallback. Populate the Services Page in Studio.")
+      servicesData = servicesJsonData
     }
   } catch (e) {
-    // CMS unavailable — use JSON fallback
+    // CMS unreachable — use JSON as last resort.
+    console.warn("[Services] Sanity fetch failed:", e)
+    servicesData = servicesJsonData
   }
 
   return <ServicesClient servicesData={servicesData} />
