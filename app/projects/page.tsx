@@ -38,7 +38,7 @@ export default async function ProjectsPage() {
     console.warn("Sanity fetch failed. Returning empty projects.", e)
   }
 
-  const mappedProjects = projects.map((p: any) => ({
+  const mappedProjects = (projects || []).filter(Boolean).map((p: any) => ({
     ...p,
     id: p._id,
   }))

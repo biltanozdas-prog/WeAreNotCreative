@@ -17,7 +17,7 @@ export default async function AboutPage() {
   let galleryImages: LightboxImage[] = []
   let showTeamSection = true
   let aboutData: any = null
-  let teamData: any = {}
+  let teamData: any = { members: [] }
 
   try {
     const aboutDoc = await client.fetch(

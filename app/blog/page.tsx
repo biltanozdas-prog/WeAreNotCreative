@@ -35,7 +35,7 @@ export default async function BlogPage() {
   } catch (e) {
     console.warn("Sanity fetch failed. Returning empty blog posts.", e)
   }
-  const blogPosts = rawPosts.map((p: any) => ({
+  const blogPosts = (rawPosts || []).filter(Boolean).map((p: any) => ({
     ...p,
     id: p._id,
   }))

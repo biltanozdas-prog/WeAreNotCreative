@@ -103,7 +103,7 @@ export default async function HomePage() {
     }
   }
 
-  selectedProjects = selectedProjects.map((p: any) => ({
+  selectedProjects = (selectedProjects || []).filter(Boolean).map((p: any) => ({
     ...p,
     id: p._id,
   })) || []
