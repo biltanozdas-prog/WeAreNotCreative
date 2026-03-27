@@ -10,7 +10,7 @@ const PREVIEWABLE = ['homepage', 'about', 'services', 'siteSettings', 'project',
 const SINGLETONS = ['homepage', 'siteSettings', 'about', 'services']
 
 // ── Preview URL resolver ───────────────────────────────────────────────────
-const secret = process.env.SANITY_PREVIEW_SECRET ?? ''
+const secret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || process.env.SANITY_PREVIEW_SECRET || ''
 const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.wearenotcreativestudio.com'
 
 function previewUrl(slug: string) {

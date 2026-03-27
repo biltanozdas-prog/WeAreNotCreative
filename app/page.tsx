@@ -65,7 +65,7 @@ export default async function HomePage() {
             "heroImage": heroImage.asset->url,
             "image": heroImage.asset->url,
             order
-          }[published == true]
+          }[published != false]
         }
       `
   let homeData: any = null
@@ -90,7 +90,7 @@ export default async function HomePage() {
 
   const projectsQuery = preview
     ? groq`*[_type == "project"] | order(order asc) ${projectFields}[0...4]`
-    : groq`*[_type == "project" && published == true] | order(order asc) ${projectFields}[0...4]`
+    : groq`*[_type == "project" && published != false] | order(order asc) ${projectFields}[0...4]`
 
   let selectedProjects = homeData?.selectedProjects || []
 

@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
     const slug = searchParams.get("slug") || "/"
 
     // Validate secret
-    if (!secret || secret !== process.env.SANITY_PREVIEW_SECRET) {
+    const expectedSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || process.env.SANITY_PREVIEW_SECRET
+    if (!secret || secret !== expectedSecret) {
         return new Response("Invalid or missing preview secret.", { status: 401 })
     }
 

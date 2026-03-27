@@ -27,7 +27,7 @@ export default async function BlogPage() {
 
   const query = preview
     ? groq`*[_type == "blogPost"] | order(order asc) ${fields}`
-    : groq`*[_type == "blogPost" && published == true] | order(order asc) ${fields}`
+    : groq`*[_type == "blogPost" && published != false] | order(order asc) ${fields}`
 
   let rawPosts = []
   try {

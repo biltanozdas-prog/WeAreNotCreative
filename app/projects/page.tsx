@@ -29,7 +29,7 @@ export default async function ProjectsPage() {
 
   const query = preview
     ? groq`*[_type == "project"] | order(order asc) ${fields}`
-    : groq`*[_type == "project" && published == true] | order(order asc) ${fields}`
+    : groq`*[_type == "project" && published != false] | order(order asc) ${fields}`
 
   let projects = []
   try {
