@@ -10,9 +10,6 @@ import Link from "next/link"
 import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
 export const metadata: Metadata = {
   title: "WEARENOTCREATIVE | Design as a Cultural Practice",
   description: "A multidisciplinary creative studio working across brand identity, art direction, visual systems and product thinking. Istanbul / Global.",
