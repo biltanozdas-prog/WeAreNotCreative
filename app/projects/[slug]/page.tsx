@@ -89,7 +89,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
-      : groq`*[_type == "project" && slug == $slug && published == true][0] {
+      : groq`*[_type == "project" && slug == $slug && coalesce(published, true) == true][0] {
           ...,
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
