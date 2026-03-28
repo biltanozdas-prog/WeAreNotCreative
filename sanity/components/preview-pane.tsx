@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 const SITE_ORIGIN =
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.wearenotcreativestudio.com'
 
-const SECRET = process.env.SANITY_PREVIEW_SECRET ?? ''
+const SECRET = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || process.env.SANITY_PREVIEW_SECRET || 'wanc-preview-9384jsdfkjsdf'
 
 // Map document type → site path
 function resolveSlug(doc: any): string {

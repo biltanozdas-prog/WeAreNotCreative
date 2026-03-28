@@ -1,0 +1,27 @@
+﻿LATEST 3 PROJECTS DUMP:
+[
+  {
+    "_createdAt": "2026-03-28T14:16:18Z",
+    "_id": "304fd7ce-b582-4721-89a2-32aded651300",
+    "_updatedAt": "2026-03-28T15:11:24Z",
+    "published": true,
+    "slug": "Creative Direction",
+    "title": "ESQUIRE MAGAZINE "
+  },
+  {
+    "_createdAt": "2026-03-06T13:00:53Z",
+    "_id": "s4zQ4gLO9FDug2F45S2jgp",
+    "_updatedAt": "2026-03-06T13:00:53Z",
+    "published": true,
+    "slug": "type-manifest",
+    "title": "TYPE\nMANIFEST"
+  },
+  {
+    "_createdAt": "2026-03-06T12:59:06Z",
+    "_id": "h7BuANLfQq977Y2qc9XyrI",
+    "_updatedAt": "2026-03-06T12:59:06Z",
+    "published": true,
+    "slug": "raw-culture",
+    "title": "RAW\nCULTURE"
+  }
+]

@@ -76,7 +76,8 @@ function collectImages(projectData: any): LightboxImage[] {
 }
 
 export default async function ProjectDetailPage({ params }: ProjectDetailProps) {
-  const { slug } = await params
+  const rawSlug = (await params).slug
+  const decodedSlug = decodeURIComponent(rawSlug)
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
@@ -95,14 +96,14 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
-    projectData = await client.fetch(query, { slug })
+    projectData = await client.fetch(query, { slug: decodedSlug })
     if (!projectData) notFound()
 
     const allQuery = preview
       ? groq`*[_type == "project"] | order(order asc) { slug, title, client }`
       : groq`*[_type == "project" && published == true] | order(order asc) { slug, title, client }`
     const allEdges = await client.fetch(allQuery)
-    const currentIndex = allEdges.findIndex((e: any) => e.slug === slug)
+    const currentIndex = allEdges.findIndex((e: any) => e.slug === decodedSlug)
     if (currentIndex !== -1 && allEdges.length > 0) {
       nextProject = allEdges[(currentIndex + 1) % allEdges.length]
     }

@@ -1,0 +1,6 @@
+﻿Direct Query Match: {
+  _id: '304fd7ce-b582-4721-89a2-32aded651300',
+  slug: 'Creative Direction',
+  title: 'ESQUIRE MAGAZINE '
+}
+Encoded Match: null
