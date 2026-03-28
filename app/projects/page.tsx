@@ -4,6 +4,8 @@ import { draftMode } from "next/headers"
 import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
+export const revalidate = 10
+
 export const metadata: Metadata = {
   title: "Projects | WEARENOTCREATIVE",
   description: "A curated selection across disciplines. Each project is shaped by its own context, scale and ambition."

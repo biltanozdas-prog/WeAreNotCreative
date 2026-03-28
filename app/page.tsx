@@ -2,6 +2,9 @@ import type { Metadata } from "next"
 import { draftMode } from "next/headers"
 import { HeroVideo } from "@/components/hero-video"
 import { ManifestoSection } from "@/components/manifesto-section"
+// Revalidate the homepage every 10 seconds to bypass Vercel Webhook setup failures
+export const revalidate = 10
+
 import { ProjectShowcaseSlider } from "@/components/project-showcase-slider"
 import Link from "next/link"
 import { getClient } from "@/lib/sanity/get-client"

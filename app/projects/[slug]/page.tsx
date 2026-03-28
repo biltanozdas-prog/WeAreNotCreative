@@ -11,9 +11,10 @@ import { LightboxOverlay } from "@/components/lightbox-overlay"
 import { ProjectBlocks } from "@/components/project-blocks-client"
 import { HeroImageClickable } from "@/components/hero-image-clickable"
 
-// Force server-render on every request so deleted/unpublished projects
-// immediately return 404 without waiting for the next build.
-export const dynamic = 'force-dynamic'
+// Use Incremental Static Regeneration (ISR) to automatically pull 
+// new project data every 10 seconds. This bypasses the need for 
+// complex manual Webhook configuration to purge stale caches.
+export const revalidate = 10
 
 interface ProjectDetailProps {
   params: Promise<{ slug: string }>
