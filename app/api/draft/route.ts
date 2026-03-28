@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const slug = searchParams.get("slug") || "/"
 
     // Validate secret
-    const expectedSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || process.env.SANITY_PREVIEW_SECRET
+    const expectedSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || process.env.SANITY_PREVIEW_SECRET || 'wanc-preview-9384jsdfkjsdf'
     if (!secret || secret !== expectedSecret) {
         return new Response(`Invalid preview secret. Vercel Server Expected: "${expectedSecret}". Browser Sent: "${secret}". Check your Vercel Environment Variables.`, { status: 401 })
     }
