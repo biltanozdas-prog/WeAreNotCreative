@@ -98,7 +98,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "image": heroImage.asset->url
         }`
     projectData = await client.fetch(query, { slug: decodedSlug })
-    if (!projectData) notFound()
+    if (!projectData) {
+      if (preview) return <div className="p-20 text-red-500 font-mono text-xl">PREVIEW ERROR: Project data returned null for slug "{decodedSlug}". Make sure the draft is saved, SANITY_API_TOKEN is valid, and the slug matches.</div>
+      notFound()
+    }
 
     const allQuery = preview
       ? groq`*[_type == "project"] | order(order asc) { slug, title, client }`
