@@ -89,11 +89,29 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
     const query = preview
       ? groq`*[_type == "project" && slug == $slug][0] {
           ...,
+          blocks[] {
+            ...,
+            _type == "fullVideo" => {
+              "videoUrl": video.asset->url
+            },
+            _type == "twoColumn" => {
+              "rightVideoUrl": rightVideo.asset->url
+            }
+          },
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
       : groq`*[_type == "project" && slug == $slug && coalesce(published, true) == true][0] {
           ...,
+          blocks[] {
+            ...,
+            _type == "fullVideo" => {
+              "videoUrl": video.asset->url
+            },
+            _type == "twoColumn" => {
+              "rightVideoUrl": rightVideo.asset->url
+            }
+          },
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`

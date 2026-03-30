@@ -21,7 +21,15 @@ export default async function BlogPage() {
         excerpt,
         "coverImage": coverImage.asset->url,
         "image": coverImage.asset->url,
-        blocks,
+        blocks[] {
+          ...,
+          _type == "fullVideo" => {
+            "videoUrl": video.asset->url
+          },
+          _type == "twoColumn" => {
+            "rightVideoUrl": rightVideo.asset->url
+          }
+        },
         order
       }`
 

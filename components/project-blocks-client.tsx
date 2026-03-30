@@ -4,7 +4,7 @@ import { PortableText } from "@portabletext/react"
 import Image from "next/image"
 import Link from "next/link"
 import { urlFor } from "@/lib/sanity/image"
-import { FullImageBlock, TwoColumnBlock, GalleryBlock } from "@/components/lightbox-image-blocks"
+import { FullImageBlock, FullVideoBlock, TwoColumnBlock, GalleryBlock } from "@/components/lightbox-image-blocks"
 
 // Static (non-image) PortableText block renderers
 const textComponents = {
@@ -65,6 +65,9 @@ const textComponents = {
     // Lightbox-aware image blocks
     fullImage: ({ value }: any) => (
       <FullImageBlock value={value} urlFor={urlFor} />
+    ),
+    fullVideo: ({ value }: any) => (
+      <FullVideoBlock value={value} />
     ),
     twoColumn: ({ value }: any) => (
       <TwoColumnBlock value={value} urlFor={urlFor} PortableTextComp={PortableText} />

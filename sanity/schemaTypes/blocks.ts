@@ -20,6 +20,21 @@ export const fullImage = defineType({
     ],
 })
 
+export const fullVideo = defineType({
+    name: 'fullVideo',
+    title: 'Full Video',
+    type: 'object',
+    fields: [
+        defineField({ 
+            name: 'video', 
+            title: 'Video File', 
+            type: 'file', 
+            options: { accept: 'video/*' } 
+        }),
+        defineField({ name: 'caption', title: 'Caption', type: 'string' }),
+    ],
+})
+
 export const textBlock = defineType({
     name: 'textBlock',
     title: 'Text Block',
@@ -36,7 +51,14 @@ export const twoColumn = defineType({
     type: 'object',
     fields: [
         defineField({ name: 'leftContent', title: 'Left Content', type: 'array', of: [{ type: 'block' }] }),
-        defineField({ name: 'rightImage', title: 'Right Image', type: 'image' }),
+        defineField({ name: 'rightImage', title: 'Right Image (Optional)', type: 'image' }),
+        defineField({ 
+            name: 'rightVideo', 
+            title: 'Right Video (Optional)', 
+            type: 'file',
+            options: { accept: 'video/*' },
+            description: 'Provide an image OR a video. If both are provided, the video takes priority.'
+        }),
     ],
 })
 

@@ -178,6 +178,24 @@ function ReaderPanel({
                         )}
                       </div>
                     )
+                  case "fullVideo":
+                    return block.videoUrl ? (
+                      <div key={i} className="w-full mb-12 md:mb-16 relative">
+                        <video
+                          src={block.videoUrl}
+                          className="w-full h-auto block"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
+                        {block.caption && (
+                          <p className="mt-4 font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase text-center">
+                            {block.caption}
+                          </p>
+                        )}
+                      </div>
+                    ) : null
                   case "textBlock":
                     return (
                       <div key={i} className="mb-12 md:mb-16">
@@ -195,15 +213,22 @@ function ReaderPanel({
                       </div>
                     )
                   case "twoColumn":
+                    const hasRightMedia = block.rightImage || block.rightVideoUrl
                     return (
                       <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16 items-start">
                         <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
                           {block.leftContent && String(block.leftContent)}
                         </div>
-                        {block.rightImage && (
-                          <div className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
-                            <Image src={block.rightImage} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
-                          </div>
+                        {hasRightMedia && (
+                          block.rightVideoUrl ? (
+                            <div className="w-full relative">
+                              <video src={block.rightVideoUrl} className="w-full h-auto block" autoPlay loop muted playsInline />
+                            </div>
+                          ) : (
+                            <div className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
+                              <Image src={block.rightImage} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
+                            </div>
+                          )
                         )}
                       </div>
                     )

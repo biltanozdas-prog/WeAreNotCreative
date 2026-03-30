@@ -58,6 +58,7 @@ export const project = defineType({
             of: [
                 { type: 'heroOverride' },
                 { type: 'fullImage' },
+                { type: 'fullVideo' },
                 { type: 'textBlock' },
                 { type: 'twoColumn' },
                 { type: 'gallery' },

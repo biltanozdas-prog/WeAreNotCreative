@@ -63,6 +63,34 @@ export function FullImageBlock({
   )
 }
 
+// fullVideo block
+export function FullVideoBlock({
+  value,
+}: {
+  value: any
+}) {
+  const src = value.videoUrl
+  if (!src) return null
+  
+  return (
+    <div className="w-full mb-20 md:mb-28 relative">
+      <video
+        src={src}
+        className="w-full h-auto block"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+      {value.caption && (
+        <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase text-center">
+          {value.caption}
+        </p>
+      )}
+    </div>
+  )
+}
+
 // twoColumn block
 export function TwoColumnBlock({
   value,
@@ -73,17 +101,30 @@ export function TwoColumnBlock({
   urlFor: (img: any) => { url: () => string }
   PortableTextComp: any
 }) {
-  const src = value.rightImage ? urlFor(value.rightImage).url() : null
+  const imgSrc = value.rightImage ? urlFor(value.rightImage).url() : null
+  const videoSrc = value.rightVideoUrl || null
+  const hasMedia = imgSrc || videoSrc
   
   // User Requested: "sol görsel sağ text" (Left image, right text)
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-20 md:mb-28 items-center">
-      {src && (
-        <ClickableImage
-          src={src}
-          alt="Column media"
-          className="order-1"
-        />
+      {hasMedia && (
+        videoSrc ? (
+          <video
+            src={videoSrc}
+            className="w-full h-auto block order-1"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        ) : (
+          <ClickableImage
+            src={imgSrc!}
+            alt="Column media"
+            className="order-1"
+          />
+        )
       )}
       <div className="order-2 font-sans font-light text-[16px] md:text-[20px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
         <PortableTextComp value={value.leftContent} />
