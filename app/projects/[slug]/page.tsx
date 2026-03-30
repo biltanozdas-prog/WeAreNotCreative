@@ -21,11 +21,12 @@ interface ProjectDetailProps {
 }
 
 export async function generateMetadata({ params }: ProjectDetailProps): Promise<Metadata> {
-  const { slug } = await params
+  const rawSlug = (await params).slug
+  const decodedSlug = decodeURIComponent(rawSlug)
   try {
     const { isEnabled: preview } = await draftMode()
     const query = groq`*[_type == "project" && slug == $slug][0]{ title, excerpt }`
-    const project = await getClient(preview).fetch(query, { slug })
+    const project = await getClient(preview).fetch(query, { slug: decodedSlug })
     if (!project) return { title: "Project Not Found" }
     return {
       title: `${project.title?.replace("\n", " ")} | WEARENOTCREATIVE`,

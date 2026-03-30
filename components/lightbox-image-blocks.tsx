@@ -31,7 +31,7 @@ function ClickableImage({
       <img
         src={src}
         alt={alt}
-        className="w-full h-full object-contain"
+        className="w-full h-auto block"
         loading="lazy"
       />
     </div>
@@ -52,7 +52,7 @@ export function FullImageBlock({
       <ClickableImage
         src={src}
         alt={value.caption || "Full Image"}
-        className="w-full h-auto max-h-[90vh]"
+        className="w-full h-auto"
       />
       {value.caption && (
         <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase text-center">
@@ -78,16 +78,16 @@ export function TwoColumnBlock({
   // User Requested: "sol görsel sağ text" (Left image, right text)
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-20 md:mb-28 items-center">
-      <div className="order-2 md:order-2 font-sans font-light text-[16px] md:text-[20px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-        <PortableTextComp value={value.leftContent} />
-      </div>
       {src && (
         <ClickableImage
           src={src}
           alt="Column media"
-          className="order-1 md:order-1 w-full h-auto max-h-[80vh]"
+          className="order-1"
         />
       )}
+      <div className="order-2 font-sans font-light text-[16px] md:text-[20px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+        <PortableTextComp value={value.leftContent} />
+      </div>
     </div>
   )
 }
@@ -103,15 +103,17 @@ export function GalleryBlock({
   const images: any[] = (value.images || [])
   
   // User requested a better method than strict cropping at same heights.
-  // Using a flex layout where images maintain organic height but scale width.
+  // Standard CSS Grid keeps logic pure and handles natural ratios well.
+  const cols = images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+  
   return (
-    <div className="flex flex-col md:flex-row gap-6 md:gap-12 mb-20 md:mb-28 justify-center items-center">
+    <div className={`grid gap-4 md:gap-8 mb-20 md:mb-28 items-center ${cols}`}>
       {images.map((img: any, idx: number) => (
         <ClickableImage
           key={idx}
           src={urlFor(img).url()}
           alt={`Gallery image ${idx + 1}`}
-          className="w-full h-auto md:w-1/2 md:max-h-[75vh]"
+          className="w-full h-auto"
         />
       ))}
     </div>
