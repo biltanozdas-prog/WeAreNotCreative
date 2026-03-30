@@ -108,7 +108,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
     if (currentIndex !== -1 && allEdges.length > 0) {
       nextProject = allEdges[(currentIndex + 1) % allEdges.length]
     }
-  } catch (e) {
+  } catch (e: any) {
+    console.error("Fetch failed in project detail:", e)
+    if (preview) {
+      return <div className="p-20 text-red-500 font-mono text-xl">PREVIEW ERROR: {e.message}</div>
+    }
     notFound()
   }
 
