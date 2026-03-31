@@ -49,15 +49,78 @@ export const twoColumn = defineType({
     name: 'twoColumn',
     title: 'Two Column',
     type: 'object',
+    description: 'Side-by-side layout. Each column can hold text, an image, or a video independently.',
     fields: [
-        defineField({ name: 'leftContent', title: 'Left Content', type: 'array', of: [{ type: 'block' }] }),
-        defineField({ name: 'rightImage', title: 'Right Image (Optional)', type: 'image' }),
-        defineField({ 
-            name: 'rightVideo', 
-            title: 'Right Video (Optional)', 
+        // ── LEFT COLUMN ───────────────────────────────────────────
+        defineField({
+            name: 'leftType',
+            title: 'Left Column — Content Type',
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'Text', value: 'text' },
+                    { title: 'Image', value: 'image' },
+                    { title: 'Video', value: 'video' },
+                ],
+                layout: 'radio',
+            },
+            initialValue: 'text',
+        }),
+        defineField({
+            name: 'leftContent',
+            title: 'Left Column — Text',
+            type: 'array',
+            of: [{ type: 'block' }],
+            hidden: ({ parent }) => parent?.leftType !== 'text' && parent?.leftType !== undefined,
+        }),
+        defineField({
+            name: 'leftImage',
+            title: 'Left Column — Image',
+            type: 'image',
+            hidden: ({ parent }) => parent?.leftType !== 'image',
+        }),
+        defineField({
+            name: 'leftVideo',
+            title: 'Left Column — Video',
             type: 'file',
             options: { accept: 'video/*' },
-            description: 'Provide an image OR a video. If both are provided, the video takes priority.'
+            hidden: ({ parent }) => parent?.leftType !== 'video',
+        }),
+
+        // ── RIGHT COLUMN ──────────────────────────────────────────
+        defineField({
+            name: 'rightType',
+            title: 'Right Column — Content Type',
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'Text', value: 'text' },
+                    { title: 'Image', value: 'image' },
+                    { title: 'Video', value: 'video' },
+                ],
+                layout: 'radio',
+            },
+            initialValue: 'image',
+        }),
+        defineField({
+            name: 'rightContent',
+            title: 'Right Column — Text',
+            type: 'array',
+            of: [{ type: 'block' }],
+            hidden: ({ parent }) => parent?.rightType !== 'text',
+        }),
+        defineField({
+            name: 'rightImage',
+            title: 'Right Column — Image',
+            type: 'image',
+            hidden: ({ parent }) => parent?.rightType !== 'image' && parent?.rightType !== undefined,
+        }),
+        defineField({
+            name: 'rightVideo',
+            title: 'Right Column — Video',
+            type: 'file',
+            options: { accept: 'video/*' },
+            hidden: ({ parent }) => parent?.rightType !== 'video',
         }),
     ],
 })

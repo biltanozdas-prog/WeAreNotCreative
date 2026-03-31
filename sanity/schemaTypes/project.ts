@@ -33,7 +33,8 @@ export const project = defineType({
             name: 'services',
             title: 'Services',
             type: 'array',
-            of: [{ type: 'string' }],
+            description: 'Select from the defined Service Tags. These drive the filter on the Projects page.',
+            of: [{ type: 'reference', to: [{ type: 'serviceTag' }] }],
         }),
         defineField({
             name: 'excerpt',

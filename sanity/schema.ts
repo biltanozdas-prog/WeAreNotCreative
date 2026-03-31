@@ -5,6 +5,7 @@ import { blogPost } from './schemaTypes/blogPost'
 import { homepage } from './schemaTypes/homepage'
 import { about } from './schemaTypes/about'
 import { services } from './schemaTypes/services'
+import { serviceTag } from './schemaTypes/serviceTag'
 import { siteSettings } from './schemaTypes/siteSettings'
 import { journalPage } from './schemaTypes/journalPage'
 import { projectsPage } from './schemaTypes/projectsPage'
@@ -26,6 +27,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
         homepage,
         about,
         services,
+        serviceTag,
         siteSettings,
         journalPage,
         projectsPage,

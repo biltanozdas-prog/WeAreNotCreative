@@ -51,6 +51,25 @@ export default defineConfig({
     document: {
         // @ts-ignore Sanity v3 context signature mismatch
         productionUrl: resolvePreviewUrl,
+
+        // Singleton documents: remove Delete & Duplicate actions so they can
+        // always be edited (prevents the "read-only" blank-form bug in Sanity v3).
+        actions: (prev, { schemaType }) => {
+            if (SINGLETONS.includes(schemaType)) {
+                return prev.filter(({ action }) =>
+                    action !== 'delete' && action !== 'duplicate'
+                )
+            }
+            return prev
+        },
+
+        // Hide singleton types from the "New document" menu
+        newDocumentOptions: (prev, { creationContext }) => {
+            if (creationContext.type === 'global') {
+                return prev.filter(({ templateId }) => !SINGLETONS.includes(templateId))
+            }
+            return prev
+        },
     },
     plugins: [
         structureTool({
@@ -144,6 +163,17 @@ export default defineConfig({
                                                     ])
                                             ),
                                     ])
+                            ),
+
+                        S.divider(),
+
+                        // ── SERVICE TAGS ──────────────────────────────
+                        S.listItem()
+                            .title('SERVICE TAGS')
+                            .child(
+                                S.documentTypeList('serviceTag')
+                                    .title('Service Tags')
+                                    .defaultOrdering([{ field: 'order', direction: 'asc' }])
                             ),
 
                         S.divider(),

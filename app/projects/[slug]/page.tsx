@@ -92,27 +92,35 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
     const query = preview
       ? groq`*[_type == "project" && ${matchFilter}][0] {
           ...,
+          "services": services[]->name,
           blocks[] {
             ...,
             _type == "fullVideo" => {
               "videoUrl": video.asset->url
             },
             _type == "twoColumn" => {
-              "rightVideoUrl": rightVideo.asset->url
+              "rightVideoUrl": rightVideo.asset->url,
+              "leftVideoUrl": leftVideo.asset->url,
+              "leftImageUrl": leftImage.asset->url,
+              "rightImageUrl": rightImage.asset->url
             }
           },
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
-      : groq`*[_type == "project" && ${matchFilter} && published == true][0] {
+      : groq`*[_type == "project" && ${matchFilter} && coalesce(published, true) == true][0] {
           ...,
+          "services": services[]->name,
           blocks[] {
             ...,
             _type == "fullVideo" => {
               "videoUrl": video.asset->url
             },
             _type == "twoColumn" => {
-              "rightVideoUrl": rightVideo.asset->url
+              "rightVideoUrl": rightVideo.asset->url,
+              "leftVideoUrl": leftVideo.asset->url,
+              "leftImageUrl": leftImage.asset->url,
+              "rightImageUrl": rightImage.asset->url
             }
           },
           "heroImage": heroImage.asset->url,
@@ -126,7 +134,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
 
     const allQuery = preview
       ? groq`*[_type == "project"] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
-      : groq`*[_type == "project" && published == true] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
+      : groq`*[_type == "project" && coalesce(published, true) == true] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
     const allEdges = await client.fetch(allQuery)
     const currentIndex = allEdges.findIndex((e: any) => e.slug === decodedSlug)
     // Find precise index based on evaluated slug fallback.

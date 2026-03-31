@@ -94,7 +94,7 @@ export function FullVideoBlock({
   )
 }
 
-// twoColumn block
+// twoColumn block — both columns support text, image, or video
 export function TwoColumnBlock({
   value,
   urlFor,
@@ -104,34 +104,83 @@ export function TwoColumnBlock({
   urlFor: (img: any) => { url: () => string }
   PortableTextComp: any
 }) {
-  const imgSrc = value.rightImage ? urlFor(value.rightImage).url() : null
-  const videoSrc = value.rightVideoUrl || null
-  const hasMedia = imgSrc || videoSrc
-  
-  // User Requested: "sol görsel sağ text" (Left image, right text)
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-20 md:mb-28 items-center">
-      {hasMedia && (
-        videoSrc ? (
-          <video
-            src={videoSrc}
-            className="w-full h-auto block order-1"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-        ) : (
-          <ClickableImage
-            src={imgSrc!}
-            alt="Column media"
-            className="order-1"
-          />
-        )
-      )}
-      <div className="order-2 font-sans font-light text-[16px] md:text-[20px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-        <PortableTextComp value={value.leftContent} />
-      </div>
+      <ColumnSlot
+        type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
+        text={value.leftContent}
+        imageSrc={value.leftImageUrl || (value.leftImage ? urlFor(value.leftImage).url() : null)}
+        videoSrc={value.leftVideoUrl || null}
+        urlFor={urlFor}
+        PortableTextComp={PortableTextComp}
+      />
+      <ColumnSlot
+        type={value.rightType || (value.rightImage || value.rightImageUrl ? 'image' : value.rightVideoUrl ? 'video' : value.rightContent ? 'text' : 'image')}
+        text={value.rightContent}
+        imageSrc={value.rightImageUrl || (value.rightImage ? urlFor(value.rightImage).url() : null)}
+        videoSrc={value.rightVideoUrl || null}
+        urlFor={urlFor}
+        PortableTextComp={PortableTextComp}
+      />
+    </div>
+  )
+}
+
+function ColumnSlot({
+  type,
+  text,
+  imageSrc,
+  videoSrc,
+  PortableTextComp,
+}: {
+  type: 'text' | 'image' | 'video'
+  text?: any
+  imageSrc?: string | null
+  videoSrc?: string | null
+  urlFor: (img: any) => { url: () => string }
+  PortableTextComp: any
+}) {
+  if (type === 'video' && videoSrc) {
+    return (
+      <video
+        src={videoSrc}
+        className="w-full h-auto block"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+    )
+  }
+
+  if (type === 'image' && imageSrc) {
+    return (
+      <ClickableImage
+        src={imageSrc}
+        alt="Column media"
+      />
+    )
+  }
+
+  // text (default) — also falls back here if declared type has no content
+  return (
+    <div className="font-sans font-light leading-[1.65] text-foreground/80">
+      <PortableTextComp
+        value={text}
+        components={{
+          block: {
+            normal: ({ children }: any) => (
+              <p className="text-[16px] md:text-[20px] mb-5 last:mb-0">{children}</p>
+            ),
+            h2: ({ children }: any) => (
+              <h2 className="font-black text-[clamp(20px,3vw,32px)] uppercase tracking-[-0.02em] leading-[0.9] mb-6">{children}</h2>
+            ),
+            h3: ({ children }: any) => (
+              <h3 className="font-black text-[clamp(16px,2vw,24px)] uppercase tracking-[-0.01em] mb-5">{children}</h3>
+            ),
+          },
+        }}
+      />
     </div>
   )
 }
