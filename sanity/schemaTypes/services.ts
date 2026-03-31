@@ -16,7 +16,6 @@ export const services = defineType({
             title: 'Page Headline',
             type: 'string',
             description: 'The large heading shown at the top of the Services page. Usually "SERVICES".',
-            validation: (Rule) => Rule.required().error('Headline is required.'),
         }),
         defineField({
             name: 'intro',
@@ -44,7 +43,6 @@ export const services = defineType({
                             title: 'Service Name',
                             type: 'string',
                             description: 'The name shown in the expandable row header.',
-                            validation: (Rule) => Rule.required().error('Service name is required.'),
                         }),
                         defineField({
                             name: 'statement',

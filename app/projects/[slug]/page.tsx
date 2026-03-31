@@ -104,7 +104,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
-      : groq`*[_type == "project" && ${matchFilter} && coalesce(published, true) == true][0] {
+      : groq`*[_type == "project" && ${matchFilter} && published == true][0] {
           ...,
           blocks[] {
             ...,

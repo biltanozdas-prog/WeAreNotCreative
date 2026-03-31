@@ -49,6 +49,8 @@ export const project = defineType({
             name: 'published',
             title: 'Published',
             type: 'boolean',
+            initialValue: false,
+            description: 'Toggle on to make this project visible on the live site.',
         }),
         defineField({
             name: 'order',

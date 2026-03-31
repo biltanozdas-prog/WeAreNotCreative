@@ -24,6 +24,10 @@ function resolveSlug(doc: any): string {
             return '/'
         case 'siteSettings':
             return '/contact'
+        case 'journalPage':
+            return '/blog'
+        case 'projectsPage':
+            return '/projects'
         default:
             return '/'
     }

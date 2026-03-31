@@ -4,21 +4,27 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { PortableText } from "@portabletext/react"
 import { components } from "@/lib/sanity/portableText"
-export function BlogClient({ blogPosts }: { blogPosts: any[] }) {
+
+export function BlogClient({ blogPosts, pageData }: { blogPosts: any[], pageData?: any }) {
   const [activePost, setActivePost] = useState<any | null>(null)
 
   return (
     <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
-      <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-        Observations
-      </p>
-      <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-10 md:mb-14">
-        JOURNAL
-      </h1>
-      <p className="font-sans font-light text-[16px] md:text-[18px] text-muted-foreground leading-[1.65] max-w-[520px] mb-24 md:mb-[140px]">
-        Writing on design, process, culture and the thinking behind our practice.
-        Not content. Thought. Click any entry to read.
-      </p>
+      {pageData?.eyebrowLabel && (
+        <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
+          {pageData.eyebrowLabel}
+        </p>
+      )}
+      {pageData?.headline && (
+        <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-10 md:mb-14">
+          {pageData.headline}
+        </h1>
+      )}
+      {pageData?.intro && (
+        <p className="font-sans font-light text-[16px] md:text-[18px] text-muted-foreground leading-[1.65] max-w-[520px] mb-24 md:mb-[140px]">
+          {pageData.intro}
+        </p>
+      )}
 
       {/* Blog entries - asymmetric layout */}
       <div className="flex flex-col gap-16 md:gap-24">
@@ -158,18 +164,27 @@ function ReaderPanel({
               {post.title}
             </h1>
 
-            <div className="w-full h-[30vh] md:h-[45vh] bg-muted relative overflow-hidden mb-10 md:mb-14">
-              <Image src={post.coverImage?.asset ? "" : (typeof post.coverImage === 'string' ? post.coverImage : "")} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
-            </div>
+            {post.coverImage && (
+              <div className="w-full h-[30vh] md:h-[45vh] bg-muted relative overflow-hidden mb-10 md:mb-14">
+                <Image
+                  src={post.coverImage}
+                  alt={post.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 55vw"
+                />
+              </div>
+            )}
 
             <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-8">
               {(post.blocks || []).map((block: any, i: number) => {
-                switch (block._template) {
+                // NOTE: Sanity blocks use _type, not _template
+                switch (block._type) {
                   case "fullImage":
-                    return (
+                    return block.imageUrl ? (
                       <div key={i} className="w-full mb-12 md:mb-16 relative overflow-hidden">
                         <div className="w-full h-[40vh] md:h-[50vh] bg-muted relative">
-                          <Image src={block.image || ""} alt={block.caption || "Full Image"} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
+                          <Image src={block.imageUrl} alt={block.caption || "Full Image"} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
                         </div>
                         {block.caption && (
                           <p className="mt-4 font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase text-center">
@@ -177,7 +192,7 @@ function ReaderPanel({
                           </p>
                         )}
                       </div>
-                    )
+                    ) : null
                   case "fullVideo":
                     return block.videoUrl ? (
                       <div key={i} className="w-full mb-12 md:mb-16 relative">
@@ -207,46 +222,47 @@ function ReaderPanel({
                             </span>
                           </div>
                         )}
-                        <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                          {block.body && String(block.body)}
-                        </div>
-                      </div>
-                    )
-                  case "twoColumn":
-                    const hasRightMedia = block.rightImage || block.rightVideoUrl
-                    return (
-                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16 items-start">
-                        <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-                          {block.leftContent && String(block.leftContent)}
-                        </div>
-                        {hasRightMedia && (
-                          block.rightVideoUrl ? (
-                            <div className="w-full relative">
-                              <video src={block.rightVideoUrl} className="w-full h-auto block" autoPlay loop muted playsInline />
-                            </div>
-                          ) : (
-                            <div className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
-                              <Image src={block.rightImage} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
-                            </div>
-                          )
+                        {block.body && (
+                          <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground/80">
+                            <PortableText value={block.body} components={components} />
+                          </div>
                         )}
                       </div>
                     )
-                  case "gallery":
+                  case "twoColumn":
                     return (
-                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 ${block.images?.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                        {(block.images || []).slice(0, 4).map((img: string, idx: number) => (
+                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16 items-start">
+                        {block.leftContent && (
+                          <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground/80">
+                            <PortableText value={block.leftContent} components={components} />
+                          </div>
+                        )}
+                        {block.rightVideoUrl ? (
+                          <div className="w-full relative">
+                            <video src={block.rightVideoUrl} className="w-full h-auto block" autoPlay loop muted playsInline />
+                          </div>
+                        ) : block.rightImageUrl ? (
+                          <div className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
+                            <Image src={block.rightImageUrl} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
+                          </div>
+                        ) : null}
+                      </div>
+                    )
+                  case "gallery":
+                    return (block.imageUrls?.length > 0) ? (
+                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 ${block.imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                        {block.imageUrls.slice(0, 4).map((url: string, idx: number) => (
                           <div key={idx} className="w-full h-[25vh] md:h-[30vh] relative bg-muted">
-                            <Image src={img} alt={`Gallery ${idx}`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" />
+                            <Image src={url} alt={`Gallery ${idx + 1}`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" />
                           </div>
                         ))}
                       </div>
-                    )
+                    ) : null
                   case "quote":
-                    return (
+                    return block.quoteText ? (
                       <div key={i} className="mb-12 md:mb-16 border-l-2 md:border-l-[3px] border-foreground pl-6 md:pl-8">
                         <blockquote className="font-sans font-black text-[clamp(20px,4vw,36px)] leading-[1.1] text-foreground uppercase tracking-[-0.02em] mb-4">
-                          "{block.quoteText}"
+                          &ldquo;{block.quoteText}&rdquo;
                         </blockquote>
                         {block.author && (
                           <cite className="font-sans font-light text-[11px] md:text-[12px] text-muted-foreground tracking-[0.2em] uppercase block not-italic">
@@ -254,10 +270,11 @@ function ReaderPanel({
                           </cite>
                         )}
                       </div>
-                    )
-                  case "spacer":
+                    ) : null
+                  case "spacer": {
                     const h = block.size === "small" ? "h-12" : block.size === "large" ? "h-24 md:h-32" : "h-16 md:h-20"
                     return <div key={i} className={`w-full ${h}`} />
+                  }
                   default:
                     return null
                 }
@@ -286,4 +303,3 @@ function ReaderPanel({
     </>
   )
 }
-

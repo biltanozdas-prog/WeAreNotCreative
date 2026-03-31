@@ -6,9 +6,12 @@ import { homepage } from './schemaTypes/homepage'
 import { about } from './schemaTypes/about'
 import { services } from './schemaTypes/services'
 import { siteSettings } from './schemaTypes/siteSettings'
+import { journalPage } from './schemaTypes/journalPage'
+import { projectsPage } from './schemaTypes/projectsPage'
 import {
     heroOverride,
     fullImage,
+    fullVideo,
     textBlock,
     twoColumn,
     gallery,
@@ -24,8 +27,11 @@ export const schema: { types: SchemaTypeDefinition[] } = {
         about,
         services,
         siteSettings,
+        journalPage,
+        projectsPage,
         heroOverride,
         fullImage,
+        fullVideo,
         textBlock,
         twoColumn,
         gallery,

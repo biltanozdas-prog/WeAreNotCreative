@@ -4,10 +4,10 @@ import { schema } from './sanity/schema'
 import { PreviewPane } from './sanity/components/preview-pane'
 
 // All types that have a live preview page
-const PREVIEWABLE = ['homepage', 'about', 'services', 'siteSettings', 'project', 'blogPost']
+const PREVIEWABLE = ['homepage', 'about', 'services', 'siteSettings', 'project', 'blogPost', 'journalPage', 'projectsPage']
 
 // Singleton document types — only one instance allowed
-const SINGLETONS = ['homepage', 'siteSettings', 'about', 'services']
+const SINGLETONS = ['homepage', 'siteSettings', 'about', 'services', 'journalPage', 'projectsPage']
 
 // ── Preview URL resolver ───────────────────────────────────────────────────
 const secret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || process.env.SANITY_PREVIEW_SECRET || 'wanc-preview-9384jsdfkjsdf'
@@ -34,6 +34,10 @@ function resolvePreviewUrl(doc: { _type?: string; slug?: string | { current?: st
             return previewUrl('/')
         case 'siteSettings':
             return previewUrl('/contact')
+        case 'journalPage':
+            return previewUrl('/blog')
+        case 'projectsPage':
+            return previewUrl('/projects')
         default:
             return previewUrl('/')
     }
@@ -108,6 +112,32 @@ export default defineConfig({
                                                     .schemaType('siteSettings')
                                                     .documentId('siteSettings')
                                                     .title('Site Settings')
+                                                    .views([
+                                                        S.view.form().title('Edit'),
+                                                        S.view.component(PreviewPane).title('Preview'),
+                                                    ])
+                                            ),
+                                        S.listItem()
+                                            .title('Journal Page')
+                                            .id('journalPage')
+                                            .child(
+                                                S.document()
+                                                    .schemaType('journalPage')
+                                                    .documentId('journalPage')
+                                                    .title('Journal Page')
+                                                    .views([
+                                                        S.view.form().title('Edit'),
+                                                        S.view.component(PreviewPane).title('Preview'),
+                                                    ])
+                                            ),
+                                        S.listItem()
+                                            .title('Projects Page')
+                                            .id('projectsPage')
+                                            .child(
+                                                S.document()
+                                                    .schemaType('projectsPage')
+                                                    .documentId('projectsPage')
+                                                    .title('Projects Page')
                                                     .views([
                                                         S.view.form().title('Edit'),
                                                         S.view.component(PreviewPane).title('Preview'),

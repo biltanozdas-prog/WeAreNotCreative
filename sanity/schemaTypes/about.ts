@@ -16,7 +16,6 @@ export const about = defineType({
             title: 'Page Headline',
             type: 'string',
             description: 'The large heading shown at the top of the About page. Usually "ABOUT".',
-            validation: (Rule) => Rule.required().error('Headline is required.'),
         }),
         defineField({
             name: 'intro',

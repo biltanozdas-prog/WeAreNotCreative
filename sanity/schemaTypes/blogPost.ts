@@ -38,6 +38,8 @@ export const blogPost = defineType({
             name: 'published',
             title: 'Published',
             type: 'boolean',
+            initialValue: false,
+            description: 'Toggle on to make this post visible on the live site.',
         }),
         defineField({
             name: 'order',

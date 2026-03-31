@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 
-export function ProjectsClient({ projects }: { projects: any[] }) {
+export function ProjectsClient({ projects, pageData }: { projects: any[], pageData?: any }) {
   const [activePreviewImageSrc, setActivePreviewImageSrc] = useState<string | null>(null)
 
   return (
@@ -44,18 +44,21 @@ export function ProjectsClient({ projects }: { projects: any[] }) {
         {/* Header / Page Title area */}
         <div className="px-4 md:px-[60px] mb-12 md:mb-20 pointer-events-auto">
           <div className="flex items-center gap-4 mb-8">
-            <span className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em]">
-              Index
-            </span>
+            {pageData?.eyebrowLabel && (
+              <span className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em]">
+                {pageData.eyebrowLabel}
+              </span>
+            )}
             <span className="w-6 h-px bg-white" />
             <span className="font-sans font-medium text-[12px] md:text-[13px] uppercase tracking-[0.05em]">
               {String(projects.length).padStart(2, "0")} Projects
             </span>
           </div>
-          <p className="font-sans font-light text-[14px] md:text-[15px] max-w-[440px] leading-[1.6]">
-            A curated selection across disciplines. Each project is shaped
-            by its own context, scale and ambition.
-          </p>
+          {pageData?.intro && (
+            <p className="font-sans font-light text-[14px] md:text-[15px] max-w-[440px] leading-[1.6]">
+              {pageData.intro}
+            </p>
+          )}
         </div>
 
         {/* Index List */}

@@ -33,7 +33,7 @@ export default async function HomePage() {
           ctaButtonText,
           selectedProjects[]->{
             _id,
-            "slug": slug,
+            "slug": coalesce(slug.current, slug),
             title,
             client,
             industry,
@@ -56,7 +56,7 @@ export default async function HomePage() {
           ctaButtonText,
           "selectedProjects": selectedProjects[]->{
             _id,
-            "slug": slug,
+            "slug": coalesce(slug.current, slug),
             title,
             client,
             industry,
@@ -77,7 +77,7 @@ export default async function HomePage() {
 
   const projectFields = `{
       _id,
-      "slug": slug,
+      "slug": coalesce(slug.current, slug),
       title,
       client,
       industry,
