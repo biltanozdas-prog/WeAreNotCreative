@@ -13,7 +13,11 @@ export const project = defineType({
         defineField({
             name: 'slug',
             title: 'Slug',
-            type: 'string',
+            type: 'slug',
+            options: {
+                source: 'title',
+                maxLength: 96,
+            },
         }),
         defineField({
             name: 'client',

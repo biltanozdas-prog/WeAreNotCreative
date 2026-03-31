@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: ProjectDetailProps): Promise<
   const decodedSlug = decodeURIComponent(rawSlug)
   try {
     const { isEnabled: preview } = await draftMode()
-    const query = groq`*[_type == "project" && slug == $slug][0]{ title, excerpt }`
+    const query = groq`*[_type == "project" && (slug == $slug || slug.current == $slug)][0]{ title, excerpt }`
     const project = await getClient(preview).fetch(query, { slug: decodedSlug })
     if (!project) return { title: "Project Not Found" }
     return {
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: ProjectDetailProps): Promise<
 }
 
 export async function generateStaticParams() {
-  const query = groq`*[_type == "project" && defined(slug)]{ "slug": slug }`
+  const query = groq`*[_type == "project" && (defined(slug.current) || defined(slug))] { "slug": coalesce(slug.current, slug) }`
   try {
     const projects = await getClient(false).fetch(query)
     return projects.map((project: { slug: string }) => ({ slug: project.slug }))
@@ -86,8 +86,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
   let nextProject: any = null
 
   try {
+    const slugQueryParam = { slug: decodedSlug }
+    const matchFilter = `(slug == $slug || slug.current == $slug)`
+    
     const query = preview
-      ? groq`*[_type == "project" && slug == $slug][0] {
+      ? groq`*[_type == "project" && ${matchFilter}][0] {
           ...,
           blocks[] {
             ...,
@@ -101,7 +104,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
-      : groq`*[_type == "project" && slug == $slug && coalesce(published, true) == true][0] {
+      : groq`*[_type == "project" && ${matchFilter} && coalesce(published, true) == true][0] {
           ...,
           blocks[] {
             ...,
@@ -115,17 +118,18 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
-    projectData = await client.fetch(query, { slug: decodedSlug })
+    projectData = await client.fetch(query, slugQueryParam)
     if (!projectData) {
       if (preview) return <div className="p-20 text-red-500 font-mono text-xl">PREVIEW ERROR: Project data returned null for slug "{decodedSlug}". Make sure the draft is saved, SANITY_API_TOKEN is valid, and the slug matches.</div>
       notFound()
     }
 
     const allQuery = preview
-      ? groq`*[_type == "project"] | order(order asc) { slug, title, client }`
-      : groq`*[_type == "project" && published == true] | order(order asc) { slug, title, client }`
+      ? groq`*[_type == "project"] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
+      : groq`*[_type == "project" && published == true] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
     const allEdges = await client.fetch(allQuery)
     const currentIndex = allEdges.findIndex((e: any) => e.slug === decodedSlug)
+    // Find precise index based on evaluated slug fallback.
     if (currentIndex !== -1 && allEdges.length > 0) {
       nextProject = allEdges[(currentIndex + 1) % allEdges.length]
     }

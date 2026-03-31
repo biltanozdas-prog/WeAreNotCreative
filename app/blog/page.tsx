@@ -15,7 +15,7 @@ export default async function BlogPage() {
 
   const fields = `{
         _id,
-        "slug": slug,
+        "slug": coalesce(slug.current, slug),
         title,
         date,
         excerpt,

@@ -1,0 +1,58 @@
+﻿[
+  {
+    "_id": "11d526ef-26c6-4fa7-baaa-790c1d292c60",
+    "order": 3,
+    "published": true,
+    "slug": "Creative Direction",
+    "title": "BLANCIA FOUNDATION"
+  },
+  {
+    "_id": "27255e69-e4d6-403f-8c33-2f471a669b82",
+    "order": 1,
+    "published": true,
+    "slug": "Creative Direction",
+    "title": "Esquire Magazine"
+  },
+  {
+    "_id": "304fd7ce-b582-4721-89a2-32aded651300",
+    "order": 2,
+    "published": true,
+    "slug": "Creative Direction",
+    "title": "ESQUIRE MAGAZINE "
+  },
+  {
+    "_id": "43f28b14-0a8c-4c90-b01a-90cfc5d7fa89",
+    "order": 5,
+    "published": true,
+    "slug": null,
+    "title": "DESPADA CAMPAIGN"
+  },
+  {
+    "_id": "8cefe711-d9b0-43e2-ba0c-f8ab111b7d1f",
+    "order": 4,
+    "published": true,
+    "slug": null,
+    "title": "L'OFFICIEL HOMMES"
+  },
+  {
+    "_id": "9f32f5e8-d45a-458d-8576-1ac9af3f4686",
+    "order": 7,
+    "published": true,
+    "slug": null,
+    "title": "STILL LIFE"
+  },
+  {
+    "_id": "b1699caa-72d9-429e-a291-5650b61e7bce",
+    "order": 8,
+    "published": true,
+    "slug": null,
+    "title": "Vaneda"
+  },
+  {
+    "_id": "cec94f06-9fc6-4e21-9bc9-ce8c8544381e",
+    "order": 7,
+    "published": true,
+    "slug": null,
+    "title": "ART CASE"
+  }
+]
