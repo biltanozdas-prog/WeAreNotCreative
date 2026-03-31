@@ -148,7 +148,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
     <LightboxProvider images={lightboxImages}>
       <LightboxOverlay />
 
-      <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
+      <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px] w-full max-w-[100vw] overflow-x-hidden">
         {/* Floating Close Button */}
         <div className="fixed top-24 md:top-32 right-8 md:right-[60px] z-[90] mix-blend-difference">
           <Link
@@ -165,7 +165,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
             {projectData.industry || projectData.category}
           </p>
-          <h1 className="font-sans font-black text-[12vw] md:text-[8vw] leading-[0.8] uppercase text-foreground mb-8 md:mb-10 whitespace-pre-line tracking-[-0.04em]">
+          <h1 className="font-sans font-black text-[12vw] md:text-[8vw] leading-[0.8] uppercase text-foreground mb-8 md:mb-10 whitespace-pre-line tracking-[-0.04em] break-words w-full">
             {projectData.title}
           </h1>
           <p className="font-sans font-light text-[16px] md:text-[20px] text-foreground/70 max-w-[600px] leading-[1.6]">

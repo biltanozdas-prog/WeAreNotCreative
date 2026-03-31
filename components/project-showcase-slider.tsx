@@ -26,6 +26,8 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isHovered, setIsHovered] = useState(false)
     const sliderRef = useRef<HTMLElement>(null)
+    const touchStartX = useRef<number | null>(null)
+    const touchEndX = useRef<number | null>(null)
 
     const handleNext = useCallback(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % projects.length)
@@ -55,6 +57,28 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
         window.addEventListener("keydown", handleKeyDown)
         return () => window.removeEventListener("keydown", handleKeyDown)
     }, [handleNext, handlePrev])
+
+    // Touch handlers for mobile swipe
+    const onTouchStart = (e: React.TouchEvent) => {
+        touchEndX.current = null
+        touchStartX.current = e.targetTouches[0].clientX
+    }
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        touchEndX.current = e.targetTouches[0].clientX
+    }
+
+    const onTouchEnd = () => {
+        if (!touchStartX.current || !touchEndX.current) return
+        const distance = touchStartX.current - touchEndX.current
+        const minSwipeDistance = 50
+        
+        if (distance > minSwipeDistance) {
+            handleNext() // swiped left
+        } else if (distance < -minSwipeDistance) {
+            handlePrev() // swiped right
+        }
+    }
 
     // IntersectionObserver to toggle body data-attribute for logo visibility
     useEffect(() => {
@@ -98,6 +122,9 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
             className="relative w-full h-screen min-h-screen overflow-hidden bg-background"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
         >
             {/* Preload Next Image for performance */}
             {nextProject?.heroImage && (
@@ -128,8 +155,8 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                         {/* Subtle dark gradient overlay */}
                         <div className="absolute inset-0 bg-gradient-to-b from-black/25 to-transparent pointer-events-none"></div>
 
-                        {/* Invisible Navigation Halves */}
-                        <div className="absolute inset-0 z-10 flex">
+                        {/* Invisible Navigation Halves (Hidden on mobile to allow swipe) */}
+                        <div className="hidden md:flex absolute inset-0 z-10">
                             {/* Left Half -> Prev */}
                             <div
                                 className="w-1/2 h-full cursor-[w-resize]"
@@ -148,33 +175,33 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                         <div className="absolute inset-0 pointer-events-none z-20">
 
                             {/* Left Cluster — three-anchor asymmetric editorial layout */}
-                            <div className="absolute bottom-[24vh] left-[3.5vw] flex flex-col items-start pointer-events-none">
+                            <div className="absolute bottom-[20vh] md:bottom-[24vh] left-[4vw] md:left-[3.5vw] flex flex-col items-start pointer-events-none">
 
                                 {/* ANCHOR 1: Brand Row — left edge */}
-                                <div className="flex items-center gap-[10px] mb-[12px]">
+                                <div className="flex items-center gap-[6px] md:gap-[10px] mb-[8px] md:mb-[12px]">
                                     {/* Circle logo */}
-                                    <div className="w-[28px] h-[28px] bg-accent rounded-full flex items-center justify-center flex-shrink-0">
-                                        <span className="font-['Montserrat'] font-black text-white text-[13px] leading-none">
+                                    <div className="w-[20px] h-[20px] md:w-[28px] md:h-[28px] bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span className="font-['Montserrat'] font-black text-white text-[10px] md:text-[13px] leading-none">
                                             W
                                         </span>
                                     </div>
                                     {/* Brand label — white background block */}
-                                    <div className="bg-white text-black px-[14px] py-[10px] font-['Montserrat'] font-black text-[22px] leading-none">
+                                    <div className="bg-white text-black px-[10px] py-[6px] md:px-[14px] md:py-[10px] font-['Montserrat'] font-black text-[14px] md:text-[22px] leading-none">
                                         WeAreNotCreative
                                     </div>
                                 </div>
 
                                 {/* ANCHOR 2: Client Name — offset right */}
                                 {(project.client || project.title) && (
-                                    <div className="ml-[70px] mb-[14px]">
-                                        <div className="bg-white text-black px-[16px] py-[12px] text-[34px] font-black font-['Montserrat'] leading-[0.9] uppercase tracking-[-0.02em] whitespace-nowrap">
+                                    <div className="ml-[40px] md:ml-[70px] mb-[10px] md:mb-[14px] max-w-[85vw]">
+                                        <div className="bg-white text-black inline-block px-[12px] py-[8px] md:px-[16px] md:py-[12px] text-[15px] md:text-[34px] font-black font-['Montserrat'] leading-[0.9] uppercase tracking-[-0.02em] whitespace-normal md:whitespace-nowrap">
                                             {project.client || project.title}
                                         </div>
                                     </div>
                                 )}
 
                                 {/* ANCHOR 3: Description + Dots — intermediate offset */}
-                                <div className="ml-[30px] flex flex-row items-start gap-[14px]">
+                                <div className="ml-[15px] md:ml-[30px] flex flex-row items-start gap-[10px] md:gap-[14px]">
 
                                     {/* Description block */}
                                     {(() => {

@@ -28,7 +28,7 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
   if (!isVisible) return null
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen z-[-1] overflow-hidden">
+    <div className="fixed top-0 left-0 w-screen h-[50vh] md:h-screen z-[-1] overflow-hidden">
       <video
         ref={videoRef}
         className="w-full h-full object-cover"

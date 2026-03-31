@@ -111,8 +111,8 @@ export default async function HomePage() {
   return (
     <main>
       <HeroVideo videoUrl={homeData?.heroVideoUrl} />
-      {/* Spacer for the video hero area */}
-      <div className="h-screen" />
+      {/* Spacer for the video hero area — 50vh on mobile, full screen on desktop */}
+      <div className="h-[50vh] md:h-screen" />
       {/* Content starts after the video */}
       <ManifestoSection
         headline={homeData?.headline ?? ""}

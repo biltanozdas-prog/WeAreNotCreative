@@ -10,10 +10,12 @@ function ClickableImage({
   src,
   alt,
   className,
+  imgClassName,
 }: {
   src: string
   alt: string
   className?: string
+  imgClassName?: string
 }) {
   const { images, open } = useLightbox()
   const index = images.findIndex((img) => img.src === src)
@@ -31,7 +33,7 @@ function ClickableImage({
       <img
         src={src}
         alt={alt}
-        className="w-full h-auto block"
+        className={imgClassName || "w-full h-auto block"}
         loading="lazy"
       />
     </div>
@@ -48,11 +50,12 @@ export function FullImageBlock({
 }) {
   const src = urlFor(value.image).url()
   return (
-    <div className="w-full mb-20 md:mb-28 relative">
+    <div className="w-full mb-20 md:mb-28 relative flex flex-col items-center">
       <ClickableImage
         src={src}
         alt={value.caption || "Full Image"}
-        className="w-full h-auto"
+        className="w-full flex justify-center"
+        imgClassName="max-h-[70vh] md:max-h-[85vh] w-auto object-contain block"
       />
       {value.caption && (
         <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase text-center">
@@ -154,7 +157,8 @@ export function GalleryBlock({
           key={idx}
           src={urlFor(img).url()}
           alt={`Gallery image ${idx + 1}`}
-          className="w-full h-auto"
+          className="w-full flex justify-center"
+          imgClassName="max-h-[70vh] md:max-h-[85vh] w-auto object-contain block"
         />
       ))}
     </div>
