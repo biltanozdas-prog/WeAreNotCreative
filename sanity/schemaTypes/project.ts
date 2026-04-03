@@ -36,6 +36,7 @@ export const project = defineType({
             description: 'Select all service categories that apply. These drive the filter on the Projects page.',
             of: [{ type: 'string' }],
             options: {
+                layout: 'tags',
                 list: [
                     { title: 'Brand Strategy', value: 'BRAND STRATEGY' },
                     { title: 'Visual Systems', value: 'VISUAL SYSTEMS' },

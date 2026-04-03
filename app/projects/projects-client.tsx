@@ -18,15 +18,10 @@ export function ProjectsClient({
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Only show categories that appear in at least one project's services array
-  const usedCategories = useMemo(() => {
-    const set = new Set<string>()
-    projects.forEach(p => {
-      if (Array.isArray(p.services)) p.services.forEach((s: string) => s && set.add(s))
-    })
-    // Preserve the canonical order from serviceCategories
-    return serviceCategories.filter(cat => set.has(cat))
-  }, [projects, serviceCategories])
+  // Always show all 7 categories in canonical order.
+  // The dropdown is never empty — all categories are selectable regardless
+  // of whether existing projects have been tagged yet.
+  const visibleCategories = serviceCategories
 
   const filteredProjects = useMemo(() => {
     if (selectedService === "All") return projects
@@ -140,7 +135,7 @@ export function ProjectsClient({
               >
                 All Projects
               </button>
-              {usedCategories.map(cat => (
+              {visibleCategories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => handleSelect(cat)}
