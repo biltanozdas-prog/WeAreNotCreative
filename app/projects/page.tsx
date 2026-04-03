@@ -11,11 +11,21 @@ export const metadata: Metadata = {
   description: "A curated selection across disciplines. Each project is shaped by its own context, scale and ambition."
 }
 
+// Source of truth — order determines filter dropdown order
+const SERVICE_CATEGORIES = [
+  "BRAND STRATEGY",
+  "VISUAL SYSTEMS",
+  "ART DIRECTION",
+  "BRAND ARCHITECTURE",
+  "DIGITAL EXPERIENCES",
+  "OBJECTS & PRODUCTS",
+  "CONTENT & CAMPAIGN SYSTEMS",
+] as const
+
 export default async function ProjectsPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
-  // Fetch projectsPage singleton for CMS-editable page header content
   let pageData: any = null
   try {
     pageData = await client.fetch(
@@ -27,38 +37,24 @@ export default async function ProjectsPage() {
     console.warn("[Projects] Sanity fetch failed for projectsPage.", e)
   }
 
-  // Fetch all service tags in order — used for the filter dropdown
-  let serviceTags: { _id: string; name: string }[] = []
-  try {
-    serviceTags = await client.fetch(
-      groq`*[_type == "serviceTag"] | order(order asc) { _id, name }`,
-      {},
-      { next: { tags: ["serviceTag"] } }
-    )
-  } catch (e) {
-    console.warn("[Projects] Sanity fetch failed for serviceTags.", e)
-  }
-
   const fields = `{
-        _id,
-        "slug": coalesce(slug.current, slug),
-        title,
-        client,
-        industry,
-        "services": services[]->name,
-        excerpt,
-        "heroImage": heroImage.asset->url,
-        "image": heroImage.asset->url,
-        order
-      }`
+      _id,
+      "slug": coalesce(slug.current, slug),
+      title,
+      client,
+      industry,
+      services,
+      excerpt,
+      "heroImage": heroImage.asset->url,
+      "image": heroImage.asset->url,
+      order
+    }`
 
-  // Use coalesce(published, true) so projects without an explicit published field
-  // default to visible (backwards-compatible with older entries).
   const query = preview
     ? groq`*[_type == "project"] | order(order asc) ${fields}`
     : groq`*[_type == "project" && coalesce(published, true) == true] | order(order asc) ${fields}`
 
-  let projects = []
+  let projects: any[] = []
   try {
     projects = await client.fetch(query, {}, { next: { tags: ["project"] } })
   } catch (e) {
@@ -70,5 +66,11 @@ export default async function ProjectsPage() {
     id: p._id,
   }))
 
-  return <ProjectsClient projects={mappedProjects} pageData={pageData} serviceTags={serviceTags} />
+  return (
+    <ProjectsClient
+      projects={mappedProjects}
+      pageData={pageData}
+      serviceCategories={[...SERVICE_CATEGORIES]}
+    />
+  )
 }

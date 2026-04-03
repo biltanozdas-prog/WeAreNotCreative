@@ -33,8 +33,19 @@ export const project = defineType({
             name: 'services',
             title: 'Services',
             type: 'array',
-            description: 'Select from the defined Service Tags. These drive the filter on the Projects page.',
-            of: [{ type: 'reference', to: [{ type: 'serviceTag' }] }],
+            description: 'Select all service categories that apply. These drive the filter on the Projects page.',
+            of: [{ type: 'string' }],
+            options: {
+                list: [
+                    { title: 'Brand Strategy', value: 'BRAND STRATEGY' },
+                    { title: 'Visual Systems', value: 'VISUAL SYSTEMS' },
+                    { title: 'Art Direction', value: 'ART DIRECTION' },
+                    { title: 'Brand Architecture', value: 'BRAND ARCHITECTURE' },
+                    { title: 'Digital Experiences', value: 'DIGITAL EXPERIENCES' },
+                    { title: 'Objects & Products', value: 'OBJECTS & PRODUCTS' },
+                    { title: 'Content & Campaign Systems', value: 'CONTENT & CAMPAIGN SYSTEMS' },
+                ],
+            },
         }),
         defineField({
             name: 'excerpt',

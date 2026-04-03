@@ -4,42 +4,36 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState, useMemo, useRef, useEffect } from "react"
 
-interface ServiceTag { _id: string; name: string }
-
 export function ProjectsClient({
   projects,
   pageData,
-  serviceTags = [],
+  serviceCategories = [],
 }: {
   projects: any[]
   pageData?: any
-  serviceTags?: ServiceTag[]
+  serviceCategories?: string[]
 }) {
   const [activePreviewImageSrc, setActivePreviewImageSrc] = useState<string | null>(null)
   const [selectedService, setSelectedService] = useState<string>("All")
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Only show service tags that are actually used in at least one project
-  const usedServiceNames = useMemo(() => {
+  // Only show categories that appear in at least one project's services array
+  const usedCategories = useMemo(() => {
     const set = new Set<string>()
     projects.forEach(p => {
       if (Array.isArray(p.services)) p.services.forEach((s: string) => s && set.add(s))
     })
-    return set
-  }, [projects])
-
-  const visibleTags = useMemo(
-    () => serviceTags.filter(t => usedServiceNames.has(t.name)),
-    [serviceTags, usedServiceNames]
-  )
+    // Preserve the canonical order from serviceCategories
+    return serviceCategories.filter(cat => set.has(cat))
+  }, [projects, serviceCategories])
 
   const filteredProjects = useMemo(() => {
     if (selectedService === "All") return projects
     return projects.filter(p => Array.isArray(p.services) && p.services.includes(selectedService))
   }, [selectedService, projects])
 
-  // Close dropdown on outside click
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -50,8 +44,8 @@ export function ProjectsClient({
     return () => document.removeEventListener("mousedown", handler)
   }, [])
 
-  const handleSelect = (name: string) => {
-    setSelectedService(name)
+  const handleSelect = (value: string) => {
+    setSelectedService(value)
     setDropdownOpen(false)
   }
 
@@ -119,22 +113,12 @@ export function ProjectsClient({
             <span className="font-['Montserrat'] font-black text-[clamp(28px,5vw,56px)] leading-none uppercase tracking-[-0.02em]">
               {selectedService === "All" ? "All Projects" : selectedService}
             </span>
-            {/* Up/down arrows */}
+            {/* Up / down chevrons */}
             <span className="flex flex-col gap-[3px] ml-1 opacity-40 group-hover:opacity-80 transition-opacity">
-              <svg
-                width="14" height="8"
-                viewBox="0 0 14 8"
-                fill="none"
-                className={`transition-transform duration-200 ${dropdownOpen ? "rotate-0" : "rotate-180"}`}
-              >
+              <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
                 <path d="M1 7L7 1L13 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <svg
-                width="14" height="8"
-                viewBox="0 0 14 8"
-                fill="none"
-                className={`transition-transform duration-200 ${dropdownOpen ? "rotate-180" : "rotate-0"}`}
-              >
+              <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
                 <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
@@ -145,27 +129,26 @@ export function ProjectsClient({
             )}
           </button>
 
-          {/* Dropdown list */}
+          {/* Dropdown list — only categories used in at least one project */}
           {dropdownOpen && (
-            <div className="absolute top-full left-4 md:left-[60px] mt-3 flex flex-col gap-1 z-20 min-w-[200px]">
-              {/* "All" option */}
+            <div className="absolute top-full left-4 md:left-[60px] mt-3 flex flex-col gap-1 z-20">
               <button
                 onClick={() => handleSelect("All")}
-                className={`text-left font-['Montserrat'] font-medium text-[16px] md:text-[18px] uppercase tracking-[0.08em] py-2 transition-opacity ${
+                className={`text-left font-['Montserrat'] font-medium text-[15px] md:text-[17px] uppercase tracking-[0.08em] py-[6px] transition-opacity ${
                   selectedService === "All" ? "opacity-100" : "opacity-40 hover:opacity-100"
                 }`}
               >
                 All Projects
               </button>
-              {visibleTags.map(tag => (
+              {usedCategories.map(cat => (
                 <button
-                  key={tag._id}
-                  onClick={() => handleSelect(tag.name)}
-                  className={`text-left font-['Montserrat'] font-medium text-[16px] md:text-[18px] uppercase tracking-[0.08em] py-2 transition-opacity ${
-                    selectedService === tag.name ? "opacity-100" : "opacity-40 hover:opacity-100"
+                  key={cat}
+                  onClick={() => handleSelect(cat)}
+                  className={`text-left font-['Montserrat'] font-medium text-[15px] md:text-[17px] uppercase tracking-[0.08em] py-[6px] transition-opacity ${
+                    selectedService === cat ? "opacity-100" : "opacity-40 hover:opacity-100"
                   }`}
                 >
-                  {tag.name}
+                  {cat}
                 </button>
               ))}
             </div>
@@ -173,13 +156,16 @@ export function ProjectsClient({
         </div>
 
         {/* ── Project Index List ──────────────────────────────────── */}
-        <div className="w-full flex flex-col pointer-events-auto border-t border-white/20 pt-4">
+        {/* onMouseLeave on the wrapper resets the bg image when cursor exits the list */}
+        <div
+          className="w-full flex flex-col pointer-events-auto border-t border-white/20 pt-4"
+          onMouseLeave={() => setActivePreviewImageSrc(null)}
+        >
           {filteredProjects.map((project) => (
             <ProjectRow
               key={project.id}
               project={project}
               onHover={setActivePreviewImageSrc}
-              onLeave={() => setActivePreviewImageSrc(null)}
               activeFilter={selectedService}
             />
           ))}
@@ -192,25 +178,23 @@ export function ProjectsClient({
 function ProjectRow({
   project,
   onHover,
-  onLeave,
   activeFilter,
 }: {
   project: any
   onHover: (src: string | null) => void
-  onLeave: () => void
   activeFilter: string
 }) {
   const imageSrc = project.featuredImage || project.heroImage || project.image
   const slugStr = typeof project.slug === "string" ? project.slug : project.slug?.current
 
-  const hasFilterMatch =
-    activeFilter !== "All" &&
-    (Array.isArray(project.services)
-      ? project.services.includes(activeFilter)
-      : project.industry === activeFilter)
-  const service = hasFilterMatch
-    ? activeFilter
-    : project.services?.[0] || project.industry || "Project"
+  // Right-side service label logic:
+  // - Filter active + project has that service → show the matched service
+  // - Otherwise → show first service in the array, or industry as fallback
+  const matchedService =
+    activeFilter !== "All" && Array.isArray(project.services) && project.services.includes(activeFilter)
+      ? activeFilter
+      : null
+  const service = matchedService ?? project.services?.[0] ?? project.industry ?? ""
 
   const clientName = project.client ? `${project.client} / ` : ""
 
@@ -219,7 +203,6 @@ function ProjectRow({
       href={`/projects/${slugStr}`}
       className="group block w-full cursor-pointer no-underline pointer-events-auto"
       onMouseEnter={() => imageSrc && onHover(imageSrc)}
-      onMouseLeave={onLeave}
     >
       <div className="w-full px-4 md:px-[60px] flex items-center justify-between py-[9px] overflow-hidden">
         {/* Left: Client / Title */}
@@ -230,13 +213,15 @@ function ProjectRow({
           </span>
         </div>
 
-        {/* Right: Service (hidden on mobile) */}
-        <div className="hidden md:inline-block relative isolate flex-shrink-0 text-right">
-          <div className="absolute inset-0 bg-white mix-blend-difference z-10 transition-transform duration-200 ease-out origin-left scale-x-0 group-hover:scale-x-100 pointer-events-none" />
-          <span className="relative z-20 mix-blend-difference font-['Montserrat'] font-medium text-[13px] md:text-[14px] uppercase tracking-[0.12em] block">
-            {service}
-          </span>
-        </div>
+        {/* Right: Service label — hidden on mobile */}
+        {service && (
+          <div className="hidden md:inline-block relative isolate flex-shrink-0 text-right">
+            <div className="absolute inset-0 bg-white mix-blend-difference z-10 transition-transform duration-200 ease-out origin-left scale-x-0 group-hover:scale-x-100 pointer-events-none" />
+            <span className="relative z-20 mix-blend-difference font-['Montserrat'] font-medium text-[13px] md:text-[14px] uppercase tracking-[0.12em] block">
+              {service}
+            </span>
+          </div>
+        )}
       </div>
     </Link>
   )
