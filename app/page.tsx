@@ -115,8 +115,8 @@ export default async function HomePage() {
       <div className="h-[50vh] md:h-screen" />
       {/* Content starts after the video */}
       <ManifestoSection
-        headline={homeData?.headline ?? ""}
-        body={homeData?.manifestoText ?? ""}
+        headline={homeData?.headline || undefined}
+        body={homeData?.manifestoText || undefined}
       />
       <ProjectShowcaseSlider projects={selectedProjects as any} />
 
