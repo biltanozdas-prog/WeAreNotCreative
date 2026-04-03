@@ -11,21 +11,11 @@ export const metadata: Metadata = {
   description: "A curated selection across disciplines. Each project is shaped by its own context, scale and ambition."
 }
 
-// Source of truth — order determines filter dropdown order
-const SERVICE_CATEGORIES = [
-  "BRAND STRATEGY",
-  "VISUAL SYSTEMS",
-  "ART DIRECTION",
-  "BRAND ARCHITECTURE",
-  "DIGITAL EXPERIENCES",
-  "OBJECTS & PRODUCTS",
-  "CONTENT & CAMPAIGN SYSTEMS",
-] as const
-
 export default async function ProjectsPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
+  // Fetch projectsPage singleton for CMS-editable page header
   let pageData: any = null
   try {
     pageData = await client.fetch(
@@ -35,6 +25,20 @@ export default async function ProjectsPage() {
     )
   } catch (e) {
     console.warn("[Projects] Sanity fetch failed for projectsPage.", e)
+  }
+
+  // Fetch service categories from the Services page disciplines array.
+  // disciplines[].label is the canonical service name used in the filter.
+  let serviceCategories: string[] = []
+  try {
+    const servicesData = await client.fetch(
+      groq`*[_type == "services"][0]{ "serviceCategories": disciplines[].label }`,
+      {},
+      { next: { tags: ["services"] } }
+    )
+    serviceCategories = (servicesData?.serviceCategories || []).filter(Boolean)
+  } catch (e) {
+    console.warn("[Projects] Sanity fetch failed for services disciplines.", e)
   }
 
   const fields = `{
@@ -70,7 +74,7 @@ export default async function ProjectsPage() {
     <ProjectsClient
       projects={mappedProjects}
       pageData={pageData}
-      serviceCategories={[...SERVICE_CATEGORIES]}
+      serviceCategories={serviceCategories}
     />
   )
 }
