@@ -15,12 +15,7 @@ export function ProjectsClient({
 }) {
   const [activePreviewImageSrc, setActivePreviewImageSrc] = useState<string | null>(null)
   const [selectedService, setSelectedService] = useState<string>("All")
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  // Dropdown panel is rendered with fixed positioning OUTSIDE the
-  // mix-blend-difference layer so it gets a solid background.
-  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null)
-  const filterBtnRef = useRef<HTMLButtonElement>(null)
-  const dropdownPanelRef = useRef<HTMLDivElement>(null)
+  const [panelOpen, setPanelOpen] = useState(false)
 
   const filteredProjects = useMemo(() => {
     if (selectedService === "All") return projects
@@ -29,35 +24,16 @@ export function ProjectsClient({
     )
   }, [selectedService, projects])
 
-  const toggleDropdown = () => {
-    if (!dropdownOpen && filterBtnRef.current) {
-      const rect = filterBtnRef.current.getBoundingClientRect()
-      // fixed positioning → top/left are relative to viewport
-      setDropdownPos({ top: rect.bottom + 8, left: rect.left })
-    }
-    setDropdownOpen((v) => !v)
-  }
-
-  // Close when clicking outside both the button and the panel
-  useEffect(() => {
-    if (!dropdownOpen) return
-    const handler = (e: MouseEvent) => {
-      const target = e.target as Node
-      if (
-        !filterBtnRef.current?.contains(target) &&
-        !dropdownPanelRef.current?.contains(target)
-      ) {
-        setDropdownOpen(false)
-      }
-    }
-    document.addEventListener("mousedown", handler)
-    return () => document.removeEventListener("mousedown", handler)
-  }, [dropdownOpen])
-
   const handleSelect = (value: string) => {
     setSelectedService(value)
-    setDropdownOpen(false)
+    setPanelOpen(false)
   }
+
+  // Heading text: "ALL PROJECTS" or "ALL PROJECTS — ART DIRECTION"
+  const headingText =
+    selectedService === "All"
+      ? "All Projects"
+      : `All Projects — ${selectedService}`
 
   return (
     <div className="relative w-full min-h-screen">
@@ -84,61 +60,152 @@ export function ProjectsClient({
         })}
       </div>
 
-      {/* ── Layer 1: Blended foreground (header + filter btn + list) */}
-      <div
-        className="relative z-10 w-full pt-[140px] md:pt-[160px] pb-32 pointer-events-none"
-        style={{ mixBlendMode: "difference", color: "white" }}
-      >
+      {/* ── Layer 1: Non-blended header + filter section ──────────
+           Solid white background — no mix-blend-difference here so
+           the dropdown panel and tags render with proper colours. */}
+      <div className="relative z-10 w-full pt-[140px] md:pt-[160px] bg-white">
+
         {/* Page header */}
-        <div className="px-4 md:px-[60px] mb-10 md:mb-16 pointer-events-auto">
+        <div className="px-4 md:px-[60px] mb-10 md:mb-16">
           <div className="flex items-center gap-4 mb-6">
             {pageData?.eyebrowLabel && (
-              <span className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em]">
+              <span className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-foreground">
                 {pageData.eyebrowLabel}
               </span>
             )}
-            <span className="w-6 h-px bg-white" />
-            <span className="font-sans font-medium text-[12px] md:text-[13px] uppercase tracking-[0.05em]">
+            <span className="w-6 h-px bg-foreground" />
+            <span className="font-sans font-medium text-[12px] md:text-[13px] uppercase tracking-[0.05em] text-foreground">
               {String(projects.length).padStart(2, "0")} Projects
             </span>
           </div>
           {pageData?.intro && (
-            <p className="font-sans font-light text-[14px] md:text-[15px] max-w-[440px] leading-[1.6]">
+            <p className="font-sans font-light text-[14px] md:text-[15px] max-w-[440px] leading-[1.6] text-foreground">
               {pageData.intro}
             </p>
           )}
         </div>
 
-        {/* Filter trigger button — inside blended layer so text inverts correctly */}
-        <div className="px-4 md:px-[60px] mb-8 pointer-events-auto">
+        {/* Filter trigger */}
+        <div className="px-4 md:px-[60px] mb-0">
           <button
-            ref={filterBtnRef}
-            onClick={toggleDropdown}
+            onClick={() => setPanelOpen((v) => !v)}
             className="flex items-center gap-3 group"
-            aria-expanded={dropdownOpen}
+            aria-expanded={panelOpen}
           >
-            <span className="font-['Montserrat'] font-black text-[clamp(28px,5vw,56px)] leading-none uppercase tracking-[-0.02em]">
-              {selectedService === "All" ? "All Projects" : selectedService}
+            <span className="font-['Montserrat'] font-black text-[clamp(28px,5vw,56px)] leading-none uppercase tracking-[-0.02em] text-foreground">
+              {headingText}
             </span>
-            <span className="flex flex-col gap-[3px] ml-1 opacity-40 group-hover:opacity-80 transition-opacity">
-              <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
-                <path d="M1 7L7 1L13 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            <span
+              className="opacity-40 group-hover:opacity-80 transition-all duration-200"
+              style={{
+                display: "inline-block",
+                transform: panelOpen ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.25s ease, opacity 0.2s",
+                marginBottom: "2px",
+              }}
+            >
               <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
                 <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
             {selectedService !== "All" && (
-              <span className="font-['Montserrat'] font-light text-[13px] md:text-[15px] opacity-50 uppercase tracking-[0.1em] ml-2 self-end mb-[6px]">
+              <span className="font-['Montserrat'] font-light text-[13px] md:text-[15px] opacity-50 uppercase tracking-[0.1em] ml-2 self-end mb-[6px] text-foreground">
                 {String(filteredProjects.length).padStart(2, "0")}
               </span>
             )}
           </button>
-        </div>
 
-        {/* Project index list */}
+          {/* Filter panel — document flow, max-height transition */}
+          <div
+            style={{
+              maxHeight: panelOpen ? "400px" : "0px",
+              overflow: "hidden",
+              transition: "max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          >
+            <div className="flex flex-wrap gap-2 pt-5 pb-6">
+              {/* "All" pill */}
+              <button
+                onClick={() => handleSelect("All")}
+                className="transition-colors duration-150"
+                style={{
+                  border: "1px solid black",
+                  borderRadius: "100px",
+                  padding: "8px 18px",
+                  fontSize: "11px",
+                  letterSpacing: "1.5px",
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                  fontFamily: "Montserrat, sans-serif",
+                  background: selectedService === "All" ? "black" : "transparent",
+                  color: selectedService === "All" ? "white" : "black",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedService !== "All") {
+                    ;(e.currentTarget as HTMLButtonElement).style.background = "black"
+                    ;(e.currentTarget as HTMLButtonElement).style.color = "white"
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedService !== "All") {
+                    ;(e.currentTarget as HTMLButtonElement).style.background = "transparent"
+                    ;(e.currentTarget as HTMLButtonElement).style.color = "black"
+                  }
+                }}
+              >
+                All
+              </button>
+
+              {serviceCategories.map((cat) => {
+                const isActive = selectedService === cat
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleSelect(cat)}
+                    className="transition-colors duration-150"
+                    style={{
+                      border: "1px solid black",
+                      borderRadius: "100px",
+                      padding: "8px 18px",
+                      fontSize: "11px",
+                      letterSpacing: "1.5px",
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                      fontFamily: "Montserrat, sans-serif",
+                      background: isActive ? "black" : "transparent",
+                      color: isActive ? "white" : "black",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        ;(e.currentTarget as HTMLButtonElement).style.background = "black"
+                        ;(e.currentTarget as HTMLButtonElement).style.color = "white"
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        ;(e.currentTarget as HTMLButtonElement).style.background = "transparent"
+                        ;(e.currentTarget as HTMLButtonElement).style.color = "black"
+                      }
+                    }}
+                  >
+                    {cat}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Layer 2: Blended project list ────────────────────────── */}
+      <div
+        className="relative z-10 w-full pb-32"
+        style={{ mixBlendMode: "difference", color: "white" }}
+      >
         <div
-          className="w-full flex flex-col pointer-events-auto border-t border-white/20 pt-4"
+          className="w-full flex flex-col border-t border-white/20 pt-4"
           onMouseLeave={() => setActivePreviewImageSrc(null)}
         >
           {filteredProjects.map((project) => (
@@ -151,37 +218,6 @@ export function ProjectsClient({
           ))}
         </div>
       </div>
-
-      {/* ── Layer 2: Dropdown panel — OUTSIDE blended layer ────────
-           Rendered with position:fixed so it sits above everything
-           with a solid background, unaffected by mix-blend-difference. */}
-      {dropdownOpen && dropdownPos && serviceCategories.length > 0 && (
-        <div
-          ref={dropdownPanelRef}
-          className="fixed z-50 bg-background border-t-2 border-foreground flex flex-col py-3 min-w-[260px]"
-          style={{ top: dropdownPos.top, left: dropdownPos.left }}
-        >
-          <button
-            onClick={() => handleSelect("All")}
-            className={`text-left font-['Montserrat'] font-medium text-[14px] md:text-[15px] uppercase tracking-[0.08em] px-6 py-[7px] transition-opacity text-foreground ${
-              selectedService === "All" ? "opacity-100" : "opacity-40 hover:opacity-100"
-            }`}
-          >
-            All Projects
-          </button>
-          {serviceCategories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => handleSelect(cat)}
-              className={`text-left font-['Montserrat'] font-medium text-[14px] md:text-[15px] uppercase tracking-[0.08em] px-6 py-[7px] transition-opacity text-foreground ${
-                selectedService === cat ? "opacity-100" : "opacity-40 hover:opacity-100"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      )}
 
     </div>
   )
