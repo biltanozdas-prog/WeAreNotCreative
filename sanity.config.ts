@@ -167,12 +167,12 @@ export default defineConfig({
 
                         S.divider(),
 
-                        // ── SERVICE TAGS ──────────────────────────────
+                        // ── DISCIPLINES ───────────────────────────────
                         S.listItem()
-                            .title('SERVICE TAGS')
+                            .title('DISCIPLINES')
                             .child(
-                                S.documentTypeList('serviceTag')
-                                    .title('Service Tags')
+                                S.documentTypeList('discipline')
+                                    .title('Disciplines')
                                     .defaultOrdering([{ field: 'order', direction: 'asc' }])
                             ),
 

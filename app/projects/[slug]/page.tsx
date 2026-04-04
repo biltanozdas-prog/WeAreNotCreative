@@ -92,7 +92,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
     const query = preview
       ? groq`*[_type == "project" && ${matchFilter}][0] {
           ...,
-          "services": services[]->name,
+          "services": services[]->title,
           blocks[] {
             ...,
             _type == "fullVideo" => {
@@ -110,7 +110,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
         }`
       : groq`*[_type == "project" && ${matchFilter} && coalesce(published, true) == true][0] {
           ...,
-          "services": services[]->name,
+          "services": services[]->title,
           blocks[] {
             ...,
             _type == "fullVideo" => {
@@ -173,26 +173,26 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
             {projectData.industry || projectData.category}
           </p>
-          <h1 className="font-sans font-black text-[12vw] md:text-[8vw] leading-[0.8] uppercase text-foreground mb-8 md:mb-10 whitespace-pre-line tracking-[-0.04em] break-words w-full">
+          <h1 className="font-sans font-black text-[8vw] md:text-[6vw] leading-[0.9] uppercase text-foreground mb-8 md:mb-10 whitespace-pre-line tracking-[-0.04em] break-words w-full">
             {projectData.title}
           </h1>
-          <p className="font-sans font-light text-[16px] md:text-[20px] text-foreground/70 max-w-[600px] leading-[1.6]">
+          <p className="font-sans font-light text-[16px] md:text-[20px] text-foreground max-w-[600px] leading-[1.6]">
             {projectData.excerpt || projectData.description}
           </p>
 
           {/* Meta Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-16 md:mt-24 border-t border-secondary pt-8 md:pt-10">
             <div>
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Client</span>
-              <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.client}</span>
+              <span className="font-sans font-medium text-[11px] tracking-[0.2em] uppercase text-foreground block mb-3">Client</span>
+              <span className="font-sans font-medium text-[13px] md:text-[14px] uppercase text-foreground tracking-[0.05em]">{projectData.client}</span>
             </div>
             <div>
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Industry</span>
-              <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.industry || projectData.category}</span>
+              <span className="font-sans font-medium text-[11px] tracking-[0.2em] uppercase text-foreground block mb-3">Industry</span>
+              <span className="font-sans font-medium text-[13px] md:text-[14px] uppercase text-foreground tracking-[0.05em]">{projectData.industry || projectData.category}</span>
             </div>
             <div>
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.25em] text-muted-foreground uppercase block mb-3">Services</span>
-              <span className="font-sans font-medium text-[14px] md:text-[15px] uppercase text-foreground tracking-[0.02em]">{projectData.services?.join(" / ")}</span>
+              <span className="font-sans font-medium text-[11px] tracking-[0.2em] uppercase text-foreground block mb-3">Services</span>
+              <span className="font-sans font-medium text-[13px] md:text-[14px] uppercase text-foreground tracking-[0.05em]">{projectData.services?.join(" / ")}</span>
             </div>
           </div>
         </header>
@@ -210,7 +210,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           <ProjectBlocks blocks={projectData.blocks} />
         ) : (
           <div className="mb-24 max-w-[900px]">
-            <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
+            <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground whitespace-pre-line prose-p:mb-4">
               {projectData.excerpt || projectData.description || "Project details coming soon."}
             </div>
           </div>

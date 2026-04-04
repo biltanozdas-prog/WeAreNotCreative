@@ -33,20 +33,8 @@ export const project = defineType({
             name: 'services',
             title: 'Services',
             type: 'array',
-            description: 'Select all service categories that apply. These drive the filter on the Projects page.',
-            of: [{ type: 'string' }],
-            // Keep this list in sync with Services Page → disciplines[].label in Sanity CMS
-            options: {
-                list: [
-                    { title: 'Brand Strategy', value: 'BRAND STRATEGY' },
-                    { title: 'Visual Systems', value: 'VISUAL SYSTEMS' },
-                    { title: 'Art Direction', value: 'ART DIRECTION' },
-                    { title: 'Brand Architecture', value: 'BRAND ARCHITECTURE' },
-                    { title: 'Digital Experiences', value: 'DIGITAL EXPERIENCES' },
-                    { title: 'Objects & Products', value: 'OBJECTS & PRODUCTS' },
-                    { title: 'Content & Campaign Systems', value: 'CONTENT & CAMPAIGN SYSTEMS' },
-                ],
-            },
+            description: 'Select disciplines that apply. Managed under DISCIPLINES in the sidebar.',
+            of: [{ type: 'reference', to: [{ type: 'discipline' }] }],
         }),
         defineField({
             name: 'excerpt',
