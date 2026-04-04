@@ -48,6 +48,7 @@ export function FullImageBlock({
   value: any
   urlFor: (img: any) => { url: () => string }
 }) {
+  if (!value.image?.asset?._ref) return null
   const src = urlFor(value.image).url()
   return (
     <div className="w-full mb-20 md:mb-28">
@@ -110,7 +111,7 @@ export function TwoColumnBlock({
         <ColumnSlot
           type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
           text={value.leftContent}
-          imageSrc={value.leftImageUrl || (value.leftImage ? urlFor(value.leftImage).url() : null)}
+          imageSrc={value.leftImageUrl || (value.leftImage?.asset?._ref ? urlFor(value.leftImage).url() : null)}
           videoSrc={value.leftVideoUrl || null}
           urlFor={urlFor}
           PortableTextComp={PortableTextComp}
@@ -120,7 +121,7 @@ export function TwoColumnBlock({
         <ColumnSlot
           type={value.rightType || (value.rightImage || value.rightImageUrl ? 'image' : value.rightVideoUrl ? 'video' : value.rightContent ? 'text' : 'image')}
           text={value.rightContent}
-          imageSrc={value.rightImageUrl || (value.rightImage ? urlFor(value.rightImage).url() : null)}
+          imageSrc={value.rightImageUrl || (value.rightImage?.asset?._ref ? urlFor(value.rightImage).url() : null)}
           videoSrc={value.rightVideoUrl || null}
           urlFor={urlFor}
           PortableTextComp={PortableTextComp}
@@ -209,7 +210,7 @@ export function GalleryBlock({
 
   return (
     <div className={`grid gap-4 md:gap-8 mb-20 md:mb-28 w-full ${cols}`}>
-      {images.map((img: any, idx: number) => (
+      {images.filter((img: any) => img?.asset?._ref).map((img: any, idx: number) => (
         <ClickableImage
           key={idx}
           src={urlFor(img).url()}
