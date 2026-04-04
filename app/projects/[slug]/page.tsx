@@ -156,7 +156,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
     <LightboxProvider images={lightboxImages}>
       <LightboxOverlay />
 
-      <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px] w-full max-w-[100vw] overflow-x-hidden">
+      <main className="bg-background min-h-screen pt-[160px] pb-32 md:pt-[200px] md:pb-[180px] w-full max-w-screen overflow-x-hidden">
         {/* Floating Close Button */}
         <div className="fixed top-24 md:top-32 right-8 md:right-[60px] z-[90] mix-blend-difference">
           <Link
@@ -169,7 +169,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
         </div>
 
         {/* Header */}
-        <header className="mb-24 md:mb-32">
+        <header className="mb-24 md:mb-32 px-8 md:px-[60px]">
           <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
             {projectData.industry || projectData.category}
           </p>
@@ -209,7 +209,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
         {hasBlocks ? (
           <ProjectBlocks blocks={projectData.blocks} />
         ) : (
-          <div className="mb-24 max-w-[900px]">
+          <div className="mb-24 max-w-[900px] px-8 md:px-[60px]">
             <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground whitespace-pre-line prose-p:mb-4">
               {projectData.excerpt || projectData.description || "Project details coming soon."}
             </div>
@@ -218,7 +218,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
 
         {/* Next Project & Return */}
         {nextProject && (
-          <div className="border-t border-secondary pt-16 md:pt-24 mt-16 md:mt-24 flex flex-col md:flex-row md:items-end justify-between gap-12">
+          <div className="border-t border-secondary pt-16 md:pt-24 mt-16 md:mt-24 flex flex-col md:flex-row md:items-end justify-between gap-12 px-8 md:px-[60px]">
             <div>
               <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
                 Next Project

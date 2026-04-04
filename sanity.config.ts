@@ -25,7 +25,7 @@ function resolvePreviewUrl(doc: { _type?: string; slug?: string | { current?: st
         case 'project':
             return previewUrl(s ? `/projects/${s}` : '/')
         case 'blogPost':
-            return previewUrl('/blog')
+            return previewUrl(s ? `/blog/${s}` : '/blog')
         case 'about':
             return previewUrl('/about')
         case 'services':
