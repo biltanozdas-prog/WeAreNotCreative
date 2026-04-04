@@ -50,15 +50,15 @@ export function FullImageBlock({
 }) {
   const src = urlFor(value.image).url()
   return (
-    <div className="w-full mb-20 md:mb-28 relative flex flex-col items-center">
+    <div className="w-full mb-20 md:mb-28">
       <ClickableImage
         src={src}
         alt={value.caption || "Full Image"}
-        className="w-full flex justify-center"
-        imgClassName="max-h-[70vh] md:max-h-[85vh] w-auto object-contain block"
+        className="w-full"
+        imgClassName="max-h-[60vh] md:max-h-[85vh] w-full h-auto object-contain block"
       />
       {value.caption && (
-        <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase text-center">
+        <p className="mt-4 md:mt-6 px-6 md:px-12 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
           {value.caption}
         </p>
       )}
@@ -105,23 +105,27 @@ export function TwoColumnBlock({
   PortableTextComp: any
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-20 md:mb-28 items-center">
-      <ColumnSlot
-        type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
-        text={value.leftContent}
-        imageSrc={value.leftImageUrl || (value.leftImage ? urlFor(value.leftImage).url() : null)}
-        videoSrc={value.leftVideoUrl || null}
-        urlFor={urlFor}
-        PortableTextComp={PortableTextComp}
-      />
-      <ColumnSlot
-        type={value.rightType || (value.rightImage || value.rightImageUrl ? 'image' : value.rightVideoUrl ? 'video' : value.rightContent ? 'text' : 'image')}
-        text={value.rightContent}
-        imageSrc={value.rightImageUrl || (value.rightImage ? urlFor(value.rightImage).url() : null)}
-        videoSrc={value.rightVideoUrl || null}
-        urlFor={urlFor}
-        PortableTextComp={PortableTextComp}
-      />
+    <div className="flex flex-col md:flex-row w-full mb-20 md:mb-28">
+      <div className="w-full md:w-1/2">
+        <ColumnSlot
+          type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
+          text={value.leftContent}
+          imageSrc={value.leftImageUrl || (value.leftImage ? urlFor(value.leftImage).url() : null)}
+          videoSrc={value.leftVideoUrl || null}
+          urlFor={urlFor}
+          PortableTextComp={PortableTextComp}
+        />
+      </div>
+      <div className="w-full md:w-1/2">
+        <ColumnSlot
+          type={value.rightType || (value.rightImage || value.rightImageUrl ? 'image' : value.rightVideoUrl ? 'video' : value.rightContent ? 'text' : 'image')}
+          text={value.rightContent}
+          imageSrc={value.rightImageUrl || (value.rightImage ? urlFor(value.rightImage).url() : null)}
+          videoSrc={value.rightVideoUrl || null}
+          urlFor={urlFor}
+          PortableTextComp={PortableTextComp}
+        />
+      </div>
     </div>
   )
 }
@@ -164,13 +168,13 @@ function ColumnSlot({
 
   // text (default) — also falls back here if declared type has no content
   return (
-    <div className="font-sans font-light leading-[1.65] text-foreground/80">
+    <div className="font-sans font-light leading-[1.7] text-foreground px-6 md:px-12 lg:px-20 my-12 md:my-20">
       <PortableTextComp
         value={text}
         components={{
           block: {
             normal: ({ children }: any) => (
-              <p className="text-[16px] md:text-[20px] mb-5 last:mb-0">{children}</p>
+              <p className="text-[16px] md:text-[18px] mb-5 last:mb-0">{children}</p>
             ),
             h2: ({ children }: any) => (
               <h2 className="font-black text-[clamp(20px,3vw,32px)] uppercase tracking-[-0.02em] leading-[0.9] mb-6">{children}</h2>
@@ -197,17 +201,21 @@ export function GalleryBlock({
   
   // User requested a better method than strict cropping at same heights.
   // Standard CSS Grid keeps logic pure and handles natural ratios well.
-  const cols = images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-  
+  const cols = images.length === 1
+    ? 'grid-cols-1'
+    : images.length === 2
+    ? 'grid-cols-1 md:grid-cols-2'
+    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+
   return (
-    <div className={`grid gap-4 md:gap-8 mb-20 md:mb-28 items-center ${cols}`}>
+    <div className={`grid gap-4 md:gap-8 mb-20 md:mb-28 w-full ${cols}`}>
       {images.map((img: any, idx: number) => (
         <ClickableImage
           key={idx}
           src={urlFor(img).url()}
           alt={`Gallery image ${idx + 1}`}
-          className="w-full flex justify-center"
-          imgClassName="max-h-[70vh] md:max-h-[85vh] w-auto object-contain block"
+          className="w-full"
+          imgClassName="max-h-[60vh] md:max-h-[85vh] w-full h-auto object-contain block"
         />
       ))}
     </div>

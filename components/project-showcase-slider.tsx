@@ -186,7 +186,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                                         </span>
                                     </div>
                                     {/* Brand label — white background block */}
-                                    <div className="bg-white text-black px-[10px] py-[6px] md:px-[14px] md:py-[10px] font-['Montserrat'] font-black text-[14px] md:text-[22px] leading-none">
+                                    <div className="bg-white text-black px-[10px] py-[6px] md:px-[14px] md:py-[10px] font-['Montserrat'] font-black text-[11px] md:text-[22px] leading-none">
                                         WeAreNotCreative
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                                 {/* ANCHOR 2: Client Name — offset right */}
                                 {(project.client || project.title) && (
                                     <div className="ml-[40px] md:ml-[70px] mb-[10px] md:mb-[14px] max-w-[85vw]">
-                                        <div className="bg-white text-black inline-block px-[12px] py-[8px] md:px-[16px] md:py-[12px] text-[15px] md:text-[34px] font-black font-['Montserrat'] leading-[0.9] uppercase tracking-[-0.02em] whitespace-normal md:whitespace-nowrap">
+                                        <div className="bg-white text-black inline-block px-[12px] py-[8px] md:px-[16px] md:py-[12px] text-[13px] md:text-[34px] font-black font-['Montserrat'] leading-[0.9] uppercase tracking-[-0.02em] whitespace-normal md:whitespace-nowrap">
                                             {project.client || project.title}
                                         </div>
                                     </div>
@@ -247,7 +247,28 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                                         href={`/projects/${slugStr}`}
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        <div className="bg-accent text-white px-[34px] py-[12px] text-[14px] font-black font-['Montserrat'] leading-none uppercase tracking-[0.02em] hover:bg-black transition-colors flex items-center justify-center text-center">
+                                        <div
+                                            className="font-['Montserrat'] font-black leading-none uppercase flex items-center justify-center text-center transition-colors duration-150"
+                                            style={{
+                                                background: "transparent",
+                                                border: "1px solid black",
+                                                color: "black",
+                                                fontSize: "10px",
+                                                letterSpacing: "0.2em",
+                                                padding: "10px 20px",
+                                                borderRadius: 0,
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                const el = e.currentTarget as HTMLDivElement
+                                                el.style.background = "black"
+                                                el.style.color = "white"
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                const el = e.currentTarget as HTMLDivElement
+                                                el.style.background = "transparent"
+                                                el.style.color = "black"
+                                            }}
+                                        >
                                             VIEW PROJECTS
                                         </div>
                                     </Link>

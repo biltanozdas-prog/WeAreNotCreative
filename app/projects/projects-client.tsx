@@ -147,7 +147,7 @@ export function ProjectsClient({
         </div>
 
         {/* Project list — no onMouseLeave: bgImage persists once set */}
-        <div className="w-full flex flex-col border-t border-current/20 mt-2 pt-2">
+        <div className="w-full flex flex-col mt-2 pt-2">
           {filteredProjects.map((project) => (
             <ProjectRow
               key={project.id}
@@ -256,8 +256,9 @@ function ProjectRow({
       href={`/projects/${slugStr}`}
       className="group block w-full cursor-pointer no-underline pointer-events-auto"
       onMouseEnter={() => imageSrc && onHover(imageSrc)}
+      onTouchStart={() => imageSrc && onHover(imageSrc)}
     >
-      <div className="w-full px-4 md:px-[60px] flex items-center justify-between py-[9px] border-b border-current/10">
+      <div className="w-full px-4 md:px-[60px] flex items-center justify-between py-[9px]">
 
         {/* Title — isolate group for sweep effect */}
         <div className="relative inline-block isolate flex-shrink-0">
