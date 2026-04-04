@@ -27,18 +27,17 @@ export default async function ProjectsPage() {
     console.warn("[Projects] Sanity fetch failed for projectsPage.", e)
   }
 
-  // Fetch service categories from the Services page disciplines array.
-  // disciplines[].label is the canonical service name used in the filter.
+  // Fetch discipline documents — single source of truth for service categories.
   let serviceCategories: string[] = []
   try {
-    const servicesData = await client.fetch(
-      groq`*[_type == "services"][0]{ "serviceCategories": disciplines[].label }`,
+    const disciplinesData = await client.fetch(
+      groq`*[_type == "discipline"] | order(order asc){ title }`,
       {},
-      { next: { tags: ["services"] } }
+      { next: { revalidate: 10 } }
     )
-    serviceCategories = (servicesData?.serviceCategories || []).filter(Boolean)
+    serviceCategories = (disciplinesData || []).map((d: { title: string }) => d.title).filter(Boolean)
   } catch (e) {
-    console.warn("[Projects] Sanity fetch failed for services disciplines.", e)
+    console.warn("[Projects] Sanity fetch failed for disciplines.", e)
   }
 
   const fields = `{
@@ -47,7 +46,7 @@ export default async function ProjectsPage() {
       title,
       client,
       industry,
-      services,
+      "services": services[]->title,
       excerpt,
       "heroImage": heroImage.asset->url,
       "image": heroImage.asset->url,

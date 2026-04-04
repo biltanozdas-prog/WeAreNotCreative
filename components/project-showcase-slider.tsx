@@ -119,7 +119,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
     return (
         <section
             ref={sliderRef}
-            className="relative w-full h-screen min-h-screen overflow-hidden bg-background"
+            className="relative w-full h-[60vh] md:h-screen md:min-h-screen overflow-hidden bg-background"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={onTouchStart}
@@ -175,7 +175,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                         <div className="absolute inset-0 pointer-events-none z-20">
 
                             {/* Left Cluster — three-anchor asymmetric editorial layout */}
-                            <div className="absolute bottom-[20vh] md:bottom-[24vh] left-[4vw] md:left-[3.5vw] flex flex-col items-start pointer-events-none">
+                            <div className="absolute bottom-[8vh] md:bottom-[24vh] left-[4vw] md:left-[3.5vw] flex flex-col items-start pointer-events-none">
 
                                 {/* ANCHOR 1: Brand Row — left edge */}
                                 <div className="flex items-center gap-[6px] md:gap-[10px] mb-[8px] md:mb-[12px]">
