@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState, useMemo, useRef, useEffect } from "react"
+import { useState, useMemo } from "react"
 
 export function ProjectsClient({
   projects,
@@ -29,7 +29,6 @@ export function ProjectsClient({
     setPanelOpen(false)
   }
 
-  // Heading text: "ALL PROJECTS" or "ALL PROJECTS — ART DIRECTION"
   const headingText =
     selectedService === "All"
       ? "All Projects"
@@ -38,11 +37,9 @@ export function ProjectsClient({
   return (
     <div className="relative w-full min-h-screen">
 
-      {/* ── Layer 0: Fixed background images ─────────────────────── */}
-      <div
-        className="fixed inset-0 pointer-events-none bg-white overflow-hidden z-0"
-        style={{ width: "100%", height: "100%" }}
-      >
+      {/* ── Fixed background layer: white base + hover images ────── */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-white" />
         {projects.map((project) => {
           const imageSrc = project.featuredImage || project.heroImage || project.image
           if (!imageSrc) return null
@@ -60,56 +57,63 @@ export function ProjectsClient({
         })}
       </div>
 
-      {/* ── Layer 1: Non-blended header + filter section ──────────
-           Solid white background — no mix-blend-difference here so
-           the dropdown panel and tags render with proper colours. */}
-      <div className="relative z-10 w-full pt-[140px] md:pt-[160px] bg-white">
+      {/* ── Content layer: mix-blend-difference over entire page ──── */}
+      <div
+        className="relative z-10 w-full min-h-screen pt-[140px] md:pt-[160px] pb-32"
+        style={{ mixBlendMode: "difference", color: "white" }}
+      >
 
         {/* Page header */}
         <div className="px-4 md:px-[60px] mb-10 md:mb-16">
           <div className="flex items-center gap-4 mb-6">
             {pageData?.eyebrowLabel && (
-              <span className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-foreground">
+              <span className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em]">
                 {pageData.eyebrowLabel}
               </span>
             )}
-            <span className="w-6 h-px bg-foreground" />
-            <span className="font-sans font-medium text-[12px] md:text-[13px] uppercase tracking-[0.05em] text-foreground">
+            <span className="w-6 h-px bg-current opacity-40" />
+            <span className="font-sans font-medium text-[12px] md:text-[13px] uppercase tracking-[0.05em]">
               {String(projects.length).padStart(2, "0")} Projects
             </span>
           </div>
           {pageData?.intro && (
-            <p className="font-sans font-light text-[14px] md:text-[15px] max-w-[440px] leading-[1.6] text-foreground">
+            <p className="font-sans font-light text-[14px] md:text-[15px] max-w-[440px] leading-[1.6]">
               {pageData.intro}
             </p>
           )}
         </div>
 
         {/* Filter trigger */}
-        <div className="px-4 md:px-[60px] mb-0">
+        <div className="px-4 md:px-[60px]">
           <button
             onClick={() => setPanelOpen((v) => !v)}
             className="flex items-center gap-3 group"
             aria-expanded={panelOpen}
           >
-            <span className="font-['Montserrat'] font-black text-[clamp(28px,5vw,56px)] leading-none uppercase tracking-[-0.02em] text-foreground">
+            <span className="font-['Montserrat'] font-black text-[clamp(28px,5vw,56px)] leading-none uppercase tracking-[-0.02em]">
               {headingText}
             </span>
             <span
-              className="opacity-40 group-hover:opacity-80 transition-all duration-200"
               style={{
                 display: "inline-block",
                 transform: panelOpen ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 0.25s ease, opacity 0.2s",
+                transition: "transform 0.25s ease",
                 marginBottom: "2px",
+                opacity: 0.6,
               }}
             >
               <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
-                <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M1 1L7 7L13 1"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </span>
             {selectedService !== "All" && (
-              <span className="font-['Montserrat'] font-light text-[13px] md:text-[15px] opacity-50 uppercase tracking-[0.1em] ml-2 self-end mb-[6px] text-foreground">
+              <span className="font-['Montserrat'] font-light text-[13px] md:text-[15px] opacity-50 uppercase tracking-[0.1em] ml-2 self-end mb-[6px]">
                 {String(filteredProjects.length).padStart(2, "0")}
               </span>
             )}
@@ -124,88 +128,26 @@ export function ProjectsClient({
             }}
           >
             <div className="flex flex-wrap gap-2 pt-5 pb-6">
-              {/* "All" pill */}
-              <button
+              <FilterPill
+                label="All"
+                active={selectedService === "All"}
                 onClick={() => handleSelect("All")}
-                className="transition-colors duration-150"
-                style={{
-                  border: "1px solid black",
-                  borderRadius: "100px",
-                  padding: "8px 18px",
-                  fontSize: "11px",
-                  letterSpacing: "1.5px",
-                  fontWeight: 500,
-                  textTransform: "uppercase",
-                  fontFamily: "Montserrat, sans-serif",
-                  background: selectedService === "All" ? "black" : "transparent",
-                  color: selectedService === "All" ? "white" : "black",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  if (selectedService !== "All") {
-                    ;(e.currentTarget as HTMLButtonElement).style.background = "black"
-                    ;(e.currentTarget as HTMLButtonElement).style.color = "white"
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedService !== "All") {
-                    ;(e.currentTarget as HTMLButtonElement).style.background = "transparent"
-                    ;(e.currentTarget as HTMLButtonElement).style.color = "black"
-                  }
-                }}
-              >
-                All
-              </button>
-
-              {serviceCategories.map((cat) => {
-                const isActive = selectedService === cat
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => handleSelect(cat)}
-                    className="transition-colors duration-150"
-                    style={{
-                      border: "1px solid black",
-                      borderRadius: "100px",
-                      padding: "8px 18px",
-                      fontSize: "11px",
-                      letterSpacing: "1.5px",
-                      fontWeight: 500,
-                      textTransform: "uppercase",
-                      fontFamily: "Montserrat, sans-serif",
-                      background: isActive ? "black" : "transparent",
-                      color: isActive ? "white" : "black",
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        ;(e.currentTarget as HTMLButtonElement).style.background = "black"
-                        ;(e.currentTarget as HTMLButtonElement).style.color = "white"
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        ;(e.currentTarget as HTMLButtonElement).style.background = "transparent"
-                        ;(e.currentTarget as HTMLButtonElement).style.color = "black"
-                      }
-                    }}
-                  >
-                    {cat}
-                  </button>
-                )
-              })}
+              />
+              {serviceCategories.map((cat) => (
+                <FilterPill
+                  key={cat}
+                  label={cat}
+                  active={selectedService === cat}
+                  onClick={() => handleSelect(cat)}
+                />
+              ))}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Layer 2: Blended project list ────────────────────────── */}
-      <div
-        className="relative z-10 w-full pb-32"
-        style={{ mixBlendMode: "difference", color: "white" }}
-      >
+        {/* Project list */}
         <div
-          className="w-full flex flex-col border-t border-white/20 pt-4"
+          className="w-full flex flex-col border-t border-current/20 mt-2 pt-2"
           onMouseLeave={() => setActivePreviewImageSrc(null)}
         >
           {filteredProjects.map((project) => (
@@ -217,11 +159,65 @@ export function ProjectsClient({
             />
           ))}
         </div>
-      </div>
 
+      </div>
     </div>
   )
 }
+
+// ── Filter pill ──────────────────────────────────────────────────────────────
+// Inside a mix-blend-difference parent:
+//   Default  → border white, bg transparent, text white  → renders black on white page
+//   Active   → border white, bg white, text black        → renders black bg, white text on white page
+//   Hover    → same as active
+
+function FilterPill({
+  label,
+  active,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        border: "1px solid currentColor",
+        borderRadius: "100px",
+        padding: "8px 18px",
+        fontSize: "11px",
+        letterSpacing: "1.5px",
+        fontWeight: 500,
+        textTransform: "uppercase",
+        fontFamily: "Montserrat, sans-serif",
+        background: active ? "white" : "transparent",
+        color: active ? "black" : "inherit",
+        cursor: "pointer",
+        transition: "background 0.15s, color 0.15s",
+      }}
+      onMouseEnter={(e) => {
+        if (!active) {
+          const el = e.currentTarget as HTMLButtonElement
+          el.style.background = "white"
+          el.style.color = "black"
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!active) {
+          const el = e.currentTarget as HTMLButtonElement
+          el.style.background = "transparent"
+          el.style.color = "inherit"
+        }
+      }}
+    >
+      {label}
+    </button>
+  )
+}
+
+// ── Project row ──────────────────────────────────────────────────────────────
 
 function ProjectRow({
   project,
@@ -251,20 +247,14 @@ function ProjectRow({
       className="group block w-full cursor-pointer no-underline pointer-events-auto"
       onMouseEnter={() => imageSrc && onHover(imageSrc)}
     >
-      <div className="w-full px-4 md:px-[60px] flex items-center justify-between py-[9px] overflow-hidden">
-        <div className="relative inline-block isolate flex-shrink-0">
-          <div className="absolute inset-0 bg-white mix-blend-difference z-10 transition-transform duration-200 ease-out origin-left scale-x-0 group-hover:scale-x-100 pointer-events-none" />
-          <span className="relative z-20 mix-blend-difference font-['Montserrat'] font-medium text-[16px] md:text-[18px] uppercase tracking-wide block">
-            {clientName}{project.title}
-          </span>
-        </div>
+      <div className="w-full px-4 md:px-[60px] flex items-center justify-between py-[9px] border-b border-current/10">
+        <span className="font-['Montserrat'] font-medium text-[16px] md:text-[18px] uppercase tracking-wide flex-shrink-0">
+          {clientName}{project.title}
+        </span>
         {service && (
-          <div className="hidden md:inline-block relative isolate flex-shrink-0 text-right">
-            <div className="absolute inset-0 bg-white mix-blend-difference z-10 transition-transform duration-200 ease-out origin-left scale-x-0 group-hover:scale-x-100 pointer-events-none" />
-            <span className="relative z-20 mix-blend-difference font-['Montserrat'] font-medium text-[13px] md:text-[14px] uppercase tracking-[0.12em] block">
-              {service}
-            </span>
-          </div>
+          <span className="hidden md:block font-['Montserrat'] font-medium text-[13px] md:text-[14px] uppercase tracking-[0.12em] flex-shrink-0 text-right">
+            {service}
+          </span>
         )}
       </div>
     </Link>
