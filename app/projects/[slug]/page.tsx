@@ -59,17 +59,20 @@ function collectImages(projectData: any): LightboxImage[] {
     })
   }
 
-  // 2. Iterate blocks in order
+  // 2. Iterate blocks in order — guard every urlFor call against missing asset refs
   const blocks: any[] = projectData.blocks || []
   for (const block of blocks) {
-    if (block._type === "fullImage" && block.image) {
+    if (block._type === "fullImage" && block.image?.asset?._ref) {
       images.push({ src: urlFor(block.image).url(), alt: block.caption || "Full Image" })
-    } else if (block._type === "twoColumn" && block.rightImage) {
+    } else if (block._type === "twoColumn" && block.rightImage?.asset?._ref) {
       images.push({ src: urlFor(block.rightImage).url(), alt: "Column media" })
     } else if (block._type === "gallery" && Array.isArray(block.images)) {
-      block.images.slice(0, 4).forEach((img: any, idx: number) => {
-        images.push({ src: urlFor(img).url(), alt: `Gallery image ${idx + 1}` })
-      })
+      block.images
+        .filter((img: any) => img?.asset?._ref)
+        .slice(0, 4)
+        .forEach((img: any, idx: number) => {
+          images.push({ src: urlFor(img).url(), alt: `Gallery image ${idx + 1}` })
+        })
     }
   }
 
