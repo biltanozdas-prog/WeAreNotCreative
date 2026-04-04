@@ -3,9 +3,6 @@
 import Image from "next/image"
 import { useLightbox } from "@/components/lightbox-provider"
 
-// Shared clickable image wrapper without harsh background fills.
-// We use a regular img tag internally, or Next image with responsive unoptimized 
-// approach to ensure aspect ratios aren't mangled by `fill` and `object-cover`.
 function ClickableImage({
   src,
   alt,
@@ -51,15 +48,15 @@ export function FullImageBlock({
   if (!value.image?.asset?._ref) return null
   const src = urlFor(value.image).url()
   return (
-    <div className="w-full mb-20 md:mb-28">
+    <div className="px-6 md:px-16 lg:px-24 my-8 md:my-16">
       <ClickableImage
         src={src}
         alt={value.caption || "Full Image"}
         className="w-full"
-        imgClassName="max-h-[60vh] md:max-h-[85vh] w-full h-auto object-contain block"
+        imgClassName="w-full h-auto block"
       />
       {value.caption && (
-        <p className="mt-4 md:mt-6 px-6 md:px-12 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
+        <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
           {value.caption}
         </p>
       )}
@@ -75,9 +72,9 @@ export function FullVideoBlock({
 }) {
   const src = value.videoUrl
   if (!src) return null
-  
+
   return (
-    <div className="w-full mb-20 md:mb-28 relative">
+    <div className="px-6 md:px-16 lg:px-24 my-8 md:my-16">
       <video
         src={src}
         className="w-full h-auto block"
@@ -87,7 +84,7 @@ export function FullVideoBlock({
         playsInline
       />
       {value.caption && (
-        <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase text-center">
+        <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
           {value.caption}
         </p>
       )}
@@ -106,26 +103,26 @@ export function TwoColumnBlock({
   PortableTextComp: any
 }) {
   return (
-    <div className="flex flex-col md:flex-row w-full mb-20 md:mb-28">
-      <div className="w-full md:w-1/2">
-        <ColumnSlot
-          type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
-          text={value.leftContent}
-          imageSrc={value.leftImageUrl || (value.leftImage?.asset?._ref ? urlFor(value.leftImage).url() : null)}
-          videoSrc={value.leftVideoUrl || null}
-          urlFor={urlFor}
-          PortableTextComp={PortableTextComp}
-        />
-      </div>
-      <div className="w-full md:w-1/2">
-        <ColumnSlot
-          type={value.rightType || (value.rightImage || value.rightImageUrl ? 'image' : value.rightVideoUrl ? 'video' : value.rightContent ? 'text' : 'image')}
-          text={value.rightContent}
-          imageSrc={value.rightImageUrl || (value.rightImage?.asset?._ref ? urlFor(value.rightImage).url() : null)}
-          videoSrc={value.rightVideoUrl || null}
-          urlFor={urlFor}
-          PortableTextComp={PortableTextComp}
-        />
+    <div className="px-6 md:px-16 lg:px-24 my-8 md:my-16">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
+        <div className="w-full md:w-1/2">
+          <ColumnSlot
+            type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
+            text={value.leftContent}
+            imageSrc={value.leftImageUrl || (value.leftImage?.asset?._ref ? urlFor(value.leftImage).url() : null)}
+            videoSrc={value.leftVideoUrl || null}
+            PortableTextComp={PortableTextComp}
+          />
+        </div>
+        <div className="w-full md:w-1/2">
+          <ColumnSlot
+            type={value.rightType || (value.rightImage || value.rightImageUrl ? 'image' : value.rightVideoUrl ? 'video' : value.rightContent ? 'text' : 'image')}
+            text={value.rightContent}
+            imageSrc={value.rightImageUrl || (value.rightImage?.asset?._ref ? urlFor(value.rightImage).url() : null)}
+            videoSrc={value.rightVideoUrl || null}
+            PortableTextComp={PortableTextComp}
+          />
+        </div>
       </div>
     </div>
   )
@@ -142,7 +139,6 @@ function ColumnSlot({
   text?: any
   imageSrc?: string | null
   videoSrc?: string | null
-  urlFor: (img: any) => { url: () => string }
   PortableTextComp: any
 }) {
   if (type === 'video' && videoSrc) {
@@ -163,13 +159,14 @@ function ColumnSlot({
       <ClickableImage
         src={imageSrc}
         alt="Column media"
+        imgClassName="w-full h-auto block"
       />
     )
   }
 
-  // text (default) — also falls back here if declared type has no content
+  // text (default) — falls back here if declared type has no content
   return (
-    <div className="font-sans font-light leading-[1.7] text-foreground px-6 md:px-12 lg:px-20 my-12 md:my-20">
+    <div className="font-sans font-light leading-[1.7] text-foreground max-w-[65ch]">
       <PortableTextComp
         value={text}
         components={{
@@ -198,10 +195,8 @@ export function GalleryBlock({
   value: any
   urlFor: (img: any) => { url: () => string }
 }) {
-  const images: any[] = (value.images || [])
-  
-  // User requested a better method than strict cropping at same heights.
-  // Standard CSS Grid keeps logic pure and handles natural ratios well.
+  const images: any[] = (value.images || []).filter((img: any) => img?.asset?._ref)
+
   const cols = images.length === 1
     ? 'grid-cols-1'
     : images.length === 2
@@ -209,17 +204,16 @@ export function GalleryBlock({
     : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
 
   return (
-    <div className={`grid gap-4 md:gap-8 mb-20 md:mb-28 w-full ${cols}`}>
-      {images.filter((img: any) => img?.asset?._ref).map((img: any, idx: number) => (
+    <div className={`px-6 md:px-16 lg:px-24 my-8 md:my-16 grid gap-4 md:gap-6 ${cols}`}>
+      {images.map((img: any, idx: number) => (
         <ClickableImage
           key={idx}
           src={urlFor(img).url()}
           alt={`Gallery image ${idx + 1}`}
-          className="w-full"
-          imgClassName="max-h-[60vh] md:max-h-[85vh] w-full h-auto object-contain block"
+          className="w-full flex justify-center"
+          imgClassName="w-full h-auto block"
         />
       ))}
     </div>
   )
 }
-
