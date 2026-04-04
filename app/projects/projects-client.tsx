@@ -13,7 +13,8 @@ export function ProjectsClient({
   pageData?: any
   serviceCategories?: string[]
 }) {
-  const [activePreviewImageSrc, setActivePreviewImageSrc] = useState<string | null>(null)
+  // bgImage only ever increases — once set it never returns to null
+  const [bgImage, setBgImage] = useState<string | null>(null)
   const [selectedService, setSelectedService] = useState<string>("All")
   const [panelOpen, setPanelOpen] = useState(false)
 
@@ -37,7 +38,7 @@ export function ProjectsClient({
   return (
     <div className="relative w-full min-h-screen">
 
-      {/* ── Fixed background layer: white base + hover images ────── */}
+      {/* ── Fixed background layer: white base + persistent hover image ── */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-white" />
         {projects.map((project) => {
@@ -50,7 +51,7 @@ export function ProjectsClient({
               alt={project.title}
               fill
               className={`object-cover transition-opacity duration-500 ease-in-out ${
-                activePreviewImageSrc === imageSrc ? "opacity-100" : "opacity-0"
+                bgImage === imageSrc ? "opacity-100" : "opacity-0"
               }`}
             />
           )
@@ -145,16 +146,13 @@ export function ProjectsClient({
           </div>
         </div>
 
-        {/* Project list */}
-        <div
-          className="w-full flex flex-col border-t border-current/20 mt-2 pt-2"
-          onMouseLeave={() => setActivePreviewImageSrc(null)}
-        >
+        {/* Project list — no onMouseLeave: bgImage persists once set */}
+        <div className="w-full flex flex-col border-t border-current/20 mt-2 pt-2">
           {filteredProjects.map((project) => (
             <ProjectRow
               key={project.id}
               project={project}
-              onHover={setActivePreviewImageSrc}
+              onHover={setBgImage}
               activeFilter={selectedService}
             />
           ))}
@@ -166,10 +164,9 @@ export function ProjectsClient({
 }
 
 // ── Filter pill ──────────────────────────────────────────────────────────────
-// Inside a mix-blend-difference parent:
-//   Default  → border white, bg transparent, text white  → renders black on white page
-//   Active   → border white, bg white, text black        → renders black bg, white text on white page
-//   Hover    → same as active
+// Inside mix-blend-difference parent:
+//   Default → border/text white → renders black on white page
+//   Active/hover → bg white, color black → renders black bg + white text on white page
 
 function FilterPill({
   label,
@@ -218,6 +215,19 @@ function FilterPill({
 }
 
 // ── Project row ──────────────────────────────────────────────────────────────
+// The sweep effect works through nested compositing:
+//
+//  1. `isolate` wrapper creates a new compositing group
+//  2. Inside: white sweep rect with mix-blend-difference blends with the
+//     group's transparent background → result: white rect in the group
+//  3. White text with mix-blend-difference blends with the white rect →
+//     result: black text on white rect in the group
+//  4. The parent content div (also mix-blend-difference) composites the
+//     group with the white page → white rect = black, black text = white
+//
+//  Visible result on white page:
+//    • default: black text (white via parent blend vs white page)
+//    • hover:   black sweep rectangle with white text ✓
 
 function ProjectRow({
   project,
@@ -225,7 +235,7 @@ function ProjectRow({
   activeFilter,
 }: {
   project: any
-  onHover: (src: string | null) => void
+  onHover: (src: string) => void
   activeFilter: string
 }) {
   const imageSrc = project.featuredImage || project.heroImage || project.image
@@ -248,14 +258,38 @@ function ProjectRow({
       onMouseEnter={() => imageSrc && onHover(imageSrc)}
     >
       <div className="w-full px-4 md:px-[60px] flex items-center justify-between py-[9px] border-b border-current/10">
-        <span className="font-['Montserrat'] font-medium text-[16px] md:text-[18px] uppercase tracking-wide flex-shrink-0">
-          {clientName}{project.title}
-        </span>
-        {service && (
-          <span className="hidden md:block font-['Montserrat'] font-medium text-[13px] md:text-[14px] uppercase tracking-[0.12em] flex-shrink-0 text-right">
-            {service}
+
+        {/* Title — isolate group for sweep effect */}
+        <div className="relative inline-block isolate flex-shrink-0">
+          {/* White sweep rect: scales left→right on group-hover */}
+          <div
+            className="absolute inset-0 z-10 pointer-events-none origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
+            style={{ background: "white", mixBlendMode: "difference" }}
+          />
+          <span
+            className="relative z-20 font-['Montserrat'] font-medium text-[16px] md:text-[18px] uppercase tracking-wide block"
+            style={{ mixBlendMode: "difference", color: "white" }}
+          >
+            {clientName}{project.title}
           </span>
+        </div>
+
+        {/* Service label — isolate group for sweep effect */}
+        {service && (
+          <div className="hidden md:inline-block relative isolate flex-shrink-0 text-right">
+            <div
+              className="absolute inset-0 z-10 pointer-events-none origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
+              style={{ background: "white", mixBlendMode: "difference" }}
+            />
+            <span
+              className="relative z-20 font-['Montserrat'] font-medium text-[13px] md:text-[14px] uppercase tracking-[0.12em] block"
+              style={{ mixBlendMode: "difference", color: "white" }}
+            >
+              {service}
+            </span>
+          </div>
         )}
+
       </div>
     </Link>
   )
