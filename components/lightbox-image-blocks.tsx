@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { useLightbox } from "@/components/lightbox-provider"
 
 function ClickableImage({
@@ -8,13 +7,11 @@ function ClickableImage({
   alt,
   className,
   imgClassName,
-  style,
 }: {
   src: string
   alt: string
   className?: string
   imgClassName?: string
-  style?: React.CSSProperties
 }) {
   const { images, open } = useLightbox()
   const index = images.findIndex((img) => img.src === src)
@@ -33,7 +30,6 @@ function ClickableImage({
         src={src}
         alt={alt}
         className={imgClassName || "w-full h-auto block"}
-        style={style}
         loading="lazy"
       />
     </div>
@@ -50,35 +46,19 @@ export function FullImageBlock({
 }) {
   if (!value.image?.asset?._ref) return null
   const src = urlFor(value.image).url()
-
-  // Detect orientation from Sanity metadata if available
-  const dims = value.image?.asset?.metadata?.dimensions
-  let sizeClass = "max-w-lg mx-auto" // default
-  if (dims) {
-    if (dims.height > dims.width) {
-      // portrait
-      sizeClass = "max-w-xs md:max-w-sm mx-auto"
-    } else {
-      // landscape
-      sizeClass = "max-w-xl md:max-w-2xl mx-auto"
-    }
-  }
-
   return (
-    <div className="px-8 md:px-20 my-6 md:my-12">
-      <div className={sizeClass}>
-        <ClickableImage
-          src={src}
-          alt={value.caption || "Full Image"}
-          className="w-full"
-          imgClassName="w-full h-auto block"
-        />
-        {value.caption && (
-          <p className="mt-3 md:mt-4 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
-            {value.caption}
-          </p>
-        )}
-      </div>
+    <div className="px-6 md:px-0 max-w-2xl mx-auto my-8 md:my-14">
+      <ClickableImage
+        src={src}
+        alt={value.caption || "Full Image"}
+        className="w-full"
+        imgClassName="w-full h-auto block"
+      />
+      {value.caption && (
+        <p className="mt-3 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
+          {value.caption}
+        </p>
+      )}
     </div>
   )
 }
@@ -93,22 +73,20 @@ export function FullVideoBlock({
   if (!src) return null
 
   return (
-    <div className="px-8 md:px-20 my-6 md:my-12">
-      <div className="max-w-xl md:max-w-2xl mx-auto">
-        <video
-          src={src}
-          className="w-full h-auto block"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-        {value.caption && (
-          <p className="mt-3 md:mt-4 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
-            {value.caption}
-          </p>
-        )}
-      </div>
+    <div className="px-6 md:px-0 max-w-2xl mx-auto my-8 md:my-14">
+      <video
+        src={src}
+        className="w-full h-auto block"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+      {value.caption && (
+        <p className="mt-3 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
+          {value.caption}
+        </p>
+      )}
     </div>
   )
 }
@@ -124,7 +102,7 @@ export function TwoColumnBlock({
   PortableTextComp: any
 }) {
   return (
-    <div className="px-8 md:px-20 my-6 md:my-12">
+    <div className="px-6 md:px-16 my-8 md:my-14">
       <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
         <div className="w-full md:w-1/2">
           <ColumnSlot
@@ -166,8 +144,7 @@ function ColumnSlot({
     return (
       <video
         src={videoSrc}
-        className="w-full block"
-        style={{ maxHeight: "500px", objectFit: "contain" }}
+        className="w-full h-auto block"
         autoPlay
         loop
         muted
@@ -181,16 +158,15 @@ function ColumnSlot({
       <ClickableImage
         src={imageSrc}
         alt="Column media"
-        className="w-full overflow-hidden"
-        imgClassName="w-full block"
-        style={{ maxHeight: "500px", objectFit: "contain" }}
+        className="w-full"
+        imgClassName="w-full h-auto block"
       />
     )
   }
 
   // text (default)
   return (
-    <div className="font-sans font-light leading-[1.7] text-foreground">
+    <div className="font-sans font-light leading-[1.7] text-foreground max-w-2xl">
       <PortableTextComp
         value={text}
         components={{
@@ -221,23 +197,22 @@ export function GalleryBlock({
 }) {
   const images: any[] = (value.images || []).filter((img: any) => img?.asset?._ref)
 
-  const gridClass = images.length === 1
-    ? 'grid-cols-1 max-w-lg mx-auto'
+  const gridClass = images.length <= 1
+    ? 'grid-cols-1'
     : images.length === 2
     ? 'grid-cols-2'
     : 'grid-cols-2 md:grid-cols-3'
 
   return (
-    <div className={`px-8 md:px-20 my-6 md:my-12 grid gap-3 md:gap-4 items-start ${gridClass}`}>
+    <div className={`px-6 md:px-16 my-8 md:my-14 grid gap-3 md:gap-5 items-start ${gridClass}`}>
       {images.map((img: any, idx: number) => (
-        <div key={idx} className="overflow-hidden">
-          <ClickableImage
-            src={urlFor(img).url()}
-            alt={`Gallery image ${idx + 1}`}
-            imgClassName="w-full block"
-            style={{ maxHeight: "340px", objectFit: "contain" }}
-          />
-        </div>
+        <ClickableImage
+          key={idx}
+          src={urlFor(img).url()}
+          alt={`Gallery image ${idx + 1}`}
+          className="w-full"
+          imgClassName="w-full h-auto block"
+        />
       ))}
     </div>
   )
