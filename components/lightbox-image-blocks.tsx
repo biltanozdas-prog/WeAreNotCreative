@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import React from "react"
 import { useLightbox } from "@/components/lightbox-provider"
 
 function ClickableImage({
@@ -8,11 +8,13 @@ function ClickableImage({
   alt,
   className,
   imgClassName,
+  style,
 }: {
   src: string
   alt: string
   className?: string
   imgClassName?: string
+  style?: React.CSSProperties
 }) {
   const { images, open } = useLightbox()
   const index = images.findIndex((img) => img.src === src)
@@ -31,6 +33,7 @@ function ClickableImage({
         src={src}
         alt={alt}
         className={imgClassName || "w-full h-auto block"}
+        style={style}
         loading="lazy"
       />
     </div>
@@ -47,9 +50,23 @@ export function FullImageBlock({
 }) {
   if (!value.image?.asset?._ref) return null
   const src = urlFor(value.image).url()
+
+  // Detect orientation from Sanity metadata if available
+  const dims = value.image?.asset?.metadata?.dimensions
+  let sizeClass = "max-w-lg mx-auto" // default
+  if (dims) {
+    if (dims.height > dims.width) {
+      // portrait
+      sizeClass = "max-w-xs md:max-w-sm mx-auto"
+    } else {
+      // landscape
+      sizeClass = "max-w-xl md:max-w-2xl mx-auto"
+    }
+  }
+
   return (
     <div className="px-8 md:px-20 my-6 md:my-12">
-      <div className="max-w-4xl mx-auto">
+      <div className={sizeClass}>
         <ClickableImage
           src={src}
           alt={value.caption || "Full Image"}
@@ -77,7 +94,7 @@ export function FullVideoBlock({
 
   return (
     <div className="px-8 md:px-20 my-6 md:my-12">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-xl md:max-w-2xl mx-auto">
         <video
           src={src}
           className="w-full h-auto block"
@@ -149,7 +166,8 @@ function ColumnSlot({
     return (
       <video
         src={videoSrc}
-        className="w-full h-auto block"
+        className="w-full block"
+        style={{ maxHeight: "500px", objectFit: "contain" }}
         autoPlay
         loop
         muted
@@ -163,7 +181,9 @@ function ColumnSlot({
       <ClickableImage
         src={imageSrc}
         alt="Column media"
-        imgClassName="w-full h-auto block"
+        className="w-full overflow-hidden"
+        imgClassName="w-full block"
+        style={{ maxHeight: "500px", objectFit: "contain" }}
       />
     )
   }
@@ -201,21 +221,23 @@ export function GalleryBlock({
 }) {
   const images: any[] = (value.images || []).filter((img: any) => img?.asset?._ref)
 
-  const cols = images.length === 1
+  const gridClass = images.length === 1
     ? 'grid-cols-1 max-w-lg mx-auto'
     : images.length === 2
     ? 'grid-cols-2'
     : 'grid-cols-2 md:grid-cols-3'
 
   return (
-    <div className={`px-8 md:px-20 my-6 md:my-12 grid gap-3 md:gap-4 ${cols}`}>
+    <div className={`px-8 md:px-20 my-6 md:my-12 grid gap-3 md:gap-4 items-start ${gridClass}`}>
       {images.map((img: any, idx: number) => (
-        <ClickableImage
-          key={idx}
-          src={urlFor(img).url()}
-          alt={`Gallery image ${idx + 1}`}
-          imgClassName="w-full h-auto block"
-        />
+        <div key={idx} className="overflow-hidden">
+          <ClickableImage
+            src={urlFor(img).url()}
+            alt={`Gallery image ${idx + 1}`}
+            imgClassName="w-full block"
+            style={{ maxHeight: "340px", objectFit: "contain" }}
+          />
+        </div>
       ))}
     </div>
   )
