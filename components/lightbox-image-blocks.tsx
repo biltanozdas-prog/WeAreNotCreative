@@ -48,18 +48,20 @@ export function FullImageBlock({
   if (!value.image?.asset?._ref) return null
   const src = urlFor(value.image).url()
   return (
-    <div className="px-6 md:px-16 lg:px-24 my-8 md:my-16">
-      <ClickableImage
-        src={src}
-        alt={value.caption || "Full Image"}
-        className="w-full"
-        imgClassName="w-full h-auto block"
-      />
-      {value.caption && (
-        <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
-          {value.caption}
-        </p>
-      )}
+    <div className="px-8 md:px-20 my-6 md:my-12">
+      <div className="max-w-4xl mx-auto">
+        <ClickableImage
+          src={src}
+          alt={value.caption || "Full Image"}
+          className="w-full"
+          imgClassName="w-full h-auto block"
+        />
+        {value.caption && (
+          <p className="mt-3 md:mt-4 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
+            {value.caption}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -74,20 +76,22 @@ export function FullVideoBlock({
   if (!src) return null
 
   return (
-    <div className="px-6 md:px-16 lg:px-24 my-8 md:my-16">
-      <video
-        src={src}
-        className="w-full h-auto block"
-        autoPlay
-        loop
-        muted
-        playsInline
-      />
-      {value.caption && (
-        <p className="mt-4 md:mt-6 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
-          {value.caption}
-        </p>
-      )}
+    <div className="px-8 md:px-20 my-6 md:my-12">
+      <div className="max-w-4xl mx-auto">
+        <video
+          src={src}
+          className="w-full h-auto block"
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
+        {value.caption && (
+          <p className="mt-3 md:mt-4 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
+            {value.caption}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -103,8 +107,8 @@ export function TwoColumnBlock({
   PortableTextComp: any
 }) {
   return (
-    <div className="px-6 md:px-16 lg:px-24 my-8 md:my-16">
-      <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
+    <div className="px-8 md:px-20 my-6 md:my-12">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
         <div className="w-full md:w-1/2">
           <ColumnSlot
             type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
@@ -164,15 +168,15 @@ function ColumnSlot({
     )
   }
 
-  // text (default) — falls back here if declared type has no content
+  // text (default)
   return (
-    <div className="font-sans font-light leading-[1.7] text-foreground max-w-[65ch]">
+    <div className="font-sans font-light leading-[1.7] text-foreground">
       <PortableTextComp
         value={text}
         components={{
           block: {
             normal: ({ children }: any) => (
-              <p className="text-[16px] md:text-[18px] mb-5 last:mb-0">{children}</p>
+              <p className="text-[15px] md:text-[17px] mb-5 last:mb-0">{children}</p>
             ),
             h2: ({ children }: any) => (
               <h2 className="font-black text-[clamp(20px,3vw,32px)] uppercase tracking-[-0.02em] leading-[0.9] mb-6">{children}</h2>
@@ -198,19 +202,18 @@ export function GalleryBlock({
   const images: any[] = (value.images || []).filter((img: any) => img?.asset?._ref)
 
   const cols = images.length === 1
-    ? 'grid-cols-1'
+    ? 'grid-cols-1 max-w-lg mx-auto'
     : images.length === 2
-    ? 'grid-cols-1 md:grid-cols-2'
-    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+    ? 'grid-cols-2'
+    : 'grid-cols-2 md:grid-cols-3'
 
   return (
-    <div className={`px-6 md:px-16 lg:px-24 my-8 md:my-16 grid gap-4 md:gap-6 ${cols}`}>
+    <div className={`px-8 md:px-20 my-6 md:my-12 grid gap-3 md:gap-4 ${cols}`}>
       {images.map((img: any, idx: number) => (
         <ClickableImage
           key={idx}
           src={urlFor(img).url()}
           alt={`Gallery image ${idx + 1}`}
-          className="w-full flex justify-center"
           imgClassName="w-full h-auto block"
         />
       ))}
