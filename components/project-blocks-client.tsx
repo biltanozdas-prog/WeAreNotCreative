@@ -10,7 +10,7 @@ import { FullImageBlock, FullVideoBlock, TwoColumnBlock, GalleryBlock } from "@/
 const textComponents = {
   types: {
     textBlock: ({ value }: any) => (
-      <div className="mb-20 md:mb-28 max-w-[900px]">
+      <div className="px-6 md:px-0 mb-20 md:mb-28 max-w-[900px]">
         {value.heading && (
           <div className="flex items-center gap-4 mb-8 md:mb-10">
             <span className="w-8 h-px bg-muted-foreground" />
@@ -19,8 +19,31 @@ const textComponents = {
             </span>
           </div>
         )}
-        <div className="font-sans font-light text-[18px] md:text-[22px] leading-[1.5] text-foreground/80 whitespace-pre-line prose-p:mb-4">
-          <PortableText value={value.body} />
+        <div className="font-sans font-light leading-[1.7] text-foreground">
+          <PortableText
+            value={value.body}
+            components={{
+              block: {
+                normal: ({ children }: any) => (
+                  <p className="mb-5 text-[15px] md:text-[18px] leading-[1.7] font-light text-foreground last:mb-0">
+                    {children}
+                  </p>
+                ),
+                h2: ({ children }: any) => (
+                  <h2 className="text-[20px] md:text-[24px] font-bold mb-4 text-foreground">{children}</h2>
+                ),
+                h3: ({ children }: any) => (
+                  <h3 className="text-[17px] md:text-[20px] font-bold mb-3 text-foreground">{children}</h3>
+                ),
+              },
+              marks: {
+                strong: ({ children }: any) => <strong className="font-bold">{children}</strong>,
+                em: ({ children }: any) => <em className="italic">{children}</em>,
+                underline: ({ children }: any) => <span className="underline underline-offset-2">{children}</span>,
+                'strike-through': ({ children }: any) => <span className="line-through">{children}</span>,
+              },
+            }}
+          />
         </div>
       </div>
     ),

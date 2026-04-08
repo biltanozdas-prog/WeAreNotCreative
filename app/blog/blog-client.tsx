@@ -90,7 +90,7 @@ function BlogEntry({
               </span>
             </div>
 
-            <h2 className="font-sans font-black text-[28px] md:text-[40px] leading-[0.88] uppercase tracking-[-0.03em] text-foreground mb-4 md:mb-6 group-hover:opacity-70 transition-opacity">
+            <h2 className="font-sans font-black text-[20px] md:text-[40px] leading-[0.88] uppercase tracking-[-0.03em] text-foreground mb-4 md:mb-6 group-hover:opacity-70 transition-opacity break-words hyphens-auto">
               {post.title}
             </h2>
 
