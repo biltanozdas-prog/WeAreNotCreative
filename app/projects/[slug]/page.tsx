@@ -98,6 +98,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "services": services[]->title,
           blocks[] {
             ...,
+            _type == "fullImage" => {
+              ...,
+              image {
+                ...,
+                asset-> {
+                  _ref,
+                  metadata { dimensions { width, height } }
+                }
+              }
+            },
             _type == "fullVideo" => {
               "videoUrl": video.asset->url
             },
@@ -116,6 +126,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "services": services[]->title,
           blocks[] {
             ...,
+            _type == "fullImage" => {
+              ...,
+              image {
+                ...,
+                asset-> {
+                  _ref,
+                  metadata { dimensions { width, height } }
+                }
+              }
+            },
             _type == "fullVideo" => {
               "videoUrl": video.asset->url
             },

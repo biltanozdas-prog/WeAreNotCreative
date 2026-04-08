@@ -46,17 +46,30 @@ export function FullImageBlock({
 }) {
   if (!value.image?.asset?._ref) return null
   const src = urlFor(value.image).url()
+
+  const dims = value.image?.asset?.metadata?.dimensions
+  const isPortrait = dims ? dims.height > dims.width : false
+
   return (
     <div className="px-6 md:px-16 my-8 md:my-14">
-      <div className="flex justify-center">
+      {isPortrait ? (
+        <div className="flex justify-center">
+          <ClickableImage
+            src={src}
+            alt={value.caption || "Full Image"}
+            imgClassName="block w-auto mx-auto max-h-[85vh] object-contain"
+          />
+        </div>
+      ) : (
         <ClickableImage
           src={src}
           alt={value.caption || "Full Image"}
-          imgClassName="block w-auto mx-auto max-h-[80vh] object-contain"
+          className="w-full"
+          imgClassName="w-full h-auto block"
         />
-      </div>
+      )}
       {value.caption && (
-        <p className="mt-3 text-center font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
+        <p className="mt-3 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
           {value.caption}
         </p>
       )}
@@ -78,7 +91,7 @@ export function FullVideoBlock({
       <div className="flex justify-center">
         <video
           src={src}
-          className="block w-auto mx-auto max-h-[80vh] object-contain"
+          className="block w-auto mx-auto max-h-[85vh]"
           autoPlay
           loop
           muted
@@ -86,7 +99,7 @@ export function FullVideoBlock({
         />
       </div>
       {value.caption && (
-        <p className="mt-3 text-center font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
+        <p className="mt-3 font-sans font-light text-[12px] md:text-[13px] text-muted-foreground tracking-[0.15em] uppercase">
           {value.caption}
         </p>
       )}
@@ -154,7 +167,7 @@ function ColumnSlot({
     return (
       <video
         src={videoSrc}
-        className="w-full max-h-[60vh] object-contain block"
+        className="w-full h-auto block"
         autoPlay
         loop
         muted
@@ -169,7 +182,7 @@ function ColumnSlot({
         src={imageSrc}
         alt="Column media"
         className="w-full"
-        imgClassName="w-full max-h-[60vh] object-contain block"
+        imgClassName="w-full h-auto block"
       />
     )
   }
@@ -221,8 +234,8 @@ export function GalleryBlock({
           key={idx}
           src={urlFor(img).url()}
           alt={`Gallery image ${idx + 1}`}
-          className="w-full overflow-hidden"
-          imgClassName="w-full max-h-[50vh] object-contain block"
+          className="w-full"
+          imgClassName="w-full h-auto block"
         />
       ))}
     </div>
