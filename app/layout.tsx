@@ -8,7 +8,7 @@ import { PreviewBanner } from '@/components/preview-banner'
 import './globals.css'
 
 const montserrat = Montserrat({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['300', '400', '500', '700', '900'],
   variable: '--font-montserrat',
 })

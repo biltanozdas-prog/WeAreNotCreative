@@ -195,7 +195,19 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
             </div>
             <div>
               <span className="font-sans font-medium text-[11px] tracking-[0.2em] uppercase text-foreground block mb-3">Services</span>
-              <span className="font-sans font-medium text-[13px] md:text-[14px] uppercase text-foreground tracking-[0.05em]">{projectData.services?.join(" / ")}</span>
+              <span className="font-sans font-medium text-[13px] md:text-[14px] uppercase text-foreground tracking-[0.05em]">
+                {projectData.services?.map((service: string, i: number) => (
+                  <span key={i}>
+                    <Link
+                      href="/services"
+                      className="hover:underline underline-offset-2 transition-all"
+                    >
+                      {service}
+                    </Link>
+                    {i < (projectData.services?.length ?? 0) - 1 && " / "}
+                  </span>
+                ))}
+              </span>
             </div>
           </div>
         </header>
