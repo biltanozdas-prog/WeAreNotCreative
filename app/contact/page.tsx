@@ -2,8 +2,7 @@ import { draftMode } from "next/headers"
 import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
-export const dynamic = "force-dynamic"
-
+export const revalidate = 30
 
 
 export default async function ContactPage() {

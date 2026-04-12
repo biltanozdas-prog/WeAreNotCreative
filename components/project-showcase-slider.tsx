@@ -120,6 +120,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
         <section
             ref={sliderRef}
             className="relative w-full h-[60vh] md:h-screen md:min-h-screen overflow-hidden bg-background"
+            style={{ touchAction: "pan-y" }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={onTouchStart}
@@ -147,6 +148,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                                 src={project.heroImage}
                                 alt={project.title}
                                 fill
+                                sizes="100vw"
                                 className="object-cover"
                                 priority={isActive} // Priority load the active image
                             />

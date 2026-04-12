@@ -15,6 +15,8 @@ export function ProjectsClient({
 }) {
   // bgImage only ever increases — once set it never returns to null
   const [bgImage, setBgImage] = useState<string | null>(null)
+  // Track which project images have been loaded (by project id) — lazy load on first hover
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
   const [selectedService, setSelectedService] = useState<string>("All")
   const [panelOpen, setPanelOpen] = useState(false)
 
@@ -43,13 +45,14 @@ export function ProjectsClient({
         <div className="absolute inset-0 bg-white" />
         {projects.map((project) => {
           const imageSrc = project.featuredImage || project.heroImage || project.image
-          if (!imageSrc) return null
+          if (!imageSrc || !loadedImages.has(project.id)) return null
           return (
             <Image
               key={`bg-${project.id}`}
               src={imageSrc}
               alt={project.title}
               fill
+              sizes="100vw"
               className={`object-cover transition-opacity duration-500 ease-in-out ${
                 bgImage === imageSrc ? "opacity-100" : "opacity-0"
               }`}
@@ -152,7 +155,10 @@ export function ProjectsClient({
             <ProjectRow
               key={project.id}
               project={project}
-              onHover={setBgImage}
+              onHover={(src, id) => {
+                setLoadedImages(prev => new Set([...prev, id]))
+                setBgImage(src)
+              }}
               activeFilter={selectedService}
             />
           ))}
@@ -235,7 +241,7 @@ function ProjectRow({
   activeFilter,
 }: {
   project: any
-  onHover: (src: string) => void
+  onHover: (src: string, id: string) => void
   activeFilter: string
 }) {
   const imageSrc = project.featuredImage || project.heroImage || project.image
@@ -255,8 +261,8 @@ function ProjectRow({
     <Link
       href={`/projects/${slugStr}`}
       className="group block w-full cursor-pointer no-underline pointer-events-auto"
-      onMouseEnter={() => imageSrc && onHover(imageSrc)}
-      onTouchStart={() => imageSrc && onHover(imageSrc)}
+      onMouseEnter={() => imageSrc && onHover(imageSrc, project.id)}
+      onTouchStart={() => imageSrc && onHover(imageSrc, project.id)}
     >
       <div className="w-full px-4 md:px-[60px] flex items-center justify-between py-[9px]">
 

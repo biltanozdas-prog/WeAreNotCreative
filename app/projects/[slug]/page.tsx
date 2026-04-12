@@ -149,16 +149,21 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "heroImage": heroImage.asset->url,
           "image": heroImage.asset->url
         }`
-    projectData = await client.fetch(query, slugQueryParam)
+    const allQuery = preview
+      ? groq`*[_type == "project"] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
+      : groq`*[_type == "project" && coalesce(published, true) == true] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
+
+    const [fetchedProject, allEdges] = await Promise.all([
+      client.fetch(query, slugQueryParam),
+      client.fetch(allQuery),
+    ])
+    projectData = fetchedProject
+
     if (!projectData) {
       if (preview) return <div className="p-20 text-red-500 font-mono text-xl">PREVIEW ERROR: Project data returned null for slug "{decodedSlug}". Make sure the draft is saved, SANITY_API_TOKEN is valid, and the slug matches.</div>
       notFound()
     }
 
-    const allQuery = preview
-      ? groq`*[_type == "project"] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
-      : groq`*[_type == "project" && coalesce(published, true) == true] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
-    const allEdges = await client.fetch(allQuery)
     const currentIndex = allEdges.findIndex((e: any) => e.slug === decodedSlug)
     // Find precise index based on evaluated slug fallback.
     if (currentIndex !== -1 && allEdges.length > 0) {

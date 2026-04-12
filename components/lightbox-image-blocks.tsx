@@ -45,7 +45,7 @@ export function FullImageBlock({
   urlFor: (img: any) => { url: () => string }
 }) {
   if (!value.image?.asset?._ref) return null
-  const src = urlFor(value.image).url()
+  const src = urlFor(value.image).width(2000).quality(90).auto('format').url()
 
   const dims = value.image?.asset?.metadata?.dimensions
   const isPortrait = dims ? dims.height > dims.width : false
@@ -124,7 +124,7 @@ export function TwoColumnBlock({
           <ColumnSlot
             type={value.leftType || (value.leftContent ? 'text' : value.leftImage ? 'image' : 'text')}
             text={value.leftContent}
-            imageSrc={value.leftImageUrl || (value.leftImage?.asset?._ref ? urlFor(value.leftImage).url() : null)}
+            imageSrc={value.leftImageUrl ? `${value.leftImageUrl}?w=1400&q=90&auto=format` : (value.leftImage?.asset?._ref ? urlFor(value.leftImage).width(1400).quality(90).auto('format').url() : null)}
             videoSrc={value.leftVideoUrl || null}
             PortableTextComp={PortableTextComp}
           />
@@ -133,7 +133,7 @@ export function TwoColumnBlock({
           <ColumnSlot
             type={value.rightType || (value.rightImage || value.rightImageUrl ? 'image' : value.rightVideoUrl ? 'video' : value.rightContent ? 'text' : 'image')}
             text={value.rightContent}
-            imageSrc={value.rightImageUrl || (value.rightImage?.asset?._ref ? urlFor(value.rightImage).url() : null)}
+            imageSrc={value.rightImageUrl ? `${value.rightImageUrl}?w=1400&q=90&auto=format` : (value.rightImage?.asset?._ref ? urlFor(value.rightImage).width(1400).quality(90).auto('format').url() : null)}
             videoSrc={value.rightVideoUrl || null}
             PortableTextComp={PortableTextComp}
           />
@@ -232,7 +232,7 @@ export function GalleryBlock({
       {images.map((img: any, idx: number) => (
         <ClickableImage
           key={idx}
-          src={urlFor(img).url()}
+          src={urlFor(img).width(1200).quality(85).auto('format').url()}
           alt={`Gallery image ${idx + 1}`}
           className="w-full"
           imgClassName="w-full h-auto block"
