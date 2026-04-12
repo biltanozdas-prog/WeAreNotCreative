@@ -4,7 +4,7 @@ import { draftMode } from "next/headers"
 import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 30
 
 export const metadata: Metadata = {
   title: "Journal | WEARENOTCREATIVE",
@@ -14,18 +14,6 @@ export const metadata: Metadata = {
 export default async function BlogPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
-
-  // Fetch journalPage singleton for CMS-editable page header content
-  let pageData: any = null
-  try {
-    pageData = await client.fetch(
-      groq`*[_type == "journalPage"][0]{ eyebrowLabel, headline, intro }`,
-      {},
-      { next: { tags: ["journalPage"] } }
-    )
-  } catch (e) {
-    console.warn("[Blog] Sanity fetch failed for journalPage.", e)
-  }
 
   const fields = `{
         _id,
@@ -54,16 +42,23 @@ export default async function BlogPage() {
         order
       }`
 
-  const query = preview
+  const postsQuery = preview
     ? groq`*[_type == "blogPost"] | order(order asc) ${fields}`
     : groq`*[_type == "blogPost" && published == true] | order(order asc) ${fields}`
 
-  let rawPosts = []
-  try {
-    rawPosts = await client.fetch(query, {}, { next: { tags: ["blogPost"] } })
-  } catch (e) {
-    console.warn("Sanity fetch failed. Returning empty blog posts.", e)
-  }
+  const [pageData, rawPosts] = await Promise.all([
+    client.fetch(
+      groq`*[_type == "journalPage"][0]{ eyebrowLabel, headline, intro }`,
+      {},
+      { next: { revalidate: 30 } }
+    ).catch((e: any) => { console.warn("[Blog] journalPage fetch failed:", e); return null }),
+
+    client.fetch(
+      postsQuery,
+      {},
+      { next: { revalidate: 30 } }
+    ).catch((e: any) => { console.warn("[Blog] blogPosts fetch failed:", e); return [] }),
+  ])
   const blogPosts = (rawPosts || []).filter(Boolean).map((p: any) => ({
     ...p,
     id: p._id,

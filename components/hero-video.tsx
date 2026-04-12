@@ -25,22 +25,28 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  if (!isVisible) return null
+  if (!videoUrl || !isVisible) return null
 
   return (
     <div className="fixed top-0 left-0 w-screen h-[50vh] md:h-screen z-[-1] overflow-hidden">
       <video
         ref={videoRef}
-        className="w-full h-full object-cover"
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          minWidth: "100%",
+          minHeight: "100%",
+          width: "auto",
+          height: "auto",
+        }}
         playsInline
         loop
         muted
         autoPlay
       >
-        <source
-          type="video/mp4"
-          src={videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"}
-        />
+        <source type="video/mp4" src={videoUrl} />
       </video>
       {/* Dark overlay for readability */}
       <div className="absolute inset-0 bg-[#000000]/30" />
