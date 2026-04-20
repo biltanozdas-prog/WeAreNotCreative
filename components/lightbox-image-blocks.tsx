@@ -42,7 +42,7 @@ export function FullImageBlock({
   urlFor,
 }: {
   value: any
-  urlFor: (img: any) => { url: () => string }
+  urlFor: (img: any) => any
 }) {
   if (!value.image?.asset?._ref) return null
   const src = urlFor(value.image).width(2000).quality(90).auto('format').url()
@@ -114,7 +114,7 @@ export function TwoColumnBlock({
   PortableTextComp,
 }: {
   value: any
-  urlFor: (img: any) => { url: () => string }
+  urlFor: (img: any) => any
   PortableTextComp: any
 }) {
   return (
@@ -217,7 +217,7 @@ export function GalleryBlock({
   urlFor,
 }: {
   value: any
-  urlFor: (img: any) => { url: () => string }
+  urlFor: (img: any) => any
 }) {
   const images: any[] = (value.images || []).filter((img: any) => img?.asset?._ref)
 
