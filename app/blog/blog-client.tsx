@@ -176,16 +176,20 @@ function ReaderPanel({
               </div>
             )}
 
-            <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-8">
+            <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground leading-[1.7] mb-6 md:mb-8 space-y-8">
               {(post.blocks || []).map((block: any, i: number) => {
                 // NOTE: Sanity blocks use _type, not _template
                 switch (block._type) {
                   case "fullImage":
                     return block.imageUrl ? (
-                      <div key={i} className="w-full mb-12 md:mb-16 relative overflow-hidden">
-                        <div className="w-full h-[40vh] md:h-[50vh] bg-muted relative">
-                          <Image src={block.imageUrl} alt={block.caption || "Full Image"} fill className="object-cover" sizes="(max-width: 768px) 100vw, 55vw" />
-                        </div>
+                      <div key={i} className="my-8 px-6 md:px-12">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={block.imageUrl}
+                          alt={block.caption || "Full Image"}
+                          className="w-full h-auto block mx-auto"
+                          style={{ maxHeight: '85vh', objectFit: 'contain' }}
+                        />
                         {block.caption && (
                           <p className="mt-4 font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase text-center">
                             {block.caption}
@@ -215,16 +219,48 @@ function ReaderPanel({
                     return (
                       <div key={i} className="mb-12 md:mb-16">
                         {block.heading && (
-                          <div className="flex items-center gap-4 mb-6 md:mb-8">
-                            <span className="w-6 h-px bg-muted-foreground" />
-                            <span className="font-sans font-medium text-[12px] tracking-[0.15em] text-foreground uppercase">
-                              {block.heading}
-                            </span>
-                          </div>
+                          <h2 className="font-sans font-black text-[20px] md:text-[28px] uppercase tracking-[-0.02em] mb-4 text-foreground">
+                            {block.heading}
+                          </h2>
                         )}
                         {block.body && (
-                          <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground/80">
-                            <PortableText value={block.body} components={components} />
+                          <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground">
+                            <PortableText
+                              value={block.body}
+                              components={{
+                                block: {
+                                  normal: ({ children }: any) => (
+                                    <p className="mb-5 text-[15px] md:text-[17px] leading-[1.7] font-light text-foreground">
+                                      {children}
+                                    </p>
+                                  ),
+                                  h2: ({ children }: any) => (
+                                    <h2 className="text-[20px] md:text-[26px] font-black uppercase tracking-[-0.02em] mb-4 mt-8 text-foreground">
+                                      {children}
+                                    </h2>
+                                  ),
+                                  h3: ({ children }: any) => (
+                                    <h3 className="text-[16px] md:text-[20px] font-bold mb-3 mt-6 text-foreground">
+                                      {children}
+                                    </h3>
+                                  ),
+                                },
+                                marks: {
+                                  strong: ({ children }: any) => (
+                                    <strong className="font-bold">{children}</strong>
+                                  ),
+                                  em: ({ children }: any) => (
+                                    <em className="italic">{children}</em>
+                                  ),
+                                  underline: ({ children }: any) => (
+                                    <span className="underline underline-offset-2">{children}</span>
+                                  ),
+                                  'strike-through': ({ children }: any) => (
+                                    <span className="line-through">{children}</span>
+                                  ),
+                                },
+                              }}
+                            />
                           </div>
                         )}
                       </div>
@@ -232,9 +268,51 @@ function ReaderPanel({
                   case "twoColumn":
                     return (
                       <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16 items-start">
-                        {block.leftContent && (
-                          <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground/80">
-                            <PortableText value={block.leftContent} components={components} />
+                        {(block.heading || block.leftContent) && (
+                          <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground">
+                            {block.heading && (
+                              <h3 className="font-black text-[18px] md:text-[24px] uppercase tracking-[-0.02em] mb-4 text-foreground">
+                                {block.heading}
+                              </h3>
+                            )}
+                            {block.leftContent && (
+                              <PortableText
+                                value={block.leftContent}
+                                components={{
+                                  block: {
+                                    normal: ({ children }: any) => (
+                                      <p className="mb-5 text-[15px] md:text-[17px] leading-[1.7] font-light text-foreground">
+                                        {children}
+                                      </p>
+                                    ),
+                                    h2: ({ children }: any) => (
+                                      <h2 className="text-[20px] md:text-[26px] font-black uppercase tracking-[-0.02em] mb-4 mt-8 text-foreground">
+                                        {children}
+                                      </h2>
+                                    ),
+                                    h3: ({ children }: any) => (
+                                      <h3 className="text-[16px] md:text-[20px] font-bold mb-3 mt-6 text-foreground">
+                                        {children}
+                                      </h3>
+                                    ),
+                                  },
+                                  marks: {
+                                    strong: ({ children }: any) => (
+                                      <strong className="font-bold">{children}</strong>
+                                    ),
+                                    em: ({ children }: any) => (
+                                      <em className="italic">{children}</em>
+                                    ),
+                                    underline: ({ children }: any) => (
+                                      <span className="underline underline-offset-2">{children}</span>
+                                    ),
+                                    'strike-through': ({ children }: any) => (
+                                      <span className="line-through">{children}</span>
+                                    ),
+                                  },
+                                }}
+                              />
+                            )}
                           </div>
                         )}
                         {block.rightVideoUrl ? (
@@ -242,19 +320,27 @@ function ReaderPanel({
                             <video src={block.rightVideoUrl} className="w-full h-auto block" autoPlay loop muted playsInline />
                           </div>
                         ) : block.rightImageUrl ? (
-                          <div className="w-full h-[30vh] md:h-[40vh] relative bg-muted">
-                            <Image src={block.rightImageUrl} alt="Column media" fill className="object-cover" sizes="(max-width: 768px) 100vw, 25vw" />
-                          </div>
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={block.rightImageUrl}
+                            alt="Column media"
+                            className="w-full h-auto block"
+                            style={{ maxHeight: '70vh', objectFit: 'contain' }}
+                          />
                         ) : null}
                       </div>
                     )
                   case "gallery":
                     return (block.imageUrls?.length > 0) ? (
-                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 ${block.imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 items-start ${block.imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
                         {block.imageUrls.slice(0, 4).map((url: string, idx: number) => (
-                          <div key={idx} className="w-full h-[25vh] md:h-[30vh] relative bg-muted">
-                            <Image src={url} alt={`Gallery ${idx + 1}`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" />
-                          </div>
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            key={idx}
+                            src={url}
+                            alt={`Gallery ${idx + 1}`}
+                            className="w-full h-auto block"
+                          />
                         ))}
                       </div>
                     ) : null
@@ -282,7 +368,7 @@ function ReaderPanel({
             </div>
 
             {(!post.blocks || post.blocks.length === 0) && (
-              <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground/80 leading-[1.7] mb-6 md:mb-8 space-y-6">
+              <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground leading-[1.7] mb-6 md:mb-8 space-y-6">
                 {(post.content || post.body) ? (
                   Array.isArray(post.content || post.body)
                     ? <PortableText value={post.content || post.body} components={components} />
