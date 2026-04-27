@@ -32,11 +32,21 @@ export default async function BlogPage() {
             "videoUrl": video.asset->url
           },
           _type == "twoColumn" => {
+            leftType,
+            rightType,
+            leftContent,
+            rightContent,
+            "leftImageUrl": leftImage.asset->url,
+            "leftVideoUrl": leftVideo.asset->url,
             "rightImageUrl": rightImage.asset->url,
             "rightVideoUrl": rightVideo.asset->url
           },
           _type == "gallery" => {
             "imageUrls": images[].asset->url
+          },
+          _type == "heroOverride" => {
+            title,
+            "imageUrl": image.asset->url
           }
         },
         order

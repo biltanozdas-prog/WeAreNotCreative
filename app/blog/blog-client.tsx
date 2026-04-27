@@ -3,7 +3,6 @@
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { PortableText } from "@portabletext/react"
-import { components } from "@/lib/sanity/portableText"
 
 export function BlogClient({ blogPosts, pageData }: { blogPosts: any[], pageData?: any }) {
   const [activePost, setActivePost] = useState<any | null>(null)
@@ -110,6 +109,42 @@ function BlogEntry({
   )
 }
 
+// Shared PortableText components used across textBlock, twoColumn text slots,
+// and the fallback rendering path inside ReaderPanel.
+const portableTextComponents = {
+  block: {
+    normal: ({ children }: any) => (
+      <p className="mb-5 text-[15px] md:text-[17px] leading-[1.7] font-light text-foreground">
+        {children}
+      </p>
+    ),
+    h2: ({ children }: any) => (
+      <h2 className="text-[20px] md:text-[26px] font-black uppercase tracking-[-0.02em] mb-4 mt-8 text-foreground">
+        {children}
+      </h2>
+    ),
+    h3: ({ children }: any) => (
+      <h3 className="text-[16px] md:text-[20px] font-bold mb-3 mt-6 text-foreground">
+        {children}
+      </h3>
+    ),
+  },
+  marks: {
+    strong: ({ children }: any) => (
+      <strong className="font-bold">{children}</strong>
+    ),
+    em: ({ children }: any) => (
+      <em className="italic">{children}</em>
+    ),
+    underline: ({ children }: any) => (
+      <span className="underline underline-offset-2">{children}</span>
+    ),
+    'strike-through': ({ children }: any) => (
+      <span className="line-through">{children}</span>
+    ),
+  },
+}
+
 function ReaderPanel({
   post,
   onClose,
@@ -180,6 +215,26 @@ function ReaderPanel({
               {(post.blocks || []).map((block: any, i: number) => {
                 // NOTE: Sanity blocks use _type, not _template
                 switch (block._type) {
+                  case "heroOverride": {
+                    return (
+                      <div key={i} className="my-8">
+                        {block.imageUrl && (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={block.imageUrl}
+                            alt={block.title || "Hero"}
+                            className="w-full h-auto block"
+                            style={{ maxHeight: '85vh', objectFit: 'contain' }}
+                          />
+                        )}
+                        {block.title && (
+                          <p className="mt-4 px-6 md:px-12 font-sans font-black text-[18px] md:text-[24px] uppercase tracking-[-0.02em] text-foreground">
+                            {block.title}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  }
                   case "fullImage":
                     return block.imageUrl ? (
                       <div key={i} className="my-8 px-6 md:px-12">
@@ -225,114 +280,83 @@ function ReaderPanel({
                         )}
                         {block.body && (
                           <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground">
-                            <PortableText
-                              value={block.body}
-                              components={{
-                                block: {
-                                  normal: ({ children }: any) => (
-                                    <p className="mb-5 text-[15px] md:text-[17px] leading-[1.7] font-light text-foreground">
-                                      {children}
-                                    </p>
-                                  ),
-                                  h2: ({ children }: any) => (
-                                    <h2 className="text-[20px] md:text-[26px] font-black uppercase tracking-[-0.02em] mb-4 mt-8 text-foreground">
-                                      {children}
-                                    </h2>
-                                  ),
-                                  h3: ({ children }: any) => (
-                                    <h3 className="text-[16px] md:text-[20px] font-bold mb-3 mt-6 text-foreground">
-                                      {children}
-                                    </h3>
-                                  ),
-                                },
-                                marks: {
-                                  strong: ({ children }: any) => (
-                                    <strong className="font-bold">{children}</strong>
-                                  ),
-                                  em: ({ children }: any) => (
-                                    <em className="italic">{children}</em>
-                                  ),
-                                  underline: ({ children }: any) => (
-                                    <span className="underline underline-offset-2">{children}</span>
-                                  ),
-                                  'strike-through': ({ children }: any) => (
-                                    <span className="line-through">{children}</span>
-                                  ),
-                                },
-                              }}
-                            />
+                            <PortableText value={block.body} components={portableTextComponents} />
                           </div>
                         )}
                       </div>
                     )
-                  case "twoColumn":
-                    return (
-                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16 items-start">
-                        {(block.heading || block.leftContent) && (
-                          <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.6] text-foreground">
-                            {block.heading && (
-                              <h3 className="font-black text-[18px] md:text-[24px] uppercase tracking-[-0.02em] mb-4 text-foreground">
-                                {block.heading}
-                              </h3>
-                            )}
-                            {block.leftContent && (
-                              <PortableText
-                                value={block.leftContent}
-                                components={{
-                                  block: {
-                                    normal: ({ children }: any) => (
-                                      <p className="mb-5 text-[15px] md:text-[17px] leading-[1.7] font-light text-foreground">
-                                        {children}
-                                      </p>
-                                    ),
-                                    h2: ({ children }: any) => (
-                                      <h2 className="text-[20px] md:text-[26px] font-black uppercase tracking-[-0.02em] mb-4 mt-8 text-foreground">
-                                        {children}
-                                      </h2>
-                                    ),
-                                    h3: ({ children }: any) => (
-                                      <h3 className="text-[16px] md:text-[20px] font-bold mb-3 mt-6 text-foreground">
-                                        {children}
-                                      </h3>
-                                    ),
-                                  },
-                                  marks: {
-                                    strong: ({ children }: any) => (
-                                      <strong className="font-bold">{children}</strong>
-                                    ),
-                                    em: ({ children }: any) => (
-                                      <em className="italic">{children}</em>
-                                    ),
-                                    underline: ({ children }: any) => (
-                                      <span className="underline underline-offset-2">{children}</span>
-                                    ),
-                                    'strike-through': ({ children }: any) => (
-                                      <span className="line-through">{children}</span>
-                                    ),
-                                  },
-                                }}
-                              />
-                            )}
-                          </div>
-                        )}
-                        {block.rightVideoUrl ? (
-                          <div className="w-full relative">
-                            <video src={block.rightVideoUrl} className="w-full h-auto block" autoPlay loop muted playsInline />
-                          </div>
-                        ) : block.rightImageUrl ? (
+                  case "twoColumn": {
+                    const renderSlot = (
+                      type: string,
+                      content: any,
+                      imageUrl: string,
+                      videoUrl: string,
+                    ) => {
+                      if (type === 'video' && videoUrl) {
+                        return (
+                          <video
+                            src={videoUrl}
+                            className="w-full h-auto block"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        )
+                      }
+                      if (type === 'image' && imageUrl) {
+                        return (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img
-                            src={block.rightImageUrl}
+                            src={imageUrl}
                             alt="Column media"
                             className="w-full h-auto block"
                             style={{ maxHeight: '70vh', objectFit: 'contain' }}
                           />
-                        ) : null}
+                        )
+                      }
+                      if (type === 'text' && content) {
+                        return (
+                          <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.7] text-foreground">
+                            <PortableText value={content} components={portableTextComponents} />
+                          </div>
+                        )
+                      }
+                      return null
+                    }
+
+                    return (
+                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-start my-8 px-6 md:px-12">
+                        <div>
+                          {renderSlot(
+                            block.leftType || 'text',
+                            block.leftContent,
+                            block.leftImageUrl,
+                            block.leftVideoUrl,
+                          )}
+                        </div>
+                        <div>
+                          {renderSlot(
+                            block.rightType || 'image',
+                            block.rightContent,
+                            block.rightImageUrl,
+                            block.rightVideoUrl,
+                          )}
+                        </div>
                       </div>
                     )
-                  case "gallery":
-                    return (block.imageUrls?.length > 0) ? (
-                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 items-start ${block.imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                  }
+                  case "gallery": {
+                    const count = block.imageUrls?.length ?? 0
+                    if (count === 0) return null
+                    const gridClass =
+                      count === 1
+                        ? 'grid-cols-1 max-w-lg mx-auto'
+                        : count === 2
+                        ? 'grid-cols-2'
+                        : 'grid-cols-2 md:grid-cols-3'
+                    return (
+                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 items-start ${gridClass}`}>
                         {block.imageUrls.slice(0, 4).map((url: string, idx: number) => (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img
@@ -343,7 +367,8 @@ function ReaderPanel({
                           />
                         ))}
                       </div>
-                    ) : null
+                    )
+                  }
                   case "quote":
                     return block.quoteText ? (
                       <div key={i} className="mb-12 md:mb-16 border-l-2 md:border-l-[3px] border-foreground pl-6 md:pl-8">
@@ -371,7 +396,7 @@ function ReaderPanel({
               <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground leading-[1.7] mb-6 md:mb-8 space-y-6">
                 {(post.content || post.body) ? (
                   Array.isArray(post.content || post.body)
-                    ? <PortableText value={post.content || post.body} components={components} />
+                    ? <PortableText value={post.content || post.body} components={portableTextComponents} />
                     : String(post.content || post.body)
                 ) : "Blog content coming soon."}
               </div>
