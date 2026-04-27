@@ -182,7 +182,7 @@ function ReaderPanel({
         aria-label={post ? `Reading: ${post.title}` : "Blog reader"}
       >
         {post && (
-          <div className="px-8 py-12 md:px-12 md:py-16">
+          <div className="px-8 py-12 md:px-12 md:py-16 @container">
             <button
               onClick={onClose}
               className="font-sans font-light text-[14px] md:text-[16px] text-muted-foreground bg-transparent border-none cursor-pointer mb-12 p-0 tracking-[0.15em] uppercase hover:text-foreground transition-colors"
@@ -228,7 +228,7 @@ function ReaderPanel({
                           />
                         )}
                         {block.title && (
-                          <p className="mt-4 px-6 md:px-12 font-sans font-black text-[18px] md:text-[24px] uppercase tracking-[-0.02em] text-foreground">
+                          <p className="mt-4 font-sans font-black text-[18px] md:text-[24px] uppercase tracking-[-0.02em] text-foreground">
                             {block.title}
                           </p>
                         )}
@@ -237,7 +237,7 @@ function ReaderPanel({
                   }
                   case "fullImage":
                     return block.imageUrl ? (
-                      <div key={i} className="my-8 px-6 md:px-12">
+                      <div key={i} className="my-8">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={block.imageUrl}
@@ -317,7 +317,7 @@ function ReaderPanel({
                       }
                       if (type === 'text' && content) {
                         return (
-                          <div className="font-sans font-light text-[15px] md:text-[16px] leading-[1.7] text-foreground">
+                          <div className="font-sans font-light text-[15px] md:text-[17px] leading-[1.7] text-foreground max-w-[65ch]">
                             <PortableText value={content} components={portableTextComponents} />
                           </div>
                         )
@@ -326,7 +326,7 @@ function ReaderPanel({
                     }
 
                     return (
-                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-start my-8 px-6 md:px-12">
+                      <div key={i} className="grid grid-cols-1 @[600px]:grid-cols-2 gap-6 @[600px]:gap-10 items-start my-8">
                         <div>
                           {renderSlot(
                             block.leftType || 'text',
