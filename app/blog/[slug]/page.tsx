@@ -6,7 +6,7 @@ import { getClient } from "@/lib/sanity/get-client"
 import { groq } from "next-sanity"
 import { JournalBlocks } from "../journal-blocks"
 
-// ISR — same cadence as other content pages.
+// ISR — same cadence as the other content pages.
 export const revalidate = 30
 
 interface PostDetailProps {
@@ -56,33 +56,11 @@ export async function generateMetadata({ params }: PostDetailProps): Promise<Met
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function formatDate(input: string | undefined): string {
   if (!input) return ""
-  // Sanity 'date' type → YYYY-MM-DD. Existing string-format dates fall through unchanged.
+  // Sanity 'date' type → YYYY-MM-DD. Legacy string-format dates pass through.
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input)
   if (!m) return input
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   return `${months[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`
-}
-
-function readingMinutes(blocks: any[] | undefined): number {
-  if (!blocks || blocks.length === 0) return 1
-  let words = 0
-  const visit = (val: any) => {
-    if (!val) return
-    if (Array.isArray(val)) { val.forEach(visit); return }
-    if (typeof val === 'object') {
-      if (typeof val.text === 'string') words += val.text.split(/\s+/).filter(Boolean).length
-      Object.values(val).forEach(visit)
-    }
-  }
-  blocks.forEach((b) => {
-    if (!b || typeof b !== 'object') return
-    if (b._type === 'textBlock') visit(b.body)
-    else if (b._type === 'twoColumn') { visit(b.leftContent); visit(b.rightContent) }
-    else if (b._type === 'quote' && typeof b.quoteText === 'string') {
-      words += b.quoteText.split(/\s+/).filter(Boolean).length
-    }
-  })
-  return Math.max(1, Math.round(words / 220))
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -121,18 +99,12 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
       _type == "textBlock"    => { heading, body },
       _type == "heroOverride" => { title, "imageUrl": image.asset->url }
     },
-    "prevPost": *[_type == "blogPost" && published == true && date < ^.date] | order(date desc)[0] {
-      "slug": slug.current, title, postType,
-      "coverImage": coverImage.asset->url
-    },
     "nextPost": *[_type == "blogPost" && published == true && date > ^.date] | order(date asc)[0] {
       "slug": slug.current, title, postType,
       "coverImage": coverImage.asset->url
     },
-    "indexInfo": {
-      "position": count(*[_type == "blogPost" && published == true && date > ^.date]) + 1,
-      "total": count(*[_type == "blogPost" && published == true])
-    }
+    "allCount": count(*[_type == "blogPost" && published == true]),
+    "currentIndex": count(*[_type == "blogPost" && published == true && date <= ^.date])
   }`
 
   let post: any = null
@@ -145,261 +117,138 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
   if (!post) notFound()
 
   const date = formatDate(post.date)
-  const minutes = readingMinutes(post.blocks)
-  const position = post.indexInfo?.position ?? 1
-  const total = post.indexInfo?.total ?? 1
+  const currentIndex = post.currentIndex ?? 1
+  const allCount = post.allCount ?? 1
+
+  // The site-wide fixed header lives in app/layout.tsx and overlaps the top
+  // of every route. Top padding pushes our nav below it.
+  const containerCls = "xl:max-w-[900px] xl:mx-auto 2xl:max-w-[1100px]"
 
   return (
-    <main style={{ background: '#f4f3ef', color: '#0a0a0a', minHeight: '100vh' }} className="journal-detail">
-      {/* NAV BAR */}
-      <nav style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '14px 24px',
-        borderBottom: '1px solid #0a0a0a',
-        fontSize: 9,
-        letterSpacing: '.18em',
-        textTransform: 'uppercase',
-      }}>
-        <Link href="/blog" style={{ color: '#0a0a0a', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ display: 'inline-block', width: 14, height: 0.5, background: 'currentColor' }} />
-          Journal
-        </Link>
-        <span style={{ color: '#0a0a0a' }}>
-          {String(position).padStart(3, '0')} / {String(total).padStart(2, '0')}
-        </span>
-      </nav>
+    <main className="bg-background text-foreground min-h-screen pt-[80px] md:pt-[100px]">
+      <div className={containerCls}>
+        {/* NAV */}
+        <nav className="flex justify-between items-center px-4 md:px-7 py-3 border-b border-foreground">
+          <Link
+            href="/blog"
+            className="text-[9px] tracking-[.18em] uppercase text-muted-foreground hover:text-foreground transition-colors no-underline"
+          >
+            ← Journal
+          </Link>
+          <span className="text-[9px] tracking-[.1em] text-muted-foreground/50">
+            {String(currentIndex).padStart(3, '0')} / {String(allCount).padStart(2, '0')}
+          </span>
+        </nav>
 
-      {/* HERO */}
-      <section className="journal-hero">
-        <div className="journal-hero-left">
-          <div>
-            <p style={{
-              fontSize: 9,
-              letterSpacing: '.22em',
-              textTransform: 'uppercase',
-              color: '#999',
-              marginBottom: 18,
-            }}>
-              {(post.postType || 'essay')}{date ? ` — ${date}` : ''}
-            </p>
-            <h1 style={{
-              fontSize: 'clamp(22px, 4.5vw, 40px)',
-              fontWeight: 900,
-              lineHeight: 0.95,
-              letterSpacing: '-0.04em',
-              textTransform: 'uppercase',
-              color: '#0a0a0a',
-            }}>
-              {post.title}
-            </h1>
+        {/* HERO */}
+        <section className="relative z-[1] grid grid-cols-1 md:grid-cols-2 border-b border-foreground">
+          {/* Title — order-2 on mobile so image rises above */}
+          <div className="flex flex-col justify-between p-7 md:border-r border-foreground order-2 md:order-1">
+            <div>
+              <p className="text-[8px] tracking-[.2em] uppercase text-muted-foreground mb-3">
+                {(post.postType || 'essay')}{date ? ` — ${date}` : ''}
+              </p>
+              <h1 className="text-[clamp(20px,3.5vw,36px)] font-black leading-[.95] tracking-[-0.04em] uppercase text-foreground">
+                {post.title}
+              </h1>
+            </div>
+            <div className="flex gap-6 mt-4">
+              {post.author && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-[7px] tracking-[.16em] uppercase text-muted-foreground">Yazar</span>
+                  <span className="text-[10px] text-muted-foreground">{post.author}</span>
+                </div>
+              )}
+              {date && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-[7px] tracking-[.16em] uppercase text-muted-foreground">Tarih</span>
+                  <span className="text-[10px] text-muted-foreground">{date}</span>
+                </div>
+              )}
+            </div>
           </div>
-          <div style={{
-            marginTop: 24,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: 9,
-            letterSpacing: '.18em',
-            textTransform: 'uppercase',
-            color: '#999',
-          }}>
-            <span>{post.author || 'Tunç'}</span>
-            <span>{minutes} dk okuma</span>
-          </div>
-        </div>
 
-        <div className="journal-hero-right">
-          {post.coverImage && (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={`${post.coverImage}?w=900&q=85&auto=format`}
-              alt={post.title}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-          )}
-        </div>
-      </section>
-
-      {/* LEAD PARAGRAPH */}
-      {post.excerpt && (
-        <div className="journal-lead">
-          <span style={{ fontSize: 14, color: '#999', paddingTop: 6 }}>—</span>
-          <p style={{
-            borderLeft: '1.5px solid #0a0a0a',
-            paddingLeft: 20,
-            fontSize: 17,
-            fontWeight: 300,
-            lineHeight: 1.6,
-            color: '#0a0a0a',
-            margin: 0,
-          }}>
-            {post.excerpt}
-          </p>
-        </div>
-      )}
-
-      {/* BLOCKS */}
-      <JournalBlocks blocks={post.blocks || []} />
-
-      {/* SON IŞARETI */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-        padding: '40px 24px 24px',
-        borderTop: '1px solid #0a0a0a',
-        marginTop: 40,
-      }}>
-        <div style={{ flex: 1, height: 0.5, background: '#ccc' }} />
-        <span style={{ fontSize: 8, letterSpacing: '.22em', color: '#bbb', textTransform: 'uppercase' }}>Son</span>
-        <div style={{ flex: 1, height: 0.5, background: '#ccc' }} />
-      </div>
-
-      {/* SONRAKI YAZI */}
-      {post.nextPost && (
-        <Link
-          href={`/blog/${post.nextPost.slug}`}
-          className="next-post-block"
-          style={{
-            display: 'grid',
-            borderTop: '1px solid #0a0a0a',
-            borderBottom: '1px solid #0a0a0a',
-            textDecoration: 'none',
-            color: 'inherit',
-          }}
-        >
-          <div className="next-post-left" style={{
-            padding: '24px 24px 22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: 140,
-          }}>
-            <p style={{
-              fontSize: 8,
-              letterSpacing: '.2em',
-              color: '#aaa',
-              textTransform: 'uppercase',
-              marginBottom: 12,
-            }}>
-              Sonraki Yazı
-            </p>
-            <p style={{
-              fontSize: 18,
-              fontWeight: 900,
-              lineHeight: 1.05,
-              letterSpacing: '-.025em',
-              textTransform: 'uppercase',
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-            }}>
-              {post.nextPost.title}
-            </p>
-            <p style={{
-              fontSize: 8,
-              letterSpacing: '.18em',
-              color: '#aaa',
-              textTransform: 'uppercase',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              marginTop: 14,
-            }}>
-              <span style={{ display: 'inline-block', width: 14, height: 0.5, background: '#aaa' }} />
-              Okumaya Devam Et
-            </p>
-          </div>
-          <div className="next-post-right" style={{
-            background: '#1a1a1a',
-            minHeight: 140,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            padding: '16px 20px',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            {post.nextPost.coverImage && (
+          {/* Cover image — order-1 on mobile */}
+          <div className="relative overflow-hidden min-h-[200px] md:min-h-[240px] bg-[#111] order-1 md:order-2">
+            {post.coverImage && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
-                src={`${post.nextPost.coverImage}?w=600&q=70&auto=format`}
-                alt={post.nextPost.title}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  opacity: 0.35,
-                  display: 'block',
-                }}
+                src={`${post.coverImage}?w=900&q=85&auto=format`}
+                alt={post.title}
+                className="absolute inset-0 w-full h-full object-cover opacity-90"
               />
             )}
-            <p style={{
-              position: 'relative',
-              zIndex: 1,
-              fontSize: 7,
-              letterSpacing: '.2em',
-              color: 'rgba(255,255,255,.45)',
-              textTransform: 'uppercase',
-            }}>
-              {post.nextPost.postType || 'essay'}
+          </div>
+        </section>
+
+        {/* LEAD */}
+        {post.excerpt && (
+          <div className="px-7 py-6 border-b border-foreground/10">
+            <p className="text-[16px] leading-[1.62] font-light border-l-[1.5px] border-foreground pl-5 ml-0 md:ml-10 max-w-[640px] text-foreground">
+              {post.excerpt}
             </p>
           </div>
-        </Link>
-      )}
+        )}
 
-      {/* JOURNAL'A DON */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '16px 24px',
-      }}>
-        <Link
-          href="/blog"
-          style={{
-            fontSize: 9,
-            letterSpacing: '.18em',
-            color: '#999',
-            textTransform: 'uppercase',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            textDecoration: 'none',
-          }}
-        >
-          <span style={{ display: 'inline-block', width: 18, height: 0.5, background: 'currentColor' }} />
-          Journal&apos;a Dön
-        </Link>
-        {post.prevPost && (
+        {/* BLOCKS */}
+        <div className="px-4 md:px-7">
+          <JournalBlocks blocks={post.blocks || []} />
+        </div>
+
+        {/* SON */}
+        <div className="flex items-center gap-4 py-8 mt-8 border-t border-foreground px-4 md:px-7">
+          <div className="flex-1 h-px bg-foreground/20" />
+          <span className="text-[8px] tracking-[.22em] uppercase text-muted-foreground whitespace-nowrap">Son</span>
+          <div className="flex-1 h-px bg-foreground/20" />
+        </div>
+
+        {/* NEXT POST */}
+        {post.nextPost && (
           <Link
-            href={`/blog/${post.prevPost.slug}`}
-            style={{
-              fontSize: 9,
-              letterSpacing: '.18em',
-              color: '#999',
-              textTransform: 'uppercase',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              textDecoration: 'none',
-            }}
+            href={`/blog/${post.nextPost.slug}`}
+            className="next-post-link grid grid-cols-1 md:grid-cols-2 border-t border-b border-foreground -mx-4 md:-mx-7 xl:mx-0 no-underline text-foreground group"
           >
-            Önceki Yazı
-            <span style={{ display: 'inline-block', width: 18, height: 0.5, background: 'currentColor' }} />
+            <div className="flex flex-col justify-between p-7 md:border-r border-foreground min-h-[130px] group-hover:bg-foreground transition-colors duration-200">
+              <p className="text-[8px] tracking-[.2em] uppercase text-muted-foreground group-hover:text-white/40 mb-2 transition-colors">
+                Sonraki Yazı
+              </p>
+              <p className="text-[17px] font-black leading-[1.05] tracking-[-0.025em] uppercase flex-1 flex items-center group-hover:text-white transition-colors">
+                {post.nextPost.title}
+              </p>
+              <p className="text-[8px] tracking-[.18em] uppercase text-muted-foreground group-hover:text-white/50 flex items-center gap-1.5 mt-3 transition-colors">
+                <span className="w-3.5 h-px bg-current inline-block" />
+                Okumaya Devam Et
+              </p>
+            </div>
+            <div className="hidden md:flex bg-[#1a1a1a] min-h-[130px] flex-col justify-end p-4 group-hover:bg-[#111] transition-colors relative overflow-hidden">
+              {post.nextPost.coverImage && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={`${post.nextPost.coverImage}?w=600&q=70&auto=format`}
+                  alt={post.nextPost.title}
+                  className="absolute inset-0 w-full h-full object-cover opacity-30"
+                />
+              )}
+              <p className="relative z-[1] text-[7px] tracking-[.2em] uppercase text-white/25">
+                {post.nextPost.postType ?? 'essay'}
+              </p>
+            </div>
           </Link>
         )}
+
+        {/* JOURNAL'A DÖN */}
+        <div className="flex justify-between items-center px-4 md:px-7 py-3">
+          <Link
+            href="/blog"
+            className="text-[9px] tracking-[.16em] uppercase text-muted-foreground hover:text-foreground flex items-center gap-2 transition-colors no-underline"
+          >
+            <span className="w-4 h-px bg-current inline-block" />
+            Journal&apos;a Dön
+          </Link>
+          <span className="text-[9px] tracking-[.1em] text-muted-foreground/40">
+            {String(currentIndex).padStart(3, '0')} / {String(allCount).padStart(2, '0')}
+          </span>
+        </div>
       </div>
     </main>
   )

@@ -2,76 +2,69 @@
 
 import { PortableText } from "@portabletext/react"
 
-// Block renderers for Journal post detail pages.
-// Independent of the project-side lightbox-image-blocks renderer.
+// Journal block renderer — independent of the project-side
+// lightbox-image-blocks component. Tailwind-only, no inline styles.
 
-const portableTextComponents = {
+const ptComponents = {
   block: {
     normal: ({ children }: any) => (
-      <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.7, marginBottom: 18, color: '#0a0a0a' }}>
+      <p className="text-[13px] leading-[1.82] text-foreground/60 mb-3 last:mb-0">
         {children}
       </p>
     ),
     h2: ({ children }: any) => (
-      <h2 style={{ fontSize: 22, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.025em', lineHeight: 1.05, marginTop: 28, marginBottom: 14, color: '#0a0a0a' }}>
+      <h2 className="text-[13px] font-black uppercase tracking-[-0.015em] mb-2.5 mt-6 first:mt-0 text-foreground">
         {children}
       </h2>
     ),
     h3: ({ children }: any) => (
-      <h3 style={{ fontSize: 16, fontWeight: 700, marginTop: 22, marginBottom: 10, color: '#0a0a0a' }}>
+      <h3 className="text-[12px] font-bold uppercase tracking-[-0.01em] mb-2 mt-5 first:mt-0 text-foreground">
         {children}
       </h3>
     ),
   },
   marks: {
-    strong: ({ children }: any) => <strong style={{ fontWeight: 700 }}>{children}</strong>,
-    em: ({ children }: any) => <em style={{ fontStyle: 'italic' }}>{children}</em>,
+    strong: ({ children }: any) => <strong className="font-bold text-foreground">{children}</strong>,
+    em: ({ children }: any) => <em className="italic">{children}</em>,
     underline: ({ children }: any) => (
-      <span style={{ textDecoration: 'underline', textUnderlineOffset: 2 }}>{children}</span>
+      <span className="underline underline-offset-2">{children}</span>
     ),
     'strike-through': ({ children }: any) => (
-      <span style={{ textDecoration: 'line-through' }}>{children}</span>
+      <span className="line-through">{children}</span>
     ),
   },
 }
 
-function renderSlot(type: string | undefined, opts: {
-  imageUrl?: string
-  videoUrl?: string
-  content?: any
-}) {
-  const t = (type || 'text').toLowerCase()
-  if (t === 'video' && opts.videoUrl) {
-    return (
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        style={{ width: '100%', display: 'block' }}
-      >
-        <source src={opts.videoUrl} />
-      </video>
-    )
+function renderSlot(side: 'left' | 'right', block: any) {
+  const type = side === 'left' ? block.leftType : block.rightType
+  const content = side === 'left' ? block.leftContent : block.rightContent
+  const imageUrl = side === 'left' ? block.leftImageUrl : block.rightImageUrl
+  const videoUrl = side === 'left' ? block.leftVideoUrl : block.rightVideoUrl
+
+  switch ((type || 'text').toLowerCase()) {
+    case 'image':
+      return imageUrl ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={`${imageUrl}?w=900&q=85&auto=format`}
+          alt="Column media"
+          className="w-full max-h-[85vh] xl:max-h-[500px] object-contain block"
+        />
+      ) : null
+    case 'video':
+      return videoUrl ? (
+        <video autoPlay muted loop playsInline className="w-full block">
+          <source src={videoUrl} />
+        </video>
+      ) : null
+    case 'text':
+    default:
+      return content ? (
+        <div>
+          <PortableText value={content} components={ptComponents} />
+        </div>
+      ) : null
   }
-  if (t === 'image' && opts.imageUrl) {
-    return (
-      /* eslint-disable-next-line @next/next/no-img-element */
-      <img
-        src={`${opts.imageUrl}?w=900&q=85&auto=format`}
-        alt="Column media"
-        style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain', display: 'block' }}
-      />
-    )
-  }
-  if (t === 'text' && opts.content) {
-    return (
-      <div style={{ maxWidth: 580, fontSize: 15, fontWeight: 300, lineHeight: 1.7, color: '#0a0a0a' }}>
-        <PortableText value={opts.content} components={portableTextComponents} />
-      </div>
-    )
-  }
-  return null
 }
 
 export function JournalBlocks({ blocks }: { blocks: any[] }) {
@@ -80,39 +73,34 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
   return (
     <>
       {blocks.map((block: any, i: number) => {
+        const key = block._key ?? `block-${i}`
+
         switch (block._type) {
           case 'textBlock':
             return (
-              <div key={i} style={{ padding: '24px 24px 0', maxWidth: 580 }}>
+              <div key={key} className="pt-6 max-w-[640px]">
                 {block.heading && (
-                  <h2 style={{
-                    fontSize: 14,
-                    fontWeight: 900,
-                    textTransform: 'uppercase',
-                    letterSpacing: '-0.02em',
-                    marginBottom: 12,
-                    color: '#0a0a0a',
-                  }}>
+                  <p className="text-[13px] font-black uppercase tracking-[-0.015em] mb-2.5 text-foreground">
                     {block.heading}
-                  </h2>
+                  </p>
                 )}
                 {block.body && (
-                  <PortableText value={block.body} components={portableTextComponents} />
+                  <PortableText value={block.body} components={ptComponents} />
                 )}
               </div>
             )
 
           case 'fullImage':
             return block.imageUrl ? (
-              <div key={i} style={{ margin: '28px 0' }}>
+              <div key={key} className="-mx-4 md:-mx-7 mt-7">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`${block.imageUrl}?w=1200&q=85&auto=format`}
-                  alt={block.caption || 'Full Image'}
-                  style={{ width: '100%', maxHeight: '85vh', objectFit: 'contain', display: 'block' }}
+                  src={`${block.imageUrl}?w=1400&q=85&auto=format`}
+                  alt={block.caption ?? ''}
+                  className="w-full max-h-[85vh] object-contain block"
                 />
                 {block.caption && (
-                  <p style={{ padding: '8px 24px 0', fontSize: 10, color: '#999', letterSpacing: '.05em', textTransform: 'uppercase' }}>
+                  <p className="px-4 md:px-7 pt-2 text-[9px] tracking-[.08em] text-muted-foreground uppercase">
                     {block.caption}
                   </p>
                 )}
@@ -121,18 +109,12 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
 
           case 'fullVideo':
             return block.videoUrl ? (
-              <div key={i} style={{ margin: '28px 0' }}>
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  style={{ width: '100%', display: 'block' }}
-                >
+              <div key={key} className="-mx-4 md:-mx-7 mt-7">
+                <video autoPlay muted loop playsInline className="w-full block">
                   <source src={block.videoUrl} />
                 </video>
                 {block.caption && (
-                  <p style={{ padding: '8px 24px 0', fontSize: 10, color: '#999', letterSpacing: '.05em', textTransform: 'uppercase' }}>
+                  <p className="px-4 md:px-7 pt-2 text-[9px] tracking-[.08em] text-muted-foreground uppercase">
                     {block.caption}
                   </p>
                 )}
@@ -141,37 +123,28 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
 
           case 'twoColumn':
             return (
-              <div key={i} className="journal-twocol">
-                <div>{renderSlot(block.leftType, {
-                  imageUrl: block.leftImageUrl,
-                  videoUrl: block.leftVideoUrl,
-                  content: block.leftContent,
-                })}</div>
-                <div>{renderSlot(block.rightType, {
-                  imageUrl: block.rightImageUrl,
-                  videoUrl: block.rightVideoUrl,
-                  content: block.rightContent,
-                })}</div>
+              <div
+                key={key}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1.4fr] gap-5 pt-7"
+              >
+                {renderSlot('left', block)}
+                {renderSlot('right', block)}
               </div>
             )
 
           case 'gallery': {
-            const urls: string[] = (block.imageUrls || []).filter(Boolean)
-            if (urls.length === 0) return null
+            const urls: string[] = (block.imageUrls ?? []).filter(Boolean)
+            if (!urls.length) return null
+            const cols = urls.length === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
             return (
-              <div key={i} style={{
-                display: 'grid',
-                gridTemplateColumns: urls.length === 1 ? '1fr' : 'repeat(2, 1fr)',
-                gap: 4,
-                margin: '28px 0',
-              }}>
+              <div key={key} className={`grid ${cols} gap-1 -mx-4 md:-mx-7 mt-7`}>
                 {urls.map((url, idx) => (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     key={idx}
-                    src={`${url}?w=800&q=85&auto=format`}
+                    src={`${url}?w=900&q=85&auto=format`}
                     alt={`Gallery image ${idx + 1}`}
-                    style={{ width: '100%', objectFit: 'contain', maxHeight: '70vh', display: 'block' }}
+                    className="w-full max-h-[70vh] object-contain block"
                   />
                 ))}
               </div>
@@ -180,60 +153,40 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
 
           case 'quote':
             return block.quoteText ? (
-              <div key={i} style={{ background: '#0a0a0a', padding: '24px 24px', margin: '28px 0' }}>
-                <p style={{
-                  fontSize: 18,
-                  fontWeight: 900,
-                  lineHeight: 1.1,
-                  letterSpacing: '-0.025em',
-                  textTransform: 'uppercase',
-                  color: '#fff',
-                  maxWidth: 480,
-                }}>
+              <div key={key} className="-mx-4 md:-mx-7 mt-7 bg-foreground px-4 md:px-7 py-6">
+                <p className="text-[17px] font-black leading-[1.1] tracking-[-0.025em] uppercase text-background max-w-[500px]">
                   &ldquo;{block.quoteText}&rdquo;
                 </p>
                 {block.author && (
-                  <p style={{
-                    marginTop: 14,
-                    fontSize: 9,
-                    letterSpacing: '.2em',
-                    color: 'rgba(255,255,255,0.5)',
-                    textTransform: 'uppercase',
-                  }}>
+                  <p className="mt-3 text-[8px] tracking-[.22em] uppercase text-background/50">
                     — {block.author}
                   </p>
                 )}
               </div>
             ) : null
 
-          case 'spacer':
-            return (
-              <div
-                key={i}
-                style={{ height: block.size === 'large' ? 80 : block.size === 'medium' ? 48 : 24 }}
-              />
-            )
+          case 'spacer': {
+            const heights: Record<string, string> = {
+              small: 'h-6',
+              medium: 'h-12',
+              large: 'h-20',
+            }
+            return <div key={key} className={heights[block.size as string] ?? 'h-12'} />
+          }
 
           case 'heroOverride':
             return (
-              <div key={i} style={{ margin: '28px 0', position: 'relative' }}>
+              <div key={key} className="-mx-4 md:-mx-7 mt-7">
                 {block.imageUrl && (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
-                    src={`${block.imageUrl}?w=1200&q=85&auto=format`}
-                    alt={block.title || 'Hero'}
-                    style={{ width: '100%', maxHeight: '85vh', objectFit: 'contain', display: 'block' }}
+                    src={`${block.imageUrl}?w=1400&q=85&auto=format`}
+                    alt={block.title ?? ''}
+                    className="w-full max-h-[85vh] object-contain block"
                   />
                 )}
                 {block.title && (
-                  <p style={{
-                    marginTop: 12,
-                    padding: '0 24px',
-                    fontSize: 11,
-                    letterSpacing: '.1em',
-                    color: '#999',
-                    textTransform: 'uppercase',
-                  }}>
+                  <p className="px-4 md:px-7 pt-3 text-[11px] tracking-[.1em] text-muted-foreground uppercase">
                     {block.title}
                   </p>
                 )}

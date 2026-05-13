@@ -28,9 +28,15 @@ function formatDate(input: string | undefined): string {
   return `${months[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`
 }
 
+function getCardRatio(width: number) {
+  if (width < 768) return 0.85   // mobile — biggest card so a single card dominates
+  if (width < 1024) return 0.60  // tablet
+  return 0.55                    // desktop & up
+}
+
 export function BlogClient({
   posts,
-  pageData,
+  pageData: _pageData,
 }: {
   posts: JournalPost[]
   pageData?: JournalPageData
@@ -38,22 +44,31 @@ export function BlogClient({
   const [active, setActive] = useState(0)
   const [dragging, setDragging] = useState(false)
   const [containerWidth, setContainerWidth] = useState(0)
+  const [cardRatio, setCardRatio] = useState(0.55)
 
   const sliderRef = useRef<HTMLDivElement>(null)
   const dragStartXRef = useRef(0)
+  const touchStartXRef = useRef(0)
 
-  // Track slider outer width so transform math stays in sync on resize.
+  // Sync slider outer width + card ratio with viewport
   useEffect(() => {
     if (!sliderRef.current) return
     const el = sliderRef.current
-    const update = () => setContainerWidth(el.offsetWidth)
+    const update = () => {
+      setContainerWidth(el.offsetWidth)
+      setCardRatio(getCardRatio(window.innerWidth))
+    }
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
-    return () => ro.disconnect()
+    window.addEventListener('resize', update)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', update)
+    }
   }, [])
 
-  const cardWidth = containerWidth * 0.55
+  const cardWidth = containerWidth * cardRatio
 
   function go(n: number) {
     if (posts.length === 0) return
@@ -61,16 +76,19 @@ export function BlogClient({
   }
 
   function handleMouseDown(e: React.MouseEvent) {
-    if (posts.length === 0) return
+    if (posts.length <= 1) return
     dragStartXRef.current = e.clientX
-    setDragging(false)
+    let moved = false
     const onMove = (ev: MouseEvent) => {
-      if (Math.abs(ev.clientX - dragStartXRef.current) > 5) setDragging(true)
+      if (Math.abs(ev.clientX - dragStartXRef.current) > 5) {
+        moved = true
+        setDragging(true)
+      }
     }
     const onUp = (ev: MouseEvent) => {
       const dx = ev.clientX - dragStartXRef.current
-      if (Math.abs(dx) > 40) go(active + (dx < 0 ? 1 : -1))
-      // Defer clearing so onClick (link) can read it
+      if (moved && Math.abs(dx) > 40) go(active + (dx < 0 ? 1 : -1))
+      // Defer clearing so any click handler can still see `dragging`
       window.setTimeout(() => setDragging(false), 0)
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mouseup', onUp)
@@ -79,7 +97,6 @@ export function BlogClient({
     window.addEventListener('mouseup', onUp)
   }
 
-  const touchStartXRef = useRef(0)
   function handleTouchStart(e: React.TouchEvent) {
     touchStartXRef.current = e.touches[0].clientX
   }
@@ -89,69 +106,30 @@ export function BlogClient({
     else if (dx > 40) go(active - 1)
   }
 
-  const headline = pageData?.headline || 'Journal'
-  const eyebrow = pageData?.eyebrowLabel
-  const intro = pageData?.intro
-
   return (
-    <main
-      style={{ background: '#f4f3ef', color: '#0a0a0a', minHeight: '100vh' }}
-      className="journal-index"
-    >
+    <main className="bg-background text-foreground min-h-screen pt-[80px] md:pt-[100px]">
       {/* HEADER */}
-      <div style={{ padding: '120px 24px 28px', borderBottom: '1px solid #0a0a0a' }}>
-        {eyebrow && (
-          <p style={{
-            fontSize: 10,
-            letterSpacing: '.25em',
-            textTransform: 'uppercase',
-            color: '#999',
-            marginBottom: 14,
-          }}>
-            {eyebrow}
-          </p>
-        )}
-        <h1 style={{
-          fontSize: 'clamp(48px, 11vw, 140px)',
-          fontWeight: 900,
-          lineHeight: 0.85,
-          letterSpacing: '-0.04em',
-          textTransform: 'uppercase',
-          color: '#0a0a0a',
-          margin: 0,
-        }}>
-          {headline}
-        </h1>
-        {intro && (
-          <p style={{
-            marginTop: 28,
-            maxWidth: 520,
-            fontSize: 15,
-            fontWeight: 300,
-            lineHeight: 1.65,
-            color: '#444',
-          }}>
-            {intro}
-          </p>
-        )}
-      </div>
+      <header className="flex justify-between items-center px-4 md:px-7 py-3 border-b border-foreground">
+        <div className="flex items-baseline gap-4">
+          <span className="text-[9px] font-bold tracking-[.2em] uppercase">WeAreNotCreative</span>
+          <span className="text-[9px] tracking-[.15em] uppercase text-foreground/40">/ Journal</span>
+        </div>
+        <span className="text-[9px] tracking-[.12em] text-foreground/40">
+          {String(active + 1).padStart(2, '0')} / {String(posts.length).padStart(2, '0')}
+        </span>
+      </header>
 
       {/* SLIDER */}
       <div
         ref={sliderRef}
-        style={{
-          overflow: 'hidden',
-          cursor: posts.length > 1 ? 'grab' : 'default',
-          borderBottom: '1px solid #0a0a0a',
-          background: '#0a0a0a',
-        }}
-        onMouseDown={posts.length > 1 ? handleMouseDown : undefined}
+        className={`overflow-hidden border-b border-foreground bg-foreground select-none ${posts.length > 1 ? 'cursor-grab' : ''}`}
+        onMouseDown={handleMouseDown}
         onTouchStart={posts.length > 1 ? handleTouchStart : undefined}
         onTouchEnd={posts.length > 1 ? handleTouchEnd : undefined}
       >
         <div
+          className="flex"
           style={{
-            display: 'flex',
             transform: `translateX(-${active * cardWidth}px)`,
             transition: dragging ? 'none' : 'transform 0.55s cubic-bezier(0.77,0,0.18,1)',
           }}
@@ -160,92 +138,43 @@ export function BlogClient({
             <Link
               href={`/blog/${post.slug}`}
               key={post._id}
-              style={{
-                flex: '0 0 55%',
-                height: 300,
-                position: 'relative',
-                overflow: 'hidden',
-                opacity: i === active ? 1 : 0.5,
-                transition: 'opacity 0.35s',
-                borderRight: '1px solid rgba(255,255,255,0.06)',
-                textDecoration: 'none',
-                color: 'inherit',
-              }}
-              onClick={(e) => { if (dragging) e.preventDefault() }}
               draggable={false}
+              onClick={(e) => { if (dragging) e.preventDefault() }}
+              className={`relative overflow-hidden h-[260px] md:h-[300px] lg:h-[340px] 2xl:h-[400px] border-r border-white/10 no-underline text-inherit transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-45'}`}
+              style={{ flex: `0 0 ${cardRatio * 100}%` }}
             >
               {post.coverImage ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
-                  src={`${post.coverImage}?w=800&q=80&auto=format`}
+                  src={`${post.coverImage}?w=900&q=80&auto=format`}
                   alt={post.title}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                    userSelect: 'none',
-                    pointerEvents: 'none',
-                  }}
                   draggable={false}
+                  className="absolute inset-0 w-full h-full object-cover block pointer-events-none select-none"
                 />
               ) : (
-                <div style={{ position: 'absolute', inset: 0, background: '#1a1a1a' }} />
+                <div className="absolute inset-0 bg-[#1a1a1a]" />
               )}
 
               {/* Fixed gradient overlay — readability guarantee */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.08) 100%)',
-                pointerEvents: 'none',
-              }} />
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.1) 100%)',
+                }}
+              />
 
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                padding: '16px 18px 18px',
-                pointerEvents: 'none',
-              }}>
-                <p style={{
-                  fontSize: 7,
-                  letterSpacing: '.22em',
-                  color: 'rgba(255,255,255,0.4)',
-                  textTransform: 'uppercase',
-                  marginBottom: 7,
-                }}>
+              {/* Content overlay */}
+              <div className="absolute inset-0 z-[2] flex flex-col justify-end p-4 md:p-5 pointer-events-none">
+                <p className="text-[7px] tracking-[.22em] uppercase text-white/40 mb-2">
                   {post.postType || 'essay'}
                 </p>
-                <h2 style={{
-                  fontSize: 14,
-                  fontWeight: 900,
-                  lineHeight: 1.05,
-                  letterSpacing: '-.02em',
-                  textTransform: 'uppercase',
-                  color: '#fff',
-                  marginBottom: 10,
-                  margin: 0,
-                }}>
+                <h2 className="text-[13px] md:text-[14px] lg:text-[16px] 2xl:text-[18px] font-black leading-[1.05] tracking-[-0.025em] uppercase text-white">
                   {post.title}
                 </h2>
-                <p style={{
-                  marginTop: 10,
-                  fontSize: 8,
-                  letterSpacing: '.18em',
-                  color: 'rgba(255,255,255,0.4)',
-                  textTransform: 'uppercase',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}>
-                  <span style={{ display: 'inline-block', width: 16, height: 0.5, background: 'currentColor' }} />
+                <p className="mt-2.5 text-[8px] tracking-[.18em] uppercase text-white/40 flex items-center gap-1.5">
+                  <span className="w-4 h-px bg-current inline-block" />
                   Oku
                 </p>
               </div>
@@ -254,142 +183,85 @@ export function BlogClient({
         </div>
       </div>
 
-      {/* SCROLL BAR — siyah bant */}
+      {/* SCROLL BAR */}
       {posts.length > 1 && (
-        <div style={{
-          background: '#0a0a0a',
-          display: 'flex',
-          alignItems: 'center',
-          borderBottom: '1px solid #1a1a1a',
-        }}>
+        <div className="bg-foreground flex items-stretch border-b border-white/10">
           <button
             onClick={() => go(active - 1)}
             aria-label="Previous"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'rgba(255,255,255,0.35)',
-              fontSize: 12,
-              padding: '9px 18px',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >←</button>
-          <div style={{
-            flex: 1,
-            height: 1,
-            background: 'rgba(255,255,255,0.12)',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              background: 'rgba(255,255,255,0.6)',
-              width: `${100 / posts.length}%`,
-              left: posts.length > 1
-                ? `${(active / (posts.length - 1)) * (100 - 100 / posts.length)}%`
-                : '0%',
-              transition: 'left 0.55s cubic-bezier(0.77,0,0.18,1)',
-            }} />
+            className="bg-transparent border-none text-white/40 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
+          >
+            ←
+          </button>
+          <div className="flex-1 flex items-center">
+            <div className="w-full h-px bg-white/15 relative overflow-hidden">
+              <div
+                className="absolute top-0 bottom-0 bg-white/65 transition-all duration-500"
+                style={{
+                  width: `${100 / posts.length}%`,
+                  left: posts.length > 1
+                    ? `${(active / (posts.length - 1)) * (100 - 100 / posts.length)}%`
+                    : '0%',
+                }}
+              />
+            </div>
           </div>
           <button
             onClick={() => go(active + 1)}
             aria-label="Next"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'rgba(255,255,255,0.35)',
-              fontSize: 12,
-              padding: '9px 18px',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >→</button>
+            className="bg-transparent border-none text-white/40 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
+          >
+            →
+          </button>
         </div>
       )}
 
-      {/* ARSIV LISTESI */}
+      {/* ARCHIVE LIST */}
       <div>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          padding: '14px 24px 8px',
-          gap: 10,
-        }}>
-          <div style={{ flex: 1, height: 0.5, background: '#ddd' }} />
-          <span style={{
-            fontSize: 8,
-            letterSpacing: '.2em',
-            color: '#bbb',
-            textTransform: 'uppercase',
-            whiteSpace: 'nowrap',
-          }}>
+        <div className="flex items-center px-4 md:px-7 pt-2.5 gap-3">
+          <div className="flex-1 h-px bg-foreground/15" />
+          <span className="text-[8px] tracking-[.2em] uppercase text-foreground/30 whitespace-nowrap">
             Tüm Yazılar
           </span>
-          <div style={{ flex: 1, height: 0.5, background: '#ddd' }} />
+          <div className="flex-1 h-px bg-foreground/15" />
         </div>
 
         {posts.map((post, i) => (
           <div
             key={post._id}
             onClick={() => go(i)}
-            className={`arch-row ${i === active ? 'arch-active' : ''}`}
+            className="relative overflow-hidden cursor-pointer group"
           >
-            <div className="arch-sweep" />
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, position: 'relative', zIndex: 1, minWidth: 0 }}>
-              <span className="arch-index" style={{
-                fontSize: 9,
-                letterSpacing: '.08em',
-                width: 26,
-                flexShrink: 0,
-                color: '#bbb',
-              }}>
-                {String(i + 1).padStart(3, '0')}
+            {/* Sweep */}
+            <div className="absolute inset-0 w-0 bg-foreground group-hover:w-full transition-[width] duration-300 ease-[cubic-bezier(0.77,0,0.18,1)] z-0" />
+
+            {/* Active left border */}
+            {i === active && (
+              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-foreground z-10" />
+            )}
+
+            <div className="relative z-[1] flex justify-between items-center px-4 md:px-7 py-2.5 border-b border-foreground/10">
+              <div className="flex items-baseline gap-3 min-w-0">
+                <span className="text-[9px] text-foreground/25 tracking-[.08em] w-6 flex-shrink-0 group-hover:text-white/30 transition-colors">
+                  {String(i + 1).padStart(3, '0')}
+                </span>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`text-[11px] md:text-[12px] tracking-[-0.01em] uppercase no-underline transition-colors group-hover:text-white truncate ${i === active ? 'font-black text-foreground' : 'font-semibold text-foreground/55'}`}
+                >
+                  {post.title}
+                </Link>
+              </div>
+              <span className="text-[9px] tracking-[.1em] text-foreground/30 group-hover:text-white/30 transition-colors whitespace-nowrap ml-4 flex-shrink-0">
+                {formatDate(post.date)}
               </span>
-              <Link
-                href={`/blog/${post.slug}`}
-                onClick={(e) => e.stopPropagation()}
-                className="arch-title"
-                style={{
-                  fontSize: 12,
-                  fontWeight: i === active ? 900 : 600,
-                  letterSpacing: '-.01em',
-                  textTransform: 'uppercase',
-                  color: '#444',
-                  textDecoration: 'none',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {post.title}
-              </Link>
             </div>
-            <span className="arch-date" style={{
-              fontSize: 9,
-              letterSpacing: '.1em',
-              color: '#bbb',
-              position: 'relative',
-              zIndex: 1,
-              flexShrink: 0,
-              marginLeft: 12,
-            }}>
-              {formatDate(post.date)}
-            </span>
           </div>
         ))}
 
         {posts.length === 0 && (
-          <p style={{
-            padding: '40px 24px',
-            fontSize: 11,
-            letterSpacing: '.18em',
-            textTransform: 'uppercase',
-            color: '#bbb',
-            textAlign: 'center',
-          }}>
+          <p className="px-4 md:px-7 py-10 text-[11px] tracking-[.18em] uppercase text-foreground/40 text-center">
             Henüz yazı yok.
           </p>
         )}
