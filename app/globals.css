@@ -81,3 +81,125 @@ body[data-showcase="active"] .header-logo-container {
   opacity: 0;
   pointer-events: none;
 }
+
+/* ── Journal (blog) — index archive list sweep ───────────────────────────── */
+.arch-row {
+  position: relative;
+  overflow: hidden;
+  padding: 12px 24px;
+  border-bottom: 0.5px solid #e5e3dd;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.arch-sweep {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: #0a0a0a;
+  transition: width 0.32s cubic-bezier(0.77, 0, 0.18, 1);
+  z-index: 0;
+}
+.arch-row:hover .arch-sweep { width: 100%; }
+.arch-row:hover .arch-index,
+.arch-row:hover .arch-title,
+.arch-row:hover .arch-date {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.arch-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #0a0a0a;
+  z-index: 2;
+}
+
+/* ── Journal detail — hero asymmetric grid ───────────────────────────────── */
+.journal-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #0a0a0a;
+}
+.journal-hero-left {
+  padding: 28px 24px;
+  border-right: 1px solid #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+}
+.journal-hero-right {
+  position: relative;
+  min-height: 220px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.journal-lead {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  padding: 28px 24px;
+  border-bottom: 0.5px solid #0a0a0a;
+}
+
+.journal-twocol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px 24px 0;
+}
+
+/* Next-post hover block */
+.next-post-block {
+  grid-template-columns: 1fr 1fr;
+  transition: background 0.32s ease, color 0.32s ease;
+}
+.next-post-block .next-post-left {
+  border-right: 1px solid #0a0a0a;
+  transition: border-color 0.32s ease;
+}
+.next-post-block:hover {
+  background: #0a0a0a;
+  color: #fff;
+}
+.next-post-block:hover .next-post-left {
+  border-color: #222;
+}
+
+/* Mobile collapse — single column for all journal grids */
+@media (max-width: 768px) {
+  .journal-hero,
+  .next-post-block,
+  .journal-twocol {
+    grid-template-columns: 1fr;
+  }
+  .journal-hero-left {
+    border-right: none;
+    border-bottom: 1px solid #0a0a0a;
+    min-height: 0;
+  }
+  .journal-hero-right {
+    min-height: 200px;
+    order: -1;
+  }
+  .next-post-block .next-post-left {
+    border-right: none;
+    border-bottom: 1px solid #0a0a0a;
+  }
+  .next-post-block .next-post-right {
+    display: none;
+  }
+  .journal-lead {
+    grid-template-columns: 1fr;
+    padding: 20px 24px;
+  }
+  .journal-lead > span:first-child {
+    display: none;
+  }
+}

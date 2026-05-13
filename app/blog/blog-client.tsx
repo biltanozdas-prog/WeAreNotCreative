@@ -1,416 +1,399 @@
 "use client"
 
-import Image from "next/image"
-import { useState, useEffect } from "react"
-import { PortableText } from "@portabletext/react"
+import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
 
-export function BlogClient({ blogPosts, pageData }: { blogPosts: any[], pageData?: any }) {
-  const [activePost, setActivePost] = useState<any | null>(null)
-
-  return (
-    <main className="bg-background min-h-screen px-8 pt-[160px] pb-32 md:px-[60px] md:pt-[200px] md:pb-[180px]">
-      {pageData?.eyebrowLabel && (
-        <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
-          {pageData.eyebrowLabel}
-        </p>
-      )}
-      {pageData?.headline && (
-        <h1 className="font-sans font-black text-[clamp(72px,14vw,200px)] leading-[0.82] tracking-[-0.04em] text-foreground uppercase mb-10 md:mb-14">
-          {pageData.headline}
-        </h1>
-      )}
-      {pageData?.intro && (
-        <p className="font-sans font-light text-[16px] md:text-[18px] text-muted-foreground leading-[1.65] max-w-[520px] mb-24 md:mb-[140px]">
-          {pageData.intro}
-        </p>
-      )}
-
-      {/* Blog entries - asymmetric layout */}
-      <div className="flex flex-col gap-16 md:gap-24">
-        {blogPosts.map((post, index) => (
-          <div
-            key={post.id}
-            className={index < blogPosts.length - 1 ? "pb-16 md:pb-24 border-b border-secondary" : ""}
-          >
-            <BlogEntry
-              post={post}
-              index={index}
-              onOpen={() => setActivePost(post)}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Reader Panel */}
-      <ReaderPanel post={activePost} onClose={() => setActivePost(null)} />
-    </main>
-  )
+type JournalPost = {
+  _id: string
+  slug: string
+  title: string
+  date?: string
+  excerpt?: string
+  postType?: 'essay' | 'observation' | 'reference' | string
+  author?: string
+  coverImage?: string
 }
 
-function BlogEntry({
-  post,
-  index,
-  onOpen,
+type JournalPageData = {
+  eyebrowLabel?: string
+  headline?: string
+  intro?: string
+} | null
+
+function formatDate(input: string | undefined): string {
+  if (!input) return ""
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input)
+  if (!m) return input
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  return `${months[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`
+}
+
+export function BlogClient({
+  posts,
+  pageData,
 }: {
-  post: any
-  index: number
-  onOpen: () => void
+  posts: JournalPost[]
+  pageData?: JournalPageData
 }) {
-  const isWide = index % 3 === 0
-  const isOffset = index % 2 !== 0
+  const [active, setActive] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const [containerWidth, setContainerWidth] = useState(0)
 
-  return (
-    <button
-      onClick={onOpen}
-      className={`block w-full text-left bg-transparent border-none cursor-pointer p-0 group ${isOffset ? "md:ml-auto md:max-w-[75%]" : "md:max-w-[85%]"
-        }`}
-    >
-      <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
-        <div
-          className={`relative overflow-hidden bg-muted shrink-0 ${isWide
-            ? "w-full md:w-[420px] h-[240px] md:h-[320px]"
-            : "w-full md:w-[300px] h-[200px] md:h-[240px]"
-            }`}
-        >
-          <Image
-            src={post.coverImage || post.image || ""}
-            alt={post.title}
-            fill
-            className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-[1.02]"
-            sizes="(max-width: 768px) 100vw, 420px"
-          />
-        </div>
+  const sliderRef = useRef<HTMLDivElement>(null)
+  const dragStartXRef = useRef(0)
 
-        <div className="flex flex-col justify-between flex-1 min-h-[200px]">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.2em] text-muted-foreground uppercase">
-                {post.date}
-              </span>
-            </div>
-
-            <h2 className="font-sans font-black text-[20px] md:text-[40px] leading-[0.88] uppercase tracking-[-0.03em] text-foreground mb-4 md:mb-6 group-hover:opacity-70 transition-opacity break-words hyphens-auto">
-              {post.title}
-            </h2>
-
-            <p className="font-sans font-light text-[14px] md:text-[16px] text-foreground/60 leading-relaxed max-w-[400px]">
-              {post.excerpt}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 mt-6">
-            <span className="font-sans font-medium text-[12px] tracking-[0.1em] text-foreground uppercase border-b border-foreground">
-              Read
-            </span>
-          </div>
-        </div>
-      </div>
-    </button>
-  )
-}
-
-// Shared PortableText components used across textBlock, twoColumn text slots,
-// and the fallback rendering path inside ReaderPanel.
-const portableTextComponents = {
-  block: {
-    normal: ({ children }: any) => (
-      <p className="mb-5 text-[15px] md:text-[17px] leading-[1.7] font-light text-foreground">
-        {children}
-      </p>
-    ),
-    h2: ({ children }: any) => (
-      <h2 className="text-[20px] md:text-[26px] font-black uppercase tracking-[-0.02em] mb-4 mt-8 text-foreground">
-        {children}
-      </h2>
-    ),
-    h3: ({ children }: any) => (
-      <h3 className="text-[16px] md:text-[20px] font-bold mb-3 mt-6 text-foreground">
-        {children}
-      </h3>
-    ),
-  },
-  marks: {
-    strong: ({ children }: any) => (
-      <strong className="font-bold">{children}</strong>
-    ),
-    em: ({ children }: any) => (
-      <em className="italic">{children}</em>
-    ),
-    underline: ({ children }: any) => (
-      <span className="underline underline-offset-2">{children}</span>
-    ),
-    'strike-through': ({ children }: any) => (
-      <span className="line-through">{children}</span>
-    ),
-  },
-}
-
-function ReaderPanel({
-  post,
-  onClose,
-}: {
-  post: any | null
-  onClose: () => void
-}) {
+  // Track slider outer width so transform math stays in sync on resize.
   useEffect(() => {
-    if (post) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
+    if (!sliderRef.current) return
+    const el = sliderRef.current
+    const update = () => setContainerWidth(el.offsetWidth)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const cardWidth = containerWidth * 0.55
+
+  function go(n: number) {
+    if (posts.length === 0) return
+    setActive(Math.max(0, Math.min(n, posts.length - 1)))
+  }
+
+  function handleMouseDown(e: React.MouseEvent) {
+    if (posts.length === 0) return
+    dragStartXRef.current = e.clientX
+    setDragging(false)
+    const onMove = (ev: MouseEvent) => {
+      if (Math.abs(ev.clientX - dragStartXRef.current) > 5) setDragging(true)
     }
-    return () => {
-      document.body.style.overflow = ""
+    const onUp = (ev: MouseEvent) => {
+      const dx = ev.clientX - dragStartXRef.current
+      if (Math.abs(dx) > 40) go(active + (dx < 0 ? 1 : -1))
+      // Defer clearing so onClick (link) can read it
+      window.setTimeout(() => setDragging(false), 0)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
     }
-  }, [post])
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
+  const touchStartXRef = useRef(0)
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartXRef.current = e.touches[0].clientX
+  }
+  function handleTouchEnd(e: React.TouchEvent) {
+    const dx = e.changedTouches[0].clientX - touchStartXRef.current
+    if (dx < -40) go(active + 1)
+    else if (dx > 40) go(active - 1)
+  }
+
+  const headline = pageData?.headline || 'Journal'
+  const eyebrow = pageData?.eyebrowLabel
+  const intro = pageData?.intro
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className={`fixed inset-0 bg-[#000000]/50 z-[99998] transition-opacity duration-500 ${post ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Panel sliding from right */}
-      <div
-        className={`fixed top-0 right-0 w-full md:w-[55vw] h-screen bg-background z-[99999] transition-transform duration-500 ease-[cubic-bezier(0.85,0,0.15,1)] border-l-2 border-foreground overflow-y-auto ${post ? "translate-x-0" : "translate-x-full"
-          }`}
-        role="dialog"
-        aria-modal="true"
-        aria-label={post ? `Reading: ${post.title}` : "Blog reader"}
-      >
-        {post && (
-          <div className="px-8 py-12 md:px-12 md:py-16 @container">
-            <button
-              onClick={onClose}
-              className="font-sans font-light text-[14px] md:text-[16px] text-muted-foreground bg-transparent border-none cursor-pointer mb-12 p-0 tracking-[0.15em] uppercase hover:text-foreground transition-colors"
-              aria-label="Close reader"
-            >
-              {'[ Close ]'}
-            </button>
-
-            <div className="flex items-center gap-3 mb-6">
-              <span className="font-sans font-light text-[11px] md:text-[12px] tracking-[0.2em] text-muted-foreground uppercase">{post.date}</span>
-            </div>
-
-            <h1 className="font-sans font-black text-[36px] md:text-[56px] leading-[0.88] uppercase tracking-[-0.03em] text-foreground mb-10 md:mb-14">
-              {post.title}
-            </h1>
-
-            {post.coverImage && (
-              <div className="w-full h-[30vh] md:h-[45vh] bg-muted relative overflow-hidden mb-10 md:mb-14">
-                <Image
-                  src={post.coverImage}
-                  alt={post.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 55vw"
-                />
-              </div>
-            )}
-
-            <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground leading-[1.7] mb-6 md:mb-8 space-y-8">
-              {(post.blocks || []).map((block: any, i: number) => {
-                // NOTE: Sanity blocks use _type, not _template
-                switch (block._type) {
-                  case "heroOverride": {
-                    return (
-                      <div key={i} className="my-8">
-                        {block.imageUrl && (
-                          /* eslint-disable-next-line @next/next/no-img-element */
-                          <img
-                            src={block.imageUrl}
-                            alt={block.title || "Hero"}
-                            className="w-full h-auto block"
-                            style={{ maxHeight: '85vh', objectFit: 'contain' }}
-                          />
-                        )}
-                        {block.title && (
-                          <p className="mt-4 font-sans font-black text-[18px] md:text-[24px] uppercase tracking-[-0.02em] text-foreground">
-                            {block.title}
-                          </p>
-                        )}
-                      </div>
-                    )
-                  }
-                  case "fullImage":
-                    return block.imageUrl ? (
-                      <div key={i} className="my-8">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={block.imageUrl}
-                          alt={block.caption || "Full Image"}
-                          className="w-full h-auto block mx-auto"
-                          style={{ maxHeight: '85vh', objectFit: 'contain' }}
-                        />
-                        {block.caption && (
-                          <p className="mt-4 font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase text-center">
-                            {block.caption}
-                          </p>
-                        )}
-                      </div>
-                    ) : null
-                  case "fullVideo":
-                    return block.videoUrl ? (
-                      <div key={i} className="w-full mb-12 md:mb-16 relative">
-                        <video
-                          src={block.videoUrl}
-                          className="w-full h-auto block"
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                        />
-                        {block.caption && (
-                          <p className="mt-4 font-sans font-light text-[12px] text-muted-foreground tracking-[0.15em] uppercase text-center">
-                            {block.caption}
-                          </p>
-                        )}
-                      </div>
-                    ) : null
-                  case "textBlock":
-                    return (
-                      <div key={i} className="mb-12 md:mb-16">
-                        {block.heading && (
-                          <h2 className="font-sans font-black text-[20px] md:text-[28px] uppercase tracking-[-0.02em] mb-4 text-foreground">
-                            {block.heading}
-                          </h2>
-                        )}
-                        {block.body && (
-                          <div className="font-sans font-light text-[16px] md:text-[18px] leading-[1.6] text-foreground">
-                            <PortableText value={block.body} components={portableTextComponents} />
-                          </div>
-                        )}
-                      </div>
-                    )
-                  case "twoColumn": {
-                    const renderSlot = (
-                      type: string,
-                      content: any,
-                      imageUrl: string,
-                      videoUrl: string,
-                    ) => {
-                      if (type === 'video' && videoUrl) {
-                        return (
-                          <video
-                            src={videoUrl}
-                            className="w-full h-auto block"
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                          />
-                        )
-                      }
-                      if (type === 'image' && imageUrl) {
-                        return (
-                          /* eslint-disable-next-line @next/next/no-img-element */
-                          <img
-                            src={imageUrl}
-                            alt="Column media"
-                            className="w-full h-auto block"
-                            style={{ maxHeight: '70vh', objectFit: 'contain' }}
-                          />
-                        )
-                      }
-                      if (type === 'text' && content) {
-                        return (
-                          <div className="font-sans font-light text-[15px] md:text-[17px] leading-[1.7] text-foreground max-w-[65ch]">
-                            <PortableText value={content} components={portableTextComponents} />
-                          </div>
-                        )
-                      }
-                      return null
-                    }
-
-                    return (
-                      <div key={i} className="grid grid-cols-1 @[600px]:grid-cols-2 gap-6 @[600px]:gap-10 items-start my-8">
-                        <div>
-                          {renderSlot(
-                            block.leftType || 'text',
-                            block.leftContent,
-                            block.leftImageUrl,
-                            block.leftVideoUrl,
-                          )}
-                        </div>
-                        <div>
-                          {renderSlot(
-                            block.rightType || 'image',
-                            block.rightContent,
-                            block.rightImageUrl,
-                            block.rightVideoUrl,
-                          )}
-                        </div>
-                      </div>
-                    )
-                  }
-                  case "gallery": {
-                    const count = block.imageUrls?.length ?? 0
-                    if (count === 0) return null
-                    const gridClass =
-                      count === 1
-                        ? 'grid-cols-1 max-w-lg mx-auto'
-                        : count === 2
-                        ? 'grid-cols-2'
-                        : 'grid-cols-2 md:grid-cols-3'
-                    return (
-                      <div key={i} className={`grid gap-4 md:gap-6 mb-12 md:mb-16 items-start ${gridClass}`}>
-                        {block.imageUrls.slice(0, 4).map((url: string, idx: number) => (
-                          /* eslint-disable-next-line @next/next/no-img-element */
-                          <img
-                            key={idx}
-                            src={url}
-                            alt={`Gallery ${idx + 1}`}
-                            className="w-full h-auto block"
-                          />
-                        ))}
-                      </div>
-                    )
-                  }
-                  case "quote":
-                    return block.quoteText ? (
-                      <div key={i} className="mb-12 md:mb-16 border-l-2 md:border-l-[3px] border-foreground pl-6 md:pl-8">
-                        <blockquote className="font-sans font-black text-[clamp(20px,4vw,36px)] leading-[1.1] text-foreground uppercase tracking-[-0.02em] mb-4">
-                          &ldquo;{block.quoteText}&rdquo;
-                        </blockquote>
-                        {block.author && (
-                          <cite className="font-sans font-light text-[11px] md:text-[12px] text-muted-foreground tracking-[0.2em] uppercase block not-italic">
-                            — {block.author}
-                          </cite>
-                        )}
-                      </div>
-                    ) : null
-                  case "spacer": {
-                    const h = block.size === "small" ? "h-12" : block.size === "large" ? "h-24 md:h-32" : "h-16 md:h-20"
-                    return <div key={i} className={`w-full ${h}`} />
-                  }
-                  default:
-                    return null
-                }
-              })}
-            </div>
-
-            {(!post.blocks || post.blocks.length === 0) && (
-              <div className="font-sans font-light text-[15px] md:text-[17px] text-foreground leading-[1.7] mb-6 md:mb-8 space-y-6">
-                {(post.content || post.body) ? (
-                  Array.isArray(post.content || post.body)
-                    ? <PortableText value={post.content || post.body} components={portableTextComponents} />
-                    : String(post.content || post.body)
-                ) : "Blog content coming soon."}
-              </div>
-            )}
-
-            <div className="flex items-center gap-4 mt-14 md:mt-20 pt-8 border-t border-secondary">
-              <span className="w-2 h-2 bg-foreground" />
-              <span className="font-sans font-light text-[12px] tracking-[0.2em] text-muted-foreground uppercase">
-                End of article
-              </span>
-            </div>
-          </div>
+    <main
+      style={{ background: '#f4f3ef', color: '#0a0a0a', minHeight: '100vh' }}
+      className="journal-index"
+    >
+      {/* HEADER */}
+      <div style={{ padding: '120px 24px 28px', borderBottom: '1px solid #0a0a0a' }}>
+        {eyebrow && (
+          <p style={{
+            fontSize: 10,
+            letterSpacing: '.25em',
+            textTransform: 'uppercase',
+            color: '#999',
+            marginBottom: 14,
+          }}>
+            {eyebrow}
+          </p>
+        )}
+        <h1 style={{
+          fontSize: 'clamp(48px, 11vw, 140px)',
+          fontWeight: 900,
+          lineHeight: 0.85,
+          letterSpacing: '-0.04em',
+          textTransform: 'uppercase',
+          color: '#0a0a0a',
+          margin: 0,
+        }}>
+          {headline}
+        </h1>
+        {intro && (
+          <p style={{
+            marginTop: 28,
+            maxWidth: 520,
+            fontSize: 15,
+            fontWeight: 300,
+            lineHeight: 1.65,
+            color: '#444',
+          }}>
+            {intro}
+          </p>
         )}
       </div>
-    </>
+
+      {/* SLIDER */}
+      <div
+        ref={sliderRef}
+        style={{
+          overflow: 'hidden',
+          cursor: posts.length > 1 ? 'grab' : 'default',
+          borderBottom: '1px solid #0a0a0a',
+          background: '#0a0a0a',
+        }}
+        onMouseDown={posts.length > 1 ? handleMouseDown : undefined}
+        onTouchStart={posts.length > 1 ? handleTouchStart : undefined}
+        onTouchEnd={posts.length > 1 ? handleTouchEnd : undefined}
+      >
+        <div
+          style={{
+            display: 'flex',
+            transform: `translateX(-${active * cardWidth}px)`,
+            transition: dragging ? 'none' : 'transform 0.55s cubic-bezier(0.77,0,0.18,1)',
+          }}
+        >
+          {posts.map((post, i) => (
+            <Link
+              href={`/blog/${post.slug}`}
+              key={post._id}
+              style={{
+                flex: '0 0 55%',
+                height: 300,
+                position: 'relative',
+                overflow: 'hidden',
+                opacity: i === active ? 1 : 0.5,
+                transition: 'opacity 0.35s',
+                borderRight: '1px solid rgba(255,255,255,0.06)',
+                textDecoration: 'none',
+                color: 'inherit',
+              }}
+              onClick={(e) => { if (dragging) e.preventDefault() }}
+              draggable={false}
+            >
+              {post.coverImage ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={`${post.coverImage}?w=800&q=80&auto=format`}
+                  alt={post.title}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                    userSelect: 'none',
+                    pointerEvents: 'none',
+                  }}
+                  draggable={false}
+                />
+              ) : (
+                <div style={{ position: 'absolute', inset: 0, background: '#1a1a1a' }} />
+              )}
+
+              {/* Fixed gradient overlay — readability guarantee */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background:
+                  'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.08) 100%)',
+                pointerEvents: 'none',
+              }} />
+
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                padding: '16px 18px 18px',
+                pointerEvents: 'none',
+              }}>
+                <p style={{
+                  fontSize: 7,
+                  letterSpacing: '.22em',
+                  color: 'rgba(255,255,255,0.4)',
+                  textTransform: 'uppercase',
+                  marginBottom: 7,
+                }}>
+                  {post.postType || 'essay'}
+                </p>
+                <h2 style={{
+                  fontSize: 14,
+                  fontWeight: 900,
+                  lineHeight: 1.05,
+                  letterSpacing: '-.02em',
+                  textTransform: 'uppercase',
+                  color: '#fff',
+                  marginBottom: 10,
+                  margin: 0,
+                }}>
+                  {post.title}
+                </h2>
+                <p style={{
+                  marginTop: 10,
+                  fontSize: 8,
+                  letterSpacing: '.18em',
+                  color: 'rgba(255,255,255,0.4)',
+                  textTransform: 'uppercase',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}>
+                  <span style={{ display: 'inline-block', width: 16, height: 0.5, background: 'currentColor' }} />
+                  Oku
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* SCROLL BAR — siyah bant */}
+      {posts.length > 1 && (
+        <div style={{
+          background: '#0a0a0a',
+          display: 'flex',
+          alignItems: 'center',
+          borderBottom: '1px solid #1a1a1a',
+        }}>
+          <button
+            onClick={() => go(active - 1)}
+            aria-label="Previous"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255,255,255,0.35)',
+              fontSize: 12,
+              padding: '9px 18px',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >←</button>
+          <div style={{
+            flex: 1,
+            height: 1,
+            background: 'rgba(255,255,255,0.12)',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              background: 'rgba(255,255,255,0.6)',
+              width: `${100 / posts.length}%`,
+              left: posts.length > 1
+                ? `${(active / (posts.length - 1)) * (100 - 100 / posts.length)}%`
+                : '0%',
+              transition: 'left 0.55s cubic-bezier(0.77,0,0.18,1)',
+            }} />
+          </div>
+          <button
+            onClick={() => go(active + 1)}
+            aria-label="Next"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255,255,255,0.35)',
+              fontSize: 12,
+              padding: '9px 18px',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >→</button>
+        </div>
+      )}
+
+      {/* ARSIV LISTESI */}
+      <div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '14px 24px 8px',
+          gap: 10,
+        }}>
+          <div style={{ flex: 1, height: 0.5, background: '#ddd' }} />
+          <span style={{
+            fontSize: 8,
+            letterSpacing: '.2em',
+            color: '#bbb',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+          }}>
+            Tüm Yazılar
+          </span>
+          <div style={{ flex: 1, height: 0.5, background: '#ddd' }} />
+        </div>
+
+        {posts.map((post, i) => (
+          <div
+            key={post._id}
+            onClick={() => go(i)}
+            className={`arch-row ${i === active ? 'arch-active' : ''}`}
+          >
+            <div className="arch-sweep" />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, position: 'relative', zIndex: 1, minWidth: 0 }}>
+              <span className="arch-index" style={{
+                fontSize: 9,
+                letterSpacing: '.08em',
+                width: 26,
+                flexShrink: 0,
+                color: '#bbb',
+              }}>
+                {String(i + 1).padStart(3, '0')}
+              </span>
+              <Link
+                href={`/blog/${post.slug}`}
+                onClick={(e) => e.stopPropagation()}
+                className="arch-title"
+                style={{
+                  fontSize: 12,
+                  fontWeight: i === active ? 900 : 600,
+                  letterSpacing: '-.01em',
+                  textTransform: 'uppercase',
+                  color: '#444',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {post.title}
+              </Link>
+            </div>
+            <span className="arch-date" style={{
+              fontSize: 9,
+              letterSpacing: '.1em',
+              color: '#bbb',
+              position: 'relative',
+              zIndex: 1,
+              flexShrink: 0,
+              marginLeft: 12,
+            }}>
+              {formatDate(post.date)}
+            </span>
+          </div>
+        ))}
+
+        {posts.length === 0 && (
+          <p style={{
+            padding: '40px 24px',
+            fontSize: 11,
+            letterSpacing: '.18em',
+            textTransform: 'uppercase',
+            color: '#bbb',
+            textAlign: 'center',
+          }}>
+            Henüz yazı yok.
+          </p>
+        )}
+      </div>
+    </main>
   )
 }

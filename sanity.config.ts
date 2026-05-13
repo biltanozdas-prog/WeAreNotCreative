@@ -202,10 +202,11 @@ export default defineConfig({
                                                     )
                                             ),
                                         S.listItem()
-                                            .title('Blog')
+                                            .title('Journal')
                                             .child(
                                                 S.documentTypeList('blogPost')
-                                                    .title('Blog Posts')
+                                                    .title('Journal')
+                                                    .defaultOrdering([{ field: 'date', direction: 'desc' }])
                                                     .child((documentId) =>
                                                         S.document()
                                                             .documentId(documentId)

@@ -22,7 +22,28 @@ export const blogPost = defineType({
         defineField({
             name: 'date',
             title: 'Date',
+            type: 'date',
+            description: 'Use the date picker. Existing string-format dates must be re-entered.',
+        }),
+        defineField({
+            name: 'postType',
+            title: 'Yazı Türü',
             type: 'string',
+            options: {
+                list: [
+                    { title: 'Essay', value: 'essay' },
+                    { title: 'Observation', value: 'observation' },
+                    { title: 'Reference', value: 'reference' },
+                ],
+                layout: 'radio',
+            },
+            initialValue: 'essay',
+        }),
+        defineField({
+            name: 'author',
+            title: 'Yazar',
+            type: 'string',
+            initialValue: 'Tunç',
         }),
         defineField({
             name: 'coverImage',

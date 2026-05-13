@@ -15,46 +15,21 @@ export default async function BlogPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
-  const fields = `{
-        _id,
-        "slug": coalesce(slug.current, slug),
-        title,
-        date,
-        excerpt,
-        "coverImage": coverImage.asset->url,
-        "image": coverImage.asset->url,
-        blocks[] {
-          ...,
-          _type == "fullImage" => {
-            "imageUrl": image.asset->url
-          },
-          _type == "fullVideo" => {
-            "videoUrl": video.asset->url
-          },
-          _type == "twoColumn" => {
-            leftType,
-            rightType,
-            leftContent,
-            rightContent,
-            "leftImageUrl": leftImage.asset->url,
-            "leftVideoUrl": leftVideo.asset->url,
-            "rightImageUrl": rightImage.asset->url,
-            "rightVideoUrl": rightVideo.asset->url
-          },
-          _type == "gallery" => {
-            "imageUrls": images[].asset->url
-          },
-          _type == "heroOverride" => {
-            title,
-            "imageUrl": image.asset->url
-          }
-        },
-        order
-      }`
+  // Light list query — only what cards need. No blocks payload.
+  const listFields = `{
+    _id,
+    "slug": slug.current,
+    title,
+    date,
+    excerpt,
+    postType,
+    author,
+    "coverImage": coverImage.asset->url
+  }`
 
   const postsQuery = preview
-    ? groq`*[_type == "blogPost"] | order(order asc) ${fields}`
-    : groq`*[_type == "blogPost" && published == true] | order(order asc) ${fields}`
+    ? groq`*[_type == "blogPost"] | order(date desc) ${listFields}`
+    : groq`*[_type == "blogPost" && published == true] | order(date desc) ${listFields}`
 
   const [pageData, rawPosts] = await Promise.all([
     client.fetch(
@@ -69,10 +44,8 @@ export default async function BlogPage() {
       { next: { revalidate: 30 } }
     ).catch((e: any) => { console.warn("[Blog] blogPosts fetch failed:", e); return [] }),
   ])
-  const blogPosts = (rawPosts || []).filter(Boolean).map((p: any) => ({
-    ...p,
-    id: p._id,
-  }))
 
-  return <BlogClient blogPosts={blogPosts} pageData={pageData} />
+  const posts = (rawPosts || []).filter(Boolean)
+
+  return <BlogClient posts={posts} pageData={pageData} />
 }
