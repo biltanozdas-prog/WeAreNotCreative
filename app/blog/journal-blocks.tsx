@@ -4,11 +4,12 @@ import { PortableText } from "@portabletext/react"
 
 // Journal block renderer — independent of the project-side
 // lightbox-image-blocks component. Tailwind-only, no inline styles.
+// Asymmetric two-column / gallery layouts driven by block index.
 
 const ptComponents = {
   block: {
     normal: ({ children }: any) => (
-      <p className="text-[13px] leading-[1.82] text-foreground/60 mb-3 last:mb-0">
+      <p className="text-[13px] leading-[1.82] text-foreground/55 mb-3 last:mb-0">
         {children}
       </p>
     ),
@@ -48,7 +49,7 @@ function renderSlot(side: 'left' | 'right', block: any) {
         <img
           src={`${imageUrl}?w=900&q=85&auto=format`}
           alt="Column media"
-          className="w-full max-h-[85vh] xl:max-h-[500px] object-contain block"
+          className="w-full max-h-[85vh] object-contain block"
         />
       ) : null
     case 'video':
@@ -72,15 +73,15 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
 
   return (
     <>
-      {blocks.map((block: any, i: number) => {
-        const key = block._key ?? `block-${i}`
+      {blocks.map((block: any, index: number) => {
+        const key = block._key ?? `block-${index}`
 
         switch (block._type) {
           case 'textBlock':
             return (
-              <div key={key} className="pt-6 max-w-[640px]">
+              <div key={key} className="pt-6 max-w-[580px]">
                 {block.heading && (
-                  <p className="text-[13px] font-black uppercase tracking-[-0.015em] mb-2.5 text-foreground">
+                  <p className="text-[12px] font-black uppercase tracking-[-0.015em] mb-2.5 text-foreground">
                     {block.heading}
                   </p>
                 )}
@@ -100,7 +101,7 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
                   className="w-full max-h-[85vh] object-contain block"
                 />
                 {block.caption && (
-                  <p className="px-4 md:px-7 pt-2 text-[9px] tracking-[.08em] text-muted-foreground uppercase">
+                  <p className="px-4 md:px-7 pt-2 text-[9px] tracking-[.08em] text-foreground/40 uppercase">
                     {block.caption}
                   </p>
                 )}
@@ -114,37 +115,50 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
                   <source src={block.videoUrl} />
                 </video>
                 {block.caption && (
-                  <p className="px-4 md:px-7 pt-2 text-[9px] tracking-[.08em] text-muted-foreground uppercase">
+                  <p className="px-4 md:px-7 pt-2 text-[9px] tracking-[.08em] text-foreground/40 uppercase">
                     {block.caption}
                   </p>
                 )}
               </div>
             ) : null
 
-          case 'twoColumn':
+          case 'twoColumn': {
+            // Alternating asymmetry — even index: image-left bleeds left.
+            // Odd index: image-right bleeds right.
+            const isEven = index % 2 === 0
+            const bleedSide = isEven ? '-ml-4 md:-ml-7' : '-mr-4 md:-mr-7'
+            const colsMd = isEven ? 'md:grid-cols-[1.5fr_1fr]' : 'md:grid-cols-[1fr_1.5fr]'
+
             return (
               <div
                 key={key}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1.4fr] gap-5 pt-7"
+                className={`grid grid-cols-1 gap-0 mt-7 items-start ${bleedSide} ${colsMd}`}
               >
-                {renderSlot('left', block)}
-                {renderSlot('right', block)}
+                <div className={isEven ? 'order-1' : 'order-2 md:order-1'}>
+                  {renderSlot('left', block)}
+                </div>
+                <div className={`px-5 md:px-6 pt-4 md:pt-0 ${isEven ? 'order-2' : 'order-1 md:order-2'}`}>
+                  {renderSlot('right', block)}
+                </div>
               </div>
             )
+          }
 
           case 'gallery': {
             const urls: string[] = (block.imageUrls ?? []).filter(Boolean)
             if (!urls.length) return null
-            const cols = urls.length === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
+            const cols = urls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
             return (
-              <div key={key} className={`grid ${cols} gap-1 -mx-4 md:-mx-7 mt-7`}>
-                {urls.map((url, idx) => (
+              <div key={key} className={`grid ${cols} gap-1 -mx-4 md:-mx-7 mt-7 items-end`}>
+                {urls.map((url, i) => (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
-                    key={idx}
+                    key={i}
                     src={`${url}?w=900&q=85&auto=format`}
-                    alt={`Gallery image ${idx + 1}`}
-                    className="w-full max-h-[70vh] object-contain block"
+                    alt={`Gallery image ${i + 1}`}
+                    className={`w-full object-contain block ${
+                      i % 2 !== 0 ? 'max-h-[55vh] mt-[8%]' : 'max-h-[70vh]'
+                    }`}
                   />
                 ))}
               </div>
@@ -154,7 +168,7 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
           case 'quote':
             return block.quoteText ? (
               <div key={key} className="-mx-4 md:-mx-7 mt-7 bg-foreground px-4 md:px-7 py-6">
-                <p className="text-[17px] font-black leading-[1.1] tracking-[-0.025em] uppercase text-background max-w-[500px]">
+                <p className="text-[17px] md:text-[20px] font-black leading-[1.1] tracking-[-0.025em] uppercase text-background max-w-[520px]">
                   &ldquo;{block.quoteText}&rdquo;
                 </p>
                 {block.author && (
@@ -186,7 +200,7 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
                   />
                 )}
                 {block.title && (
-                  <p className="px-4 md:px-7 pt-3 text-[11px] tracking-[.1em] text-muted-foreground uppercase">
+                  <p className="px-4 md:px-7 pt-3 text-[11px] tracking-[.1em] text-foreground/40 uppercase">
                     {block.title}
                   </p>
                 )}

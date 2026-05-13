@@ -127,15 +127,12 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
   return (
     <main className="bg-background text-foreground min-h-screen pt-[80px] md:pt-[100px]">
       <div className={containerCls}>
-        {/* NAV */}
+        {/* NAV — non-link label; exit is the fixed top-right × button */}
         <nav className="flex justify-between items-center px-4 md:px-7 py-3 border-b border-foreground">
-          <Link
-            href="/blog"
-            className="text-[9px] tracking-[.18em] uppercase text-muted-foreground hover:text-foreground transition-colors no-underline"
-          >
-            ← Journal
-          </Link>
-          <span className="text-[9px] tracking-[.1em] text-muted-foreground/50">
+          <span className="text-[9px] tracking-[.18em] uppercase text-foreground/40">
+            Journal
+          </span>
+          <span className="text-[9px] tracking-[.1em] text-foreground/30">
             {String(currentIndex).padStart(3, '0')} / {String(allCount).padStart(2, '0')}
           </span>
         </nav>
@@ -195,27 +192,20 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
           <JournalBlocks blocks={post.blocks || []} />
         </div>
 
-        {/* SON */}
-        <div className="flex items-center gap-4 py-8 mt-8 border-t border-foreground px-4 md:px-7">
-          <div className="flex-1 h-px bg-foreground/20" />
-          <span className="text-[8px] tracking-[.22em] uppercase text-muted-foreground whitespace-nowrap">Son</span>
-          <div className="flex-1 h-px bg-foreground/20" />
-        </div>
-
-        {/* NEXT POST */}
+        {/* NEXT POST — comes directly without separator. Exit is the fixed × only. */}
         {post.nextPost && (
           <Link
             href={`/blog/${post.nextPost.slug}`}
-            className="next-post-link grid grid-cols-1 md:grid-cols-2 border-t border-b border-foreground -mx-4 md:-mx-7 xl:mx-0 no-underline text-foreground group"
+            className="group grid grid-cols-1 md:grid-cols-2 border-t border-foreground mt-12 -mx-4 md:-mx-7 xl:mx-0 no-underline text-foreground"
           >
             <div className="flex flex-col justify-between p-7 md:border-r border-foreground min-h-[130px] group-hover:bg-foreground transition-colors duration-200">
-              <p className="text-[8px] tracking-[.2em] uppercase text-muted-foreground group-hover:text-white/40 mb-2 transition-colors">
+              <p className="text-[8px] tracking-[.2em] uppercase text-foreground/40 group-hover:text-white/40 mb-2 transition-colors">
                 Sonraki Yazı
               </p>
               <p className="text-[17px] font-black leading-[1.05] tracking-[-0.025em] uppercase flex-1 flex items-center group-hover:text-white transition-colors">
                 {post.nextPost.title}
               </p>
-              <p className="text-[8px] tracking-[.18em] uppercase text-muted-foreground group-hover:text-white/50 flex items-center gap-1.5 mt-3 transition-colors">
+              <p className="text-[8px] tracking-[.18em] uppercase text-foreground/40 group-hover:text-white/50 flex items-center gap-1.5 mt-3 transition-colors">
                 <span className="w-3.5 h-px bg-current inline-block" />
                 Okumaya Devam Et
               </p>
@@ -235,20 +225,6 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
             </div>
           </Link>
         )}
-
-        {/* JOURNAL'A DÖN */}
-        <div className="flex justify-between items-center px-4 md:px-7 py-3">
-          <Link
-            href="/blog"
-            className="text-[9px] tracking-[.16em] uppercase text-muted-foreground hover:text-foreground flex items-center gap-2 transition-colors no-underline"
-          >
-            <span className="w-4 h-px bg-current inline-block" />
-            Journal&apos;a Dön
-          </Link>
-          <span className="text-[9px] tracking-[.1em] text-muted-foreground/40">
-            {String(currentIndex).padStart(3, '0')} / {String(allCount).padStart(2, '0')}
-          </span>
-        </div>
       </div>
     </main>
   )

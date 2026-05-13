@@ -5,6 +5,7 @@ import { Header } from '@/components/header'
 import { MenuOverlay } from '@/components/menu-overlay'
 import { MenuProvider } from '@/lib/menu-context'
 import { PreviewBanner } from '@/components/preview-banner'
+import { JournalCloseButton } from '@/components/journal-close-button'
 import './globals.css'
 
 const montserrat = Montserrat({
@@ -34,6 +35,7 @@ export default function RootLayout({
         <MenuProvider>
           <Header />
           <MenuOverlay />
+          <JournalCloseButton />
           {children}
         </MenuProvider>
         <PreviewBanner />

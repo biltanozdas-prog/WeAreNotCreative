@@ -110,11 +110,11 @@ export function BlogClient({
     <main className="bg-background text-foreground min-h-screen pt-[80px] md:pt-[100px]">
       {/* HEADER */}
       <header className="flex justify-between items-center px-4 md:px-7 py-3 border-b border-foreground">
-        <div className="flex items-baseline gap-4">
+        <div className="flex items-baseline gap-3 md:gap-4">
           <span className="text-[9px] font-bold tracking-[.2em] uppercase">WeAreNotCreative</span>
-          <span className="text-[9px] tracking-[.15em] uppercase text-foreground/40">/ Journal</span>
+          <span className="text-[9px] tracking-[.15em] uppercase text-foreground/35">/ Journal</span>
         </div>
-        <span className="text-[9px] tracking-[.12em] text-foreground/40">
+        <span className="text-[9px] tracking-[.12em] text-foreground/35">
           {String(active + 1).padStart(2, '0')} / {String(posts.length).padStart(2, '0')}
         </span>
       </header>
@@ -140,7 +140,7 @@ export function BlogClient({
               key={post._id}
               draggable={false}
               onClick={(e) => { if (dragging) e.preventDefault() }}
-              className={`relative overflow-hidden h-[260px] md:h-[300px] lg:h-[340px] 2xl:h-[400px] border-r border-white/10 no-underline text-inherit transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-45'}`}
+              className={`relative overflow-hidden h-[260px] md:h-[300px] lg:h-[340px] 2xl:h-[400px] border-r border-white/5 no-underline text-inherit transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-45'}`}
               style={{ flex: `0 0 ${cardRatio * 100}%` }}
             >
               {post.coverImage ? (
@@ -185,11 +185,11 @@ export function BlogClient({
 
       {/* SCROLL BAR */}
       {posts.length > 1 && (
-        <div className="bg-foreground flex items-stretch border-b border-white/10">
+        <div className="bg-foreground flex items-stretch">
           <button
             onClick={() => go(active - 1)}
             aria-label="Previous"
-            className="bg-transparent border-none text-white/40 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
+            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
           >
             ←
           </button>
@@ -209,7 +209,7 @@ export function BlogClient({
           <button
             onClick={() => go(active + 1)}
             aria-label="Next"
-            className="bg-transparent border-none text-white/40 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
+            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
           >
             →
           </button>
@@ -240,7 +240,7 @@ export function BlogClient({
               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-foreground z-10" />
             )}
 
-            <div className="relative z-[1] flex justify-between items-center px-4 md:px-7 py-2.5 border-b border-foreground/10">
+            <div className="relative z-[1] flex justify-between items-center px-4 md:px-7 py-2.5 border-b border-foreground/[0.08]">
               <div className="flex items-baseline gap-3 min-w-0">
                 <span className="text-[9px] text-foreground/25 tracking-[.08em] w-6 flex-shrink-0 group-hover:text-white/30 transition-colors">
                   {String(i + 1).padStart(3, '0')}
@@ -248,12 +248,12 @@ export function BlogClient({
                 <Link
                   href={`/blog/${post.slug}`}
                   onClick={(e) => e.stopPropagation()}
-                  className={`text-[11px] md:text-[12px] tracking-[-0.01em] uppercase no-underline transition-colors group-hover:text-white truncate ${i === active ? 'font-black text-foreground' : 'font-semibold text-foreground/55'}`}
+                  className={`text-[11px] md:text-[12px] tracking-[-0.01em] uppercase no-underline transition-colors group-hover:!text-white truncate ${i === active ? 'font-black text-foreground' : 'font-semibold text-foreground/50'}`}
                 >
                   {post.title}
                 </Link>
               </div>
-              <span className="text-[9px] tracking-[.1em] text-foreground/30 group-hover:text-white/30 transition-colors whitespace-nowrap ml-4 flex-shrink-0">
+              <span className="text-[9px] tracking-[.1em] text-foreground/25 group-hover:text-white/30 transition-colors whitespace-nowrap ml-4 flex-shrink-0">
                 {formatDate(post.date)}
               </span>
             </div>
