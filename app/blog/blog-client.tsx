@@ -107,9 +107,9 @@ export function BlogClient({
   }
 
   return (
-    <main className="bg-background text-foreground min-h-screen pt-[80px] md:pt-[100px]">
+    <main className="bg-background text-foreground min-h-screen pt-[88px] md:pt-[140px]">
       {/* HEADER */}
-      <header className="flex justify-between items-center px-4 md:px-7 py-3 border-b border-foreground">
+      <header className="flex justify-between items-center px-5 md:px-7 py-3 border-b border-foreground">
         <div className="flex items-baseline gap-3 md:gap-4">
           <span className="text-[9px] font-bold tracking-[.2em] uppercase">WeAreNotCreative</span>
           <span className="text-[9px] tracking-[.15em] uppercase text-foreground/35">/ Journal</span>
@@ -189,7 +189,7 @@ export function BlogClient({
           <button
             onClick={() => go(active - 1)}
             aria-label="Previous"
-            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
+            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-3 min-h-[44px] cursor-pointer font-sans leading-none transition-colors"
           >
             ←
           </button>
@@ -209,7 +209,7 @@ export function BlogClient({
           <button
             onClick={() => go(active + 1)}
             aria-label="Next"
-            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-2.5 cursor-pointer font-sans leading-none transition-colors"
+            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-3 min-h-[44px] cursor-pointer font-sans leading-none transition-colors"
           >
             →
           </button>
@@ -218,7 +218,7 @@ export function BlogClient({
 
       {/* ARCHIVE LIST */}
       <div>
-        <div className="flex items-center px-4 md:px-7 pt-2.5 gap-3">
+        <div className="flex items-center px-5 md:px-7 pt-2.5 gap-3">
           <div className="flex-1 h-px bg-foreground/15" />
           <span className="text-[8px] tracking-[.2em] uppercase text-foreground/30 whitespace-nowrap">
             Tüm Yazılar
@@ -240,7 +240,7 @@ export function BlogClient({
               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-foreground z-10" />
             )}
 
-            <div className="relative z-[1] flex justify-between items-center px-4 md:px-7 py-2.5 border-b border-foreground/[0.08]">
+            <div className="relative z-[1] flex justify-between items-center px-5 md:px-7 py-3 md:py-2.5 border-b border-foreground/[0.08]">
               <div className="flex items-baseline gap-3 min-w-0">
                 <span className="text-[9px] text-foreground/25 tracking-[.08em] w-6 flex-shrink-0 group-hover:text-white/30 transition-colors">
                   {String(i + 1).padStart(3, '0')}
@@ -261,7 +261,7 @@ export function BlogClient({
         ))}
 
         {posts.length === 0 && (
-          <p className="px-4 md:px-7 py-10 text-[11px] tracking-[.18em] uppercase text-foreground/40 text-center">
+          <p className="px-5 md:px-7 py-10 text-[11px] tracking-[.18em] uppercase text-foreground/40 text-center">
             Henüz yazı yok.
           </p>
         )}

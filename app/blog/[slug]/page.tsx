@@ -125,10 +125,10 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
   const containerCls = "xl:max-w-[900px] xl:mx-auto 2xl:max-w-[1100px]"
 
   return (
-    <main className="bg-background text-foreground min-h-screen pt-[80px] md:pt-[100px]">
+    <main className="bg-background text-foreground min-h-screen pt-[88px] md:pt-[140px]">
       <div className={containerCls}>
         {/* NAV — non-link label; exit is the fixed top-right × button */}
-        <nav className="flex justify-between items-center px-4 md:px-7 py-3 border-b border-foreground">
+        <nav className="flex justify-between items-center px-5 md:px-7 py-3 border-b border-foreground">
           <span className="text-[9px] tracking-[.18em] uppercase text-foreground/40">
             Journal
           </span>
@@ -180,7 +180,7 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
 
         {/* LEAD */}
         {post.excerpt && (
-          <div className="px-7 py-6 border-b border-foreground/10">
+          <div className="px-5 md:px-7 py-6 border-b border-foreground/10">
             <p className="text-[16px] leading-[1.62] font-light border-l-[1.5px] border-foreground pl-5 ml-0 md:ml-10 max-w-[640px] text-foreground">
               {post.excerpt}
             </p>
@@ -188,7 +188,7 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
         )}
 
         {/* BLOCKS */}
-        <div className="px-4 md:px-7">
+        <div className="px-5 md:px-7">
           <JournalBlocks blocks={post.blocks || []} />
         </div>
 
@@ -196,7 +196,7 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
         {post.nextPost && (
           <Link
             href={`/blog/${post.nextPost.slug}`}
-            className="group grid grid-cols-1 md:grid-cols-2 border-t border-foreground mt-12 -mx-4 md:-mx-7 xl:mx-0 no-underline text-foreground"
+            className="group grid grid-cols-1 md:grid-cols-2 border-t border-foreground mt-12 -mx-5 md:-mx-7 xl:mx-0 no-underline text-foreground"
           >
             <div className="flex flex-col justify-between p-7 md:border-r border-foreground min-h-[130px] group-hover:bg-foreground transition-colors duration-200">
               <p className="text-[8px] tracking-[.2em] uppercase text-foreground/40 group-hover:text-white/40 mb-2 transition-colors">
