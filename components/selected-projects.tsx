@@ -130,7 +130,7 @@ function DesktopSelectedProjects({ selectedProjects }: { selectedProjects: any[]
                       src={project.image}
                       alt={project.title}
                       fill
-                      className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-[1.03]"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       sizes="540px"
                       priority={i === 0}
                     />
@@ -229,7 +229,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
                     src={project.image}
                     alt={project.title}
                     fill
-                    className="object-cover grayscale"
+                    className="object-cover"
                     sizes="380px"
                     priority={i === 0}
                   />

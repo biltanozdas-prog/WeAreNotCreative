@@ -52,7 +52,7 @@ function renderSlot(side: 'left' | 'right', block: any) {
         <img
           src={`${imageUrl}?w=900&q=85&auto=format`}
           alt="Column media"
-          className="w-full block object-cover h-[65vw] md:h-auto md:max-h-[85vh] md:object-contain"
+          className="w-full h-auto object-contain block md:max-h-[85vh]"
         />
       ) : null
     case 'video':
@@ -101,7 +101,7 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
                 <img
                   src={`${block.imageUrl}?w=1400&q=85&auto=format`}
                   alt={block.caption ?? ''}
-                  className="w-full block object-cover h-[65vw] md:h-auto md:max-h-[85vh] md:object-contain"
+                  className="w-full h-auto object-contain block md:max-h-[85vh]"
                 />
                 {block.caption && (
                   <p className="px-5 md:px-7 pt-2 text-[9px] tracking-[.08em] text-foreground/40 uppercase">
@@ -158,14 +158,14 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
             const urls: string[] = (block.imageUrls ?? []).filter(Boolean)
             if (!urls.length) return null
             return (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-1 -mx-5 md:-mx-7 mt-7 md:items-end" key={key}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-1 -mx-5 md:-mx-7 mt-7 md:items-end" key={key}>
                 {urls.map((url, i) => (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     key={i}
                     src={`${url}?w=900&q=85&auto=format`}
                     alt={`Gallery image ${i + 1}`}
-                    className={`w-full block object-cover md:object-contain h-[70vw] md:h-auto md:max-h-[70vh] ${
+                    className={`w-full h-auto block object-contain md:max-h-[70vh] ${
                       i % 2 !== 0 ? 'md:mt-[8%] md:max-h-[55vh]' : ''
                     }`}
                   />
@@ -205,7 +205,7 @@ export function JournalBlocks({ blocks }: { blocks: any[] }) {
                   <img
                     src={`${block.imageUrl}?w=1400&q=85&auto=format`}
                     alt={block.title ?? ''}
-                    className="w-full block object-cover h-[65vw] md:h-auto md:max-h-[85vh] md:object-contain"
+                    className="w-full h-auto object-contain block md:max-h-[85vh]"
                   />
                 )}
                 {block.title && (
