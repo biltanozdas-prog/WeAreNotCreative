@@ -119,16 +119,16 @@ export function BlogClient({
         </span>
       </header>
 
-      {/* SLIDER */}
+      {/* SLIDER — image on top, text in its own panel below. No overlay. */}
       <div
         ref={sliderRef}
-        className={`overflow-hidden border-b border-foreground bg-foreground select-none ${posts.length > 1 ? 'cursor-grab' : ''}`}
+        className={`overflow-hidden border-b border-foreground bg-background select-none ${posts.length > 1 ? 'cursor-grab' : ''}`}
         onMouseDown={handleMouseDown}
         onTouchStart={posts.length > 1 ? handleTouchStart : undefined}
         onTouchEnd={posts.length > 1 ? handleTouchEnd : undefined}
       >
         <div
-          className="flex"
+          className="flex items-stretch"
           style={{
             transform: `translateX(-${active * cardWidth}px)`,
             transition: dragging ? 'none' : 'transform 0.55s cubic-bezier(0.77,0,0.18,1)',
@@ -140,42 +140,35 @@ export function BlogClient({
               key={post._id}
               draggable={false}
               onClick={(e) => { if (dragging) e.preventDefault() }}
-              className={`relative overflow-hidden h-[260px] md:h-[300px] lg:h-[340px] 2xl:h-[400px] border-r border-white/5 no-underline text-inherit transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-45'}`}
+              className={`relative flex-shrink-0 flex flex-col border-r border-foreground/10 no-underline text-inherit transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-45'}`}
               style={{ flex: `0 0 ${cardRatio * 100}%` }}
             >
-              {post.coverImage ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={`${post.coverImage}?w=900&q=80&auto=format`}
-                  alt={post.title}
-                  draggable={false}
-                  className="absolute inset-0 w-full h-full object-cover block pointer-events-none select-none"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-[#1a1a1a]" />
-              )}
+              {/* Image — full colour, no overlay */}
+              <div className="relative overflow-hidden h-[220px] md:h-[260px] lg:h-[300px] 2xl:h-[360px]">
+                {post.coverImage ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={`${post.coverImage}?w=900&q=80&auto=format`}
+                    alt={post.title}
+                    draggable={false}
+                    className="absolute inset-0 w-full h-full object-cover block pointer-events-none select-none"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-[#1a1a1a]" />
+                )}
+              </div>
 
-              {/* Fixed gradient overlay — readability guarantee */}
-              <div
-                aria-hidden
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.1) 100%)',
-                }}
-              />
-
-              {/* Content overlay */}
-              <div className="absolute inset-0 z-[2] flex flex-col justify-end p-4 md:p-5 pointer-events-none">
-                <p className="text-[7px] tracking-[.22em] uppercase text-white/40 mb-2">
+              {/* Text panel — sits below the image, own background */}
+              <div className="flex flex-col gap-2 px-4 md:px-5 pt-3 pb-4 bg-background border-t border-foreground/10">
+                <p className="text-[7px] tracking-[.22em] uppercase text-foreground/40">
                   {post.postType || 'essay'}
                 </p>
-                <h2 className="text-[13px] md:text-[14px] lg:text-[16px] 2xl:text-[18px] font-black leading-[1.05] tracking-[-0.025em] uppercase text-white">
+                <h2 className="text-[12px] md:text-[13px] lg:text-[14px] font-black leading-[1.1] tracking-[-0.02em] uppercase text-foreground line-clamp-3">
                   {post.title}
                 </h2>
-                <p className="mt-2.5 text-[8px] tracking-[.18em] uppercase text-white/40 flex items-center gap-1.5">
-                  <span className="w-4 h-px bg-current inline-block" />
-                  Oku
+                <p className="text-[8px] tracking-[.18em] uppercase text-foreground/35 flex items-center gap-1.5 mt-1">
+                  <span className="w-3 h-px bg-current inline-block" />
+                  OKU
                 </p>
               </div>
             </Link>
@@ -240,8 +233,8 @@ export function BlogClient({
               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-foreground z-10" />
             )}
 
-            <div className="relative z-[1] flex justify-between items-center px-5 md:px-7 py-3 md:py-2.5 border-b border-foreground/[0.08]">
-              <div className="flex items-baseline gap-3 min-w-0">
+            <div className="relative z-[1] flex items-center px-5 md:px-7 py-3 md:py-2.5 border-b border-foreground/[0.08]">
+              <div className="flex items-baseline gap-3 min-w-0 flex-1">
                 <span className="text-[9px] text-foreground/25 tracking-[.08em] w-6 flex-shrink-0 group-hover:text-white/30 transition-colors">
                   {String(i + 1).padStart(3, '0')}
                 </span>
@@ -253,9 +246,6 @@ export function BlogClient({
                   {post.title}
                 </Link>
               </div>
-              <span className="text-[9px] tracking-[.1em] text-foreground/25 group-hover:text-white/30 transition-colors whitespace-nowrap ml-4 flex-shrink-0">
-                {formatDate(post.date)}
-              </span>
             </div>
           </div>
         ))}
