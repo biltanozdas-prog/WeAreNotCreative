@@ -150,8 +150,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
           "image": heroImage.asset->url
         }`
     const allQuery = preview
-      ? groq`*[_type == "project"] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
-      : groq`*[_type == "project" && coalesce(published, true) == true] | order(order asc) { "slug": coalesce(slug.current, slug), title, client }`
+      ? groq`*[_type == "project"] | order(_createdAt desc) { "slug": coalesce(slug.current, slug), title, client }`
+      : groq`*[_type == "project" && coalesce(published, true) == true] | order(_createdAt desc) { "slug": coalesce(slug.current, slug), title, client }`
 
     const [fetchedProject, allEdges] = await Promise.all([
       client.fetch(query, slugQueryParam),

@@ -17,6 +17,7 @@ export default async function ProjectsPage() {
 
   const fields = `{
       _id,
+      _createdAt,
       "slug": coalesce(slug.current, slug),
       title,
       client,
@@ -24,13 +25,12 @@ export default async function ProjectsPage() {
       "services": services[]->title,
       excerpt,
       "heroImage": heroImage.asset->url,
-      "image": heroImage.asset->url,
-      order
+      "image": heroImage.asset->url
     }`
 
   const projectsQuery = preview
-    ? groq`*[_type == "project"] | order(order asc) ${fields}`
-    : groq`*[_type == "project" && coalesce(published, true) == true] | order(order asc) ${fields}`
+    ? groq`*[_type == "project"] | order(_createdAt desc) ${fields}`
+    : groq`*[_type == "project" && coalesce(published, true) == true] | order(_createdAt desc) ${fields}`
 
   const [pageData, disciplinesData, rawProjects] = await Promise.all([
     client.fetch(

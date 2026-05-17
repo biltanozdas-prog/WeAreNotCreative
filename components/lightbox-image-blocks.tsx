@@ -51,13 +51,13 @@ export function FullImageBlock({
   const isPortrait = dims ? dims.height > dims.width : false
 
   return (
-    <div className="px-6 md:px-16 my-8 md:my-14">
+    <div className="px-2 md:px-6 my-10 md:my-16">
       {isPortrait ? (
         <div className="flex justify-center">
           <ClickableImage
             src={src}
             alt={value.caption || "Full Image"}
-            imgClassName="block w-auto mx-auto max-h-[85vh] object-contain"
+            imgClassName="block w-auto mx-auto max-h-[95vh] object-contain"
           />
         </div>
       ) : (
@@ -87,11 +87,11 @@ export function FullVideoBlock({
   if (!src) return null
 
   return (
-    <div className="px-6 md:px-16 my-8 md:my-14">
+    <div className="px-2 md:px-6 my-10 md:my-16">
       <div className="flex justify-center">
         <video
           src={src}
-          className="block w-auto mx-auto max-h-[85vh]"
+          className="block w-auto mx-auto max-h-[95vh]"
           autoPlay
           loop
           muted
@@ -118,7 +118,7 @@ export function TwoColumnBlock({
   PortableTextComp: any
 }) {
   return (
-    <div className="px-6 md:px-16 my-8 md:my-14">
+    <div className="px-2 md:px-6 my-10 md:my-16">
       <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
         <div className="w-full md:w-1/2">
           <ColumnSlot
@@ -228,7 +228,7 @@ export function GalleryBlock({
     : 'grid-cols-2 md:grid-cols-3'
 
   return (
-    <div className={`px-6 md:px-16 my-8 md:my-14 grid gap-3 md:gap-5 items-start ${gridClass}`}>
+    <div className={`px-2 md:px-6 my-10 md:my-16 grid gap-2 md:gap-3 items-start ${gridClass}`}>
       {images.map((img: any, idx: number) => (
         <ClickableImage
           key={idx}

@@ -13,7 +13,7 @@ export function HeroImageClickable({ src, alt }: { src: string; alt: string }) {
 
   return (
     <div
-      className="w-full h-[50vh] md:h-[85vh] bg-muted relative overflow-hidden mb-28 md:mb-36 cursor-zoom-in"
+      className="w-full h-[60vh] md:h-screen bg-muted relative overflow-hidden mb-28 md:mb-36 cursor-zoom-in"
       onClick={handleClick}
       role="button"
       tabIndex={0}
