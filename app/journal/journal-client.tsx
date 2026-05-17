@@ -180,7 +180,7 @@ export function JournalClient({
               onClick={() => go(active - 1)}
               aria-label="Önceki"
               disabled={active === 0}
-              className="pointer-events-auto flex items-center justify-center w-11 h-11 md:w-14 md:h-14 text-white text-[28px] md:text-[36px] leading-none font-light bg-transparent border-none cursor-pointer transition-opacity duration-200 disabled:opacity-25 hover:opacity-100 opacity-90"
+              className="pointer-events-auto flex items-center justify-center w-16 h-16 md:w-24 md:h-24 text-white text-[52px] md:text-[80px] leading-none font-light bg-transparent border-none cursor-pointer transition-opacity duration-200 disabled:opacity-25 hover:opacity-100 opacity-90"
             >
               ‹
             </button>
@@ -188,7 +188,7 @@ export function JournalClient({
               onClick={() => go(active + 1)}
               aria-label="Sonraki"
               disabled={active === posts.length - 1}
-              className="pointer-events-auto flex items-center justify-center w-11 h-11 md:w-14 md:h-14 text-white text-[28px] md:text-[36px] leading-none font-light bg-transparent border-none cursor-pointer transition-opacity duration-200 disabled:opacity-25 hover:opacity-100 opacity-90"
+              className="pointer-events-auto flex items-center justify-center w-16 h-16 md:w-24 md:h-24 text-white text-[52px] md:text-[80px] leading-none font-light bg-transparent border-none cursor-pointer transition-opacity duration-200 disabled:opacity-25 hover:opacity-100 opacity-90"
             >
               ›
             </button>
