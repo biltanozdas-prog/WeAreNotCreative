@@ -5,10 +5,10 @@ import Link from "next/link"
 import { useRef, useEffect, useState, useCallback } from "react"
 
 const homeSizes = [
-  { w: 480, mw: 320, h: "h-[55vh] md:h-[65vh]" },
-  { w: 360, mw: 250, h: "h-[40vh] md:h-[50vh]" },
-  { w: 540, mw: 380, h: "h-[60vh] md:h-[70vh]" },
-  { w: 380, mw: 270, h: "h-[45vh] md:h-[55vh]" },
+  { w: 640, mw: 420, h: "h-[60vh] md:h-[78vh]" },
+  { w: 500, mw: 340, h: "h-[48vh] md:h-[64vh]" },
+  { w: 720, mw: 500, h: "h-[66vh] md:h-[84vh]" },
+  { w: 520, mw: 360, h: "h-[52vh] md:h-[68vh]" },
 ]
 
 const homeOffsets = ["self-end", "self-start", "self-center", "self-end"]
@@ -123,7 +123,7 @@ function DesktopSelectedProjects({ selectedProjects }: { selectedProjects: any[]
                   key={project.id}
                   href={`/projects/${project.slug}`}
                   className={`shrink-0 ${offset} flex flex-col no-underline text-foreground group`}
-                  style={{ width: `clamp(${size.mw}px, 28vw, ${size.w}px)` }}
+                  style={{ width: `clamp(${size.mw}px, 36vw, ${size.w}px)` }}
                 >
                   <div className={`w-full ${size.h} bg-muted overflow-hidden relative`}>
                     <Image
@@ -222,7 +222,7 @@ function MobileSelectedProjects({ selectedProjects }: { selectedProjects: any[] 
                 key={project.id}
                 href={`/projects/${project.slug}`}
                 className={`snap-start shrink-0 flex-none ${offset} flex flex-col no-underline text-foreground`}
-                style={{ width: `clamp(${size.mw}px, 60vw, ${size.w}px)` }}
+                style={{ width: `clamp(${size.mw}px, 75vw, ${size.w}px)` }}
               >
                 <div className={`w-full ${size.h} bg-muted relative overflow-hidden`}>
                   <Image

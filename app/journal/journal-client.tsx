@@ -20,21 +20,13 @@ type JournalPageData = {
   intro?: string
 } | null
 
-function formatDate(input: string | undefined): string {
-  if (!input) return ""
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input)
-  if (!m) return input
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  return `${months[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`
-}
-
 function getCardRatio(width: number) {
-  if (width < 768) return 0.85   // mobile — biggest card so a single card dominates
+  if (width < 768) return 0.85   // mobile — single card dominates
   if (width < 1024) return 0.60  // tablet
   return 0.55                    // desktop & up
 }
 
-export function BlogClient({
+export function JournalClient({
   posts,
   pageData: _pageData,
 }: {
@@ -88,7 +80,6 @@ export function BlogClient({
     const onUp = (ev: MouseEvent) => {
       const dx = ev.clientX - dragStartXRef.current
       if (moved && Math.abs(dx) > 40) go(active + (dx < 0 ? 1 : -1))
-      // Defer clearing so any click handler can still see `dragging`
       window.setTimeout(() => setDragging(false), 0)
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mouseup', onUp)
@@ -106,6 +97,8 @@ export function BlogClient({
     else if (dx > 40) go(active - 1)
   }
 
+  const progressPercent = posts.length > 1 ? (active / (posts.length - 1)) * 100 : 0
+
   return (
     <main className="bg-background text-foreground min-h-screen pt-[88px] md:pt-[140px]">
       {/* HEADER */}
@@ -119,93 +112,102 @@ export function BlogClient({
         </span>
       </header>
 
-      {/* SLIDER — image on top, text in its own panel below. No overlay. */}
-      <div
-        ref={sliderRef}
-        className={`overflow-hidden border-b border-foreground bg-background select-none ${posts.length > 1 ? 'cursor-grab' : ''}`}
-        onMouseDown={handleMouseDown}
-        onTouchStart={posts.length > 1 ? handleTouchStart : undefined}
-        onTouchEnd={posts.length > 1 ? handleTouchEnd : undefined}
-      >
+      {/* SLIDER — image + text card; arrows float over the image */}
+      <div className="relative">
         <div
-          className="flex items-stretch"
-          style={{
-            transform: `translateX(-${active * cardWidth}px)`,
-            transition: dragging ? 'none' : 'transform 0.55s cubic-bezier(0.77,0,0.18,1)',
-          }}
+          ref={sliderRef}
+          className={`overflow-hidden bg-background select-none ${posts.length > 1 ? 'cursor-grab' : ''}`}
+          onMouseDown={handleMouseDown}
+          onTouchStart={posts.length > 1 ? handleTouchStart : undefined}
+          onTouchEnd={posts.length > 1 ? handleTouchEnd : undefined}
         >
-          {posts.map((post, i) => (
-            <Link
-              href={`/blog/${post.slug}`}
-              key={post._id}
-              draggable={false}
-              onClick={(e) => { if (dragging) e.preventDefault() }}
-              className={`relative flex-shrink-0 flex flex-col border-r border-foreground/10 no-underline text-inherit transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-45'}`}
-              style={{ flex: `0 0 ${cardRatio * 100}%` }}
-            >
-              {/* Image — full colour, no overlay */}
-              <div className="relative overflow-hidden h-[220px] md:h-[260px] lg:h-[300px] 2xl:h-[360px]">
-                {post.coverImage ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={`${post.coverImage}?w=900&q=80&auto=format`}
-                    alt={post.title}
-                    draggable={false}
-                    className="absolute inset-0 w-full h-full object-cover block pointer-events-none select-none"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[#1a1a1a]" />
-                )}
-              </div>
+          <div
+            className="flex items-stretch"
+            style={{
+              transform: `translateX(-${active * cardWidth}px)`,
+              transition: dragging ? 'none' : 'transform 0.55s cubic-bezier(0.77,0,0.18,1)',
+            }}
+          >
+            {posts.map((post, i) => (
+              <Link
+                href={`/journal/${post.slug}`}
+                key={post._id}
+                draggable={false}
+                onClick={(e) => { if (dragging) e.preventDefault() }}
+                className={`relative flex-shrink-0 flex flex-col border-r border-foreground/10 no-underline text-inherit transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-45'}`}
+                style={{ flex: `0 0 ${cardRatio * 100}%` }}
+              >
+                {/* Image — full colour, no overlay */}
+                <div className="relative overflow-hidden h-[260px] md:h-[340px] lg:h-[420px] 2xl:h-[480px]">
+                  {post.coverImage ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={`${post.coverImage}?w=1200&q=82&auto=format`}
+                      alt={post.title}
+                      draggable={false}
+                      className="absolute inset-0 w-full h-full object-cover block pointer-events-none select-none"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-[#1a1a1a]" />
+                  )}
+                </div>
 
-              {/* Text panel — sits below the image, own background */}
-              <div className="flex flex-col gap-2 px-4 md:px-5 pt-3 pb-4 bg-background border-t border-foreground/10">
-                <p className="text-[7px] tracking-[.22em] uppercase text-foreground/40">
-                  {post.postType || 'essay'}
-                </p>
-                <h2 className="text-[12px] md:text-[13px] lg:text-[14px] font-black leading-[1.1] tracking-[-0.02em] uppercase text-foreground line-clamp-3">
-                  {post.title}
-                </h2>
-                <p className="text-[8px] tracking-[.18em] uppercase text-foreground/35 flex items-center gap-1.5 mt-1">
-                  <span className="w-3 h-px bg-current inline-block" />
-                  OKU
-                </p>
-              </div>
-            </Link>
-          ))}
+                {/* Text panel — own background below the image */}
+                <div className="flex flex-col gap-2 px-4 md:px-5 pt-3 pb-4 bg-background border-t border-foreground/10">
+                  <p className="text-[7px] tracking-[.22em] uppercase text-foreground/40">
+                    {post.postType || 'essay'}
+                  </p>
+                  <h2 className="text-[12px] md:text-[13px] lg:text-[14px] font-black leading-[1.1] tracking-[-0.02em] uppercase text-foreground line-clamp-3">
+                    {post.title}
+                  </h2>
+                  <p className="text-[8px] tracking-[.18em] uppercase text-foreground/35 flex items-center gap-1.5 mt-1">
+                    <span className="w-3 h-px bg-current inline-block" />
+                    OKU
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
+
+        {/* Floating arrow controls — sit on top of the slider, blend with image */}
+        {posts.length > 1 && (
+          <div
+            className="pointer-events-none absolute inset-0 flex items-center justify-between px-3 md:px-6"
+            style={{ mixBlendMode: 'difference' }}
+          >
+            <button
+              onClick={() => go(active - 1)}
+              aria-label="Önceki"
+              disabled={active === 0}
+              className="pointer-events-auto flex items-center justify-center w-11 h-11 md:w-14 md:h-14 text-white text-[28px] md:text-[36px] leading-none font-light bg-transparent border-none cursor-pointer transition-opacity duration-200 disabled:opacity-25 hover:opacity-100 opacity-90"
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => go(active + 1)}
+              aria-label="Sonraki"
+              disabled={active === posts.length - 1}
+              className="pointer-events-auto flex items-center justify-center w-11 h-11 md:w-14 md:h-14 text-white text-[28px] md:text-[36px] leading-none font-light bg-transparent border-none cursor-pointer transition-opacity duration-200 disabled:opacity-25 hover:opacity-100 opacity-90"
+            >
+              ›
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* SCROLL BAR */}
+      {/* Progress — thin line below the slider, no dark band */}
       {posts.length > 1 && (
-        <div className="bg-foreground flex items-stretch">
-          <button
-            onClick={() => go(active - 1)}
-            aria-label="Previous"
-            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-3 min-h-[44px] cursor-pointer font-sans leading-none transition-colors"
-          >
-            ←
-          </button>
-          <div className="flex-1 flex items-center">
-            <div className="w-full h-px bg-white/15 relative overflow-hidden">
-              <div
-                className="absolute top-0 bottom-0 bg-white/65 transition-all duration-500"
-                style={{
-                  width: `${100 / posts.length}%`,
-                  left: posts.length > 1
-                    ? `${(active / (posts.length - 1)) * (100 - 100 / posts.length)}%`
-                    : '0%',
-                }}
-              />
-            </div>
+        <div className="px-5 md:px-7 py-3 border-b border-foreground/[0.08]">
+          <div className="relative h-px w-full bg-foreground/10">
+            <div
+              className="absolute top-1/2 -translate-y-1/2 h-[2px] bg-foreground transition-all duration-500 ease-[cubic-bezier(0.77,0,0.18,1)]"
+              style={{
+                width: `${100 / posts.length}%`,
+                left: `${progressPercent * (1 - 1 / posts.length)}%`,
+              }}
+            />
           </div>
-          <button
-            onClick={() => go(active + 1)}
-            aria-label="Next"
-            className="bg-transparent border-none text-white/35 hover:text-white text-[16px] px-6 py-3 min-h-[44px] cursor-pointer font-sans leading-none transition-colors"
-          >
-            →
-          </button>
         </div>
       )}
 
@@ -239,7 +241,7 @@ export function BlogClient({
                   {String(i + 1).padStart(3, '0')}
                 </span>
                 <Link
-                  href={`/blog/${post.slug}`}
+                  href={`/journal/${post.slug}`}
                   onClick={(e) => e.stopPropagation()}
                   className={`text-[11px] md:text-[12px] tracking-[-0.01em] uppercase no-underline transition-colors group-hover:!text-white truncate ${i === active ? 'font-black text-foreground' : 'font-semibold text-foreground/50'}`}
                 >

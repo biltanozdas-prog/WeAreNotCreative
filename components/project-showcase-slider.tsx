@@ -154,8 +154,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                             />
                         )}
 
-                        {/* Subtle dark gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/25 to-transparent pointer-events-none"></div>
+                        {/* Overlay removed — images now render at full colour, no scrim. */}
 
                         {/* Invisible Navigation Halves (Hidden on mobile to allow swipe) */}
                         <div className="hidden md:flex absolute inset-0 z-10">

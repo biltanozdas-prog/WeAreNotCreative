@@ -1,4 +1,4 @@
-import { BlogClient } from "./blog-client"
+import { JournalClient } from "./journal-client"
 import type { Metadata } from "next"
 import { draftMode } from "next/headers"
 import { getClient } from "@/lib/sanity/get-client"
@@ -11,13 +11,16 @@ export const metadata: Metadata = {
   description: "Writing on design, process, culture and the thinking behind our practice."
 }
 
-export default async function BlogPage() {
+export default async function JournalPage() {
   const { isEnabled: preview } = await draftMode()
   const client = getClient(preview)
 
   // Light list query — only what cards need. No blocks payload.
+  // Sorted by Sanity's built-in _createdAt so the most recently added
+  // post lands at the top automatically. No manual order field needed.
   const listFields = `{
     _id,
+    _createdAt,
     "slug": slug.current,
     title,
     date,
@@ -28,24 +31,24 @@ export default async function BlogPage() {
   }`
 
   const postsQuery = preview
-    ? groq`*[_type == "blogPost"] | order(date desc) ${listFields}`
-    : groq`*[_type == "blogPost" && published == true] | order(date desc) ${listFields}`
+    ? groq`*[_type == "blogPost"] | order(_createdAt desc) ${listFields}`
+    : groq`*[_type == "blogPost" && published == true] | order(_createdAt desc) ${listFields}`
 
   const [pageData, rawPosts] = await Promise.all([
     client.fetch(
       groq`*[_type == "journalPage"][0]{ eyebrowLabel, headline, intro }`,
       {},
       { next: { revalidate: 30 } }
-    ).catch((e: any) => { console.warn("[Blog] journalPage fetch failed:", e); return null }),
+    ).catch((e: any) => { console.warn("[Journal] journalPage fetch failed:", e); return null }),
 
     client.fetch(
       postsQuery,
       {},
       { next: { revalidate: 30 } }
-    ).catch((e: any) => { console.warn("[Blog] blogPosts fetch failed:", e); return [] }),
+    ).catch((e: any) => { console.warn("[Journal] blogPosts fetch failed:", e); return [] }),
   ])
 
   const posts = (rawPosts || []).filter(Boolean)
 
-  return <BlogClient posts={posts} pageData={pageData} />
+  return <JournalClient posts={posts} pageData={pageData} />
 }

@@ -11,13 +11,13 @@ import { usePathname } from "next/navigation"
 export function JournalCloseButton() {
   const pathname = usePathname()
   const isJournalPost =
-    !!pathname && pathname.startsWith("/blog/") && pathname !== "/blog"
+    !!pathname && pathname.startsWith("/journal/") && pathname !== "/journal"
 
   if (!isJournalPost) return null
 
   return (
     <Link
-      href="/blog"
+      href="/journal"
       aria-label="Journal'a dön"
       className="
         fixed z-[10000]

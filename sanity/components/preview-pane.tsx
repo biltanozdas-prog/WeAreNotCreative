@@ -15,7 +15,7 @@ function resolveSlug(doc: any): string {
         case 'project':
             return s ? `/projects/${s}` : '/'
         case 'blogPost':
-            return '/blog'
+            return s ? `/journal/${s}` : '/journal'
         case 'about':
             return '/about'
         case 'services':
@@ -25,7 +25,7 @@ function resolveSlug(doc: any): string {
         case 'siteSettings':
             return '/contact'
         case 'journalPage':
-            return '/blog'
+            return '/journal'
         case 'projectsPage':
             return '/projects'
         default:

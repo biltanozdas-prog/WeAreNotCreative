@@ -12,6 +12,13 @@ const nextConfig = {
             },
         ],
     },
+    async redirects() {
+        return [
+            // /blog was renamed to /journal — keep old shared links working.
+            { source: '/blog', destination: '/journal', permanent: true },
+            { source: '/blog/:slug', destination: '/journal/:slug', permanent: true },
+        ]
+    },
 }
 
 export default nextConfig

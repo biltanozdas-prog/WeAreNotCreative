@@ -99,12 +99,12 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
       _type == "textBlock"    => { heading, body },
       _type == "heroOverride" => { title, "imageUrl": image.asset->url }
     },
-    "nextPost": *[_type == "blogPost" && published == true && date > ^.date] | order(date asc)[0] {
+    "nextPost": *[_type == "blogPost" && published == true && _createdAt < ^._createdAt] | order(_createdAt desc)[0] {
       "slug": slug.current, title, postType,
       "coverImage": coverImage.asset->url
     },
     "allCount": count(*[_type == "blogPost" && published == true]),
-    "currentIndex": count(*[_type == "blogPost" && published == true && date <= ^.date])
+    "currentIndex": count(*[_type == "blogPost" && published == true && _createdAt >= ^._createdAt])
   }`
 
   let post: any = null
@@ -195,7 +195,7 @@ export default async function JournalPostPage({ params }: PostDetailProps) {
         {/* NEXT POST — comes directly without separator. Exit is the fixed × only. */}
         {post.nextPost && (
           <Link
-            href={`/blog/${post.nextPost.slug}`}
+            href={`/journal/${post.nextPost.slug}`}
             className="group grid grid-cols-1 md:grid-cols-2 border-t border-foreground mt-12 -mx-5 md:-mx-7 xl:mx-0 no-underline text-foreground"
           >
             <div className="flex flex-col justify-between p-7 md:border-r border-foreground min-h-[130px] group-hover:bg-foreground transition-colors duration-200">
