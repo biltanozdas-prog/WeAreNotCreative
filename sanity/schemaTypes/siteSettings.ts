@@ -43,6 +43,18 @@ export const siteSettings = defineType({
             description: 'Full URL to the Instagram profile, e.g. "https://instagram.com/wearenotcreative".',
         }),
         defineField({
+            name: 'linkedinUrl',
+            title: 'LinkedIn Link',
+            type: 'string',
+            description: 'Optional full URL to the LinkedIn page.',
+        }),
+        defineField({
+            name: 'spotifyUrl',
+            title: 'Spotify Playlist URL',
+            type: 'url',
+            description: 'Optional Spotify playlist or profile URL shown in the site footer.',
+        }),
+        defineField({
             name: 'inquiryCategories',
             title: 'Inquiry Categories',
             type: 'array',
