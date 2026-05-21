@@ -190,7 +190,7 @@ export default defineConfig({
                                             .child(
                                                 S.documentTypeList('project')
                                                     .title('Projects')
-                                                    .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                                                    .defaultOrdering([{ field: 'order', direction: 'asc' }])
                                                     .child((documentId) =>
                                                         S.document()
                                                             .documentId(documentId)

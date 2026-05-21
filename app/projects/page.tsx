@@ -17,7 +17,6 @@ export default async function ProjectsPage() {
 
   const fields = `{
       _id,
-      _createdAt,
       "slug": coalesce(slug.current, slug),
       title,
       client,
@@ -25,12 +24,15 @@ export default async function ProjectsPage() {
       "services": services[]->title,
       excerpt,
       "heroImage": heroImage.asset->url,
-      "image": heroImage.asset->url
+      "image": heroImage.asset->url,
+      order
     }`
 
+  // Manual order field (lower = earlier). coalesce() pushes blanks
+  // to the end so a missing 'order' value doesn't jump to the top.
   const projectsQuery = preview
-    ? groq`*[_type == "project"] | order(_createdAt desc) ${fields}`
-    : groq`*[_type == "project" && coalesce(published, true) == true] | order(_createdAt desc) ${fields}`
+    ? groq`*[_type == "project"] | order(coalesce(order, 99999) asc, _createdAt asc) ${fields}`
+    : groq`*[_type == "project" && coalesce(published, true) == true] | order(coalesce(order, 99999) asc, _createdAt asc) ${fields}`
 
   const [pageData, disciplinesData, rawProjects] = await Promise.all([
     client.fetch(

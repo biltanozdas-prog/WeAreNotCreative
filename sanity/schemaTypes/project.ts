@@ -54,6 +54,12 @@ export const project = defineType({
             description: 'Toggle on to make this project visible on the live site.',
         }),
         defineField({
+            name: 'order',
+            title: 'Order',
+            type: 'number',
+            description: 'Manual sort order on /projects. Lower numbers appear first.',
+        }),
+        defineField({
             name: 'blocks',
             title: 'Blocks',
             type: 'array',

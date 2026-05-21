@@ -45,7 +45,7 @@ export function SiteFooter({
   }, [])
 
   return (
-    <footer className="bg-[#0a0a0a] text-white w-full">
+    <footer className="bg-accent text-white w-full">
       {/* MAIN GRID */}
       <div className="grid grid-cols-1 md:grid-cols-3 border-t border-white/10">
         {/* LEFT — identity + clock */}
