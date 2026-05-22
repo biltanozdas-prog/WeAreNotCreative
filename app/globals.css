@@ -84,10 +84,3 @@ body[data-showcase="active"] .header-logo-container {
 
 /* Journal-specific layout / hover effects are now Tailwind-only inside
    app/journal/. No extra CSS needed here. */
-
-/* Marquee / ticker keyframe — used by HeroTicker + SectorTicker.
-   Track is rendered twice so translating by -50% loops seamlessly. */
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}

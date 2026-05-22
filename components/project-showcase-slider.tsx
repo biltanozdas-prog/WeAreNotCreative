@@ -172,52 +172,109 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                             />
                         </div>
 
-                        {/* Editorial Overlay — minimal: bottom gradient + title + View link */}
+                        {/* Editorial Overlay */}
                         <div className="absolute inset-0 pointer-events-none z-20">
-                            {/* Bottom gradient so text reads on any image */}
-                            <div
-                                className="absolute inset-0 pointer-events-none"
-                                style={{
-                                    background:
-                                        'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 40%)',
-                                }}
-                            />
 
-                            <div className="absolute bottom-0 left-0 right-0 flex flex-col md:flex-row md:justify-between md:items-end gap-4 md:gap-6 px-[4vw] pb-[6vh] md:pb-[3vw]">
-                                <div>
-                                    {project.industry && (
-                                        <p className="text-[9px] tracking-[.2em] uppercase text-white/50 mb-2">
-                                            {project.industry}
-                                        </p>
-                                    )}
-                                    <h3 className="text-[22px] md:text-[34px] lg:text-[40px] font-black tracking-[-0.025em] uppercase text-white leading-[1.02] max-w-[80vw]">
-                                        {project.client || project.title}
-                                    </h3>
+                            {/* Left Cluster — three-anchor asymmetric editorial layout */}
+                            <div className="absolute bottom-[8vh] md:bottom-[24vh] left-[4vw] md:left-[3.5vw] flex flex-col items-start pointer-events-none">
+
+                                {/* ANCHOR 1: Brand Row — left edge */}
+                                <div className="flex items-center gap-[6px] md:gap-[10px] mb-[8px] md:mb-[12px]">
+                                    {/* Circle logo */}
+                                    <div className="w-[20px] h-[20px] md:w-[28px] md:h-[28px] bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span className="font-['Montserrat'] font-black text-white text-[10px] md:text-[13px] leading-none">
+                                            W
+                                        </span>
+                                    </div>
+                                    {/* Brand label — white background block */}
+                                    <div className="bg-white text-black px-[10px] py-[6px] md:px-[14px] md:py-[10px] font-['Montserrat'] font-normal text-[10px] md:text-[13px] leading-none">
+                                        WeAreNotCreative
+                                    </div>
                                 </div>
 
-                                {slugStr && (
+                                {/* ANCHOR 2: Client Name — offset right */}
+                                {(project.client || project.title) && (
+                                    <div className="ml-[40px] md:ml-[70px] mb-[10px] md:mb-[14px] max-w-[85vw]">
+                                        <div className="bg-white text-black inline-block px-[12px] py-[8px] md:px-[16px] md:py-[12px] text-[11px] md:text-[28px] font-black font-['Montserrat'] leading-[0.9] uppercase tracking-[-0.02em] whitespace-normal md:whitespace-nowrap">
+                                            {project.client || project.title}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* ANCHOR 3: Description + Dots — intermediate offset */}
+                                <div className="ml-[15px] md:ml-[30px] flex flex-row items-start gap-[10px] md:gap-[14px]">
+
+                                    {/* Description block */}
+                                    {(() => {
+                                        const raw = project.excerpt
+                                        const excerptText =
+                                            typeof raw === "string" && raw.trim()
+                                                ? raw.trim()
+                                                : Array.isArray(raw)
+                                                ? raw
+                                                    .flatMap((block: any) =>
+                                                        block?.children?.map((c: any) => c?.text ?? "") ?? []
+                                                    )
+                                                    .join(" ")
+                                                    .trim()
+                                                : null
+                                        return excerptText ? (
+                                            <div className="bg-white text-black px-[12px] py-[10px] max-w-[240px] w-fit">
+                                                <p className="font-['Montserrat'] font-light text-[11px] md:text-[12px] leading-[1.5] m-0">
+                                                    {excerptText}
+                                                </p>
+                                            </div>
+                                        ) : null
+                                    })()}
+
+                                    {/* Dots block */}
+                                    <div className="bg-white px-[10px] py-[8px] flex flex-row items-center gap-[5px]">
+                                        {displayProjects.map((_, i) => (
+                                            <div
+                                                key={`dot-${i}`}
+                                                className={`w-[5px] h-[5px] rounded-full transition-colors duration-300 ${i === currentIndex ? "bg-black" : "bg-gray-300"}`}
+                                            />
+                                        ))}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            {/* Right CTA */}
+                            {slugStr && (
+                                <div className="absolute bottom-[8vh] right-[3vw] pointer-events-auto">
                                     <Link
                                         href={`/projects/${slugStr}`}
                                         onClick={(e) => e.stopPropagation()}
-                                        className="pointer-events-auto text-[9px] tracking-[.2em] uppercase text-white/60 hover:text-white flex items-center gap-2 transition-colors no-underline self-start md:self-end"
                                     >
-                                        <span className="w-4 h-px bg-current inline-block" />
-                                        View Project
+                                        <div
+                                            className="font-['Montserrat'] font-black leading-none uppercase flex items-center justify-center text-center transition-colors duration-150"
+                                            style={{
+                                                background: "transparent",
+                                                border: "1px solid white",
+                                                color: "white",
+                                                fontSize: "9px",
+                                                letterSpacing: "0.2em",
+                                                padding: "8px 16px",
+                                                borderRadius: 0,
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                const el = e.currentTarget as HTMLDivElement
+                                                el.style.background = "white"
+                                                el.style.color = "black"
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                const el = e.currentTarget as HTMLDivElement
+                                                el.style.background = "transparent"
+                                                el.style.color = "white"
+                                            }}
+                                        >
+                                            VIEW PROJECTS
+                                        </div>
                                     </Link>
-                                )}
-                            </div>
-
-                            {/* Slide dots — minimal, top-right */}
-                            <div className="absolute top-[3vh] md:top-[24px] right-[4vw] md:right-[3.5vw] flex items-center gap-[6px] pointer-events-none">
-                                {displayProjects.map((_, i) => (
-                                    <span
-                                        key={`dot-${i}`}
-                                        className={`w-[6px] h-[6px] rounded-full transition-colors duration-300 ${
-                                            i === currentIndex ? 'bg-white' : 'bg-white/30'
-                                        }`}
-                                    />
-                                ))}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )

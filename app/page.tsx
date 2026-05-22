@@ -1,10 +1,8 @@
 import type { Metadata } from "next"
 import { draftMode } from "next/headers"
 import { HeroVideo } from "@/components/hero-video"
-import { HeroTicker } from "@/components/hero-ticker"
 import { ManifestoSection } from "@/components/manifesto-section"
 import { ServicesSection } from "@/components/services-section"
-import { SectorTicker } from "@/components/sector-ticker"
 import { HomepageJournal } from "@/components/homepage-journal"
 // Revalidate the homepage every 10 seconds to bypass Vercel Webhook setup failures
 export const revalidate = 10
@@ -115,18 +113,14 @@ export default async function HomePage() {
   return (
     <main>
       <HeroVideo videoUrl={homeData?.heroVideoUrl} />
-      {/* Ticker — rendered above the spacer so it sits flush under the video */}
-      <HeroTicker />
       {/* Spacer for the fixed video hero — 50vh mobile / 100vh desktop */}
       <div className="h-[50vh] md:h-screen" />
-      {/* Content starts after the video */}
       <ManifestoSection
         headline={homeData?.headline || undefined}
         body={homeData?.manifestoText || undefined}
       />
       <ServicesSection />
       <ProjectShowcaseSlider projects={selectedProjects as any} />
-      <SectorTicker />
       {/* Journal preview (Sanity) */}
       <HomepageJournal />
 
