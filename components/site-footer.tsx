@@ -158,8 +158,8 @@ export function SiteFooter({
 
       {/* BOTTOM STRIP */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 px-8 py-3.5 border-t border-white/[0.08]">
-        <p className="text-[9px] tracking-[.12em] uppercase text-white/20">
-          © 2024—26 We Are Not Creative Studio
+        <p className="text-[9px] tracking-[.04em] text-white/20">
+          © 2024—26 WeAreNotCreative
         </p>
         <div className="flex items-center gap-5">
           <Link

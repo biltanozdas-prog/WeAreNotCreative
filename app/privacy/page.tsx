@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — We Are Not Creative",
+  title: "Privacy Policy — WeAreNotCreative",
 }
 
 export default function PrivacyPage() {
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
               Who We Are
             </h2>
             <p>
-              We Are Not Creative Studio is a multidisciplinary creative studio based in Istanbul, Turkey.
+              WeAreNotCreative is a multidisciplinary creative studio based in Istanbul, Turkey.
               Our website is wearenotcreativestudio.com.
             </p>
           </section>
