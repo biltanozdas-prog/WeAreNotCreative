@@ -13,11 +13,9 @@ const SERVICES = [
   { num: "07", name: "Content & Campaign Systems", desc: "So the message keeps moving.", dark: true },
 ]
 
-const BOX_W = 172
-const BOX_H = 72
-
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,& "
-const TITLE = "Design as a Cultural Practice."
+const BOX_W = 188
+const BOX_H = 76
+const SECTION_H = 480
 
 export function ServicesPhysics() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -27,10 +25,6 @@ export function ServicesPhysics() {
   const frameRef = useRef<number>(0)
   const dragging = useRef<{ body: Matter.Body; offX: number; offY: number } | null>(null)
 
-  const titleRef = useRef<HTMLHeadingElement>(null)
-  const scrambleTimer = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  // ── Physics ───────────────────────────────────────────────────────────────
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -38,24 +32,27 @@ export function ServicesPhysics() {
     const W = container.offsetWidth
     const H = container.offsetHeight
 
-    const engine = Matter.Engine.create({ gravity: { x: 0, y: 2.2 } })
+    const engine = Matter.Engine.create({ gravity: { x: 0, y: 1.8 } })
     engineRef.current = engine
 
-    // Invisible floor + walls so boxes can't escape the right pane
-    const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 2, 50, { isStatic: true, label: "ground" })
-    const wallL = Matter.Bodies.rectangle(-25, H / 2, 50, H * 2, { isStatic: true })
-    const wallR = Matter.Bodies.rectangle(W + 25, H / 2, 50, H * 2, { isStatic: true })
-    const ceiling = Matter.Bodies.rectangle(W / 2, -200, W * 2, 50, { isStatic: true })
-    Matter.Composite.add(engine.world, [ground, wallL, wallR, ceiling])
+    // Invisible bounds so boxes can't escape the section
+    const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 2, 50, { isStatic: true, friction: 0.8, label: "ground" })
+    const wallL = Matter.Bodies.rectangle(-25, H / 2, 50, H * 4, { isStatic: true })
+    const wallR = Matter.Bodies.rectangle(W + 25, H / 2, 50, H * 4, { isStatic: true })
+    Matter.Composite.add(engine.world, [ground, wallL, wallR])
 
     bodies.current = []
+    const cols = 3
     SERVICES.forEach((_, i) => {
-      const x = 20 + Math.random() * Math.max(1, W - BOX_W - 40) + BOX_W / 2
-      const y = -80 - i * 90
+      const col = i % cols
+      const slot = W / cols
+      const x = slot * col + slot / 2 + (Math.random() * 40 - 20)
+      const y = -60 - i * 80
       const body = Matter.Bodies.rectangle(x, y, BOX_W, BOX_H, {
-        restitution: 0.15,
+        restitution: 0.1,
         friction: 0.8,
-        frictionAir: 0.02,
+        frictionAir: 0.015,
+        angle: (Math.random() - 0.5) * 0.3,
         label: `box-${i}`,
       })
       bodies.current.push(body)
@@ -77,7 +74,6 @@ export function ServicesPhysics() {
     frameRef.current = requestAnimationFrame(loop)
 
     function getBodyAt(x: number, y: number) {
-      // Iterate top-most last so the visually upper box wins
       for (let i = bodies.current.length - 1; i >= 0; i--) {
         const b = bodies.current[i]
         if (Math.abs(b.position.x - x) < BOX_W / 2 && Math.abs(b.position.y - y) < BOX_H / 2) {
@@ -93,7 +89,6 @@ export function ServicesPhysics() {
       Matter.Body.setStatic(body, true)
       dragging.current = { body, offX: mx - body.position.x, offY: my - body.position.y }
     }
-
     function moveDrag(mx: number, my: number) {
       if (!dragging.current) return
       const { body, offX, offY } = dragging.current
@@ -102,7 +97,6 @@ export function ServicesPhysics() {
       Matter.Body.setPosition(body, { x: nx, y: ny })
       Matter.Body.setVelocity(body, { x: 0, y: 0 })
     }
-
     function endDrag() {
       if (!dragging.current) return
       Matter.Body.setStatic(dragging.current.body, false)
@@ -148,77 +142,23 @@ export function ServicesPhysics() {
     }
   }, [])
 
-  // ── Title scramble ────────────────────────────────────────────────────────
-  useEffect(() => {
-    function scramble() {
-      const el = titleRef.current
-      if (!el || el.dataset.running === "true") return
-      el.dataset.running = "true"
-      let frame = 0
-      const total = TITLE.length * 2.2
-      if (scrambleTimer.current) clearInterval(scrambleTimer.current)
-      scrambleTimer.current = setInterval(() => {
-        el.textContent = TITLE.split("")
-          .map((c, i) => {
-            if (c === " ") return " "
-            if (frame / 2.2 > i) return TITLE[i]
-            return CHARS[Math.floor(Math.random() * CHARS.length)]
-          })
-          .join("")
-        frame++
-        if (frame > total) {
-          el.textContent = TITLE
-          el.dataset.running = "false"
-          if (scrambleTimer.current) clearInterval(scrambleTimer.current)
-        }
-      }, 38)
-    }
-
-    // store on the element so the JSX onMouseEnter can call it
-    const el = titleRef.current
-    if (el) (el as any)._scramble = scramble
-
-    const t = setTimeout(scramble, 800)
-    return () => {
-      clearTimeout(t)
-      if (scrambleTimer.current) clearInterval(scrambleTimer.current)
-    }
-  }, [])
-
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 border-t border-foreground border-b border-foreground">
-      {/* LEFT — manifesto title + body + CTA */}
-      <div className="flex flex-col justify-between px-8 md:px-[60px] py-12 md:py-16 md:border-r border-foreground">
-        <div>
-          <p className="text-[8px] tracking-[.25em] uppercase text-foreground/40 mb-4">
-            What We Do
-          </p>
-          <h2
-            ref={titleRef}
-            onMouseEnter={() => titleRef.current && (titleRef.current as any)._scramble?.()}
-            className="text-[clamp(28px,4.5vw,52px)] font-black leading-[.92] tracking-[-0.045em] uppercase mb-6 cursor-default"
-          >
-            {TITLE}
-          </h2>
-          <p className="text-[12px] leading-[1.75] text-foreground/55 max-w-[320px]">
-            An Istanbul-based creative studio building brands as cultural artifacts — visual
-            languages that carry meaning across time, medium, and market.
-          </p>
-        </div>
-        <a
-          href="/contact"
-          className="text-[9px] tracking-[.18em] uppercase flex items-center gap-2 text-foreground hover:opacity-60 transition-opacity mt-8 no-underline w-fit"
-        >
-          <span className="w-4 h-px bg-foreground inline-block" />
-          Start a Project
-        </a>
+    <section className="bg-background border-t border-foreground border-b border-foreground">
+      {/* Eyebrow header strip */}
+      <div className="flex justify-between items-center px-8 md:px-[60px] py-5 border-b border-foreground/10">
+        <h2 className="text-[clamp(13px,1.6vw,20px)] font-black tracking-[-0.02em] uppercase">
+          What We Do
+        </h2>
+        <p className="text-[8px] md:text-[9px] tracking-[.18em] uppercase text-foreground/40">
+          Drag the boxes
+        </p>
       </div>
 
-      {/* RIGHT — physics boxes */}
+      {/* Physics arena — full width */}
       <div
         ref={containerRef}
         className="relative overflow-hidden bg-background touch-none"
-        style={{ minHeight: 520, cursor: "grab" }}
+        style={{ height: SECTION_H, cursor: "grab" }}
       >
         {SERVICES.map((svc, i) => (
           <div
