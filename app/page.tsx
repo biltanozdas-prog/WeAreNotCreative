@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { draftMode } from "next/headers"
 import { HeroVideo } from "@/components/hero-video"
-import { ManifestoSection } from "@/components/manifesto-section"
+import { ManifestoWithPhysics } from "@/components/manifesto-with-physics"
 import { HomepageJournal } from "@/components/homepage-journal"
 import { RevealSection } from "@/components/reveal-section"
 // Revalidate the homepage every 10 seconds to bypass Vercel Webhook setup failures
@@ -116,7 +116,7 @@ export default async function HomePage() {
       {/* Spacer for the fixed video hero — 50vh mobile / 100vh desktop */}
       <div className="h-[50vh] md:h-screen" />
       {/* Manifesto — left text, right interactive physics service deck */}
-      <ManifestoSection
+      <ManifestoWithPhysics
         headline={homeData?.headline || undefined}
         body={homeData?.manifestoText || undefined}
       />
