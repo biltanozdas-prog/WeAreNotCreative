@@ -121,6 +121,9 @@ export default async function HomePage() {
         body={homeData?.manifestoText || undefined}
       />
 
+      {/* Spacer between manifesto and the project showcase */}
+      <div className="h-16 md:h-24 border-b border-foreground" />
+
       {/* Selected Work — slider keeps its own IntersectionObserver, NOT wrapped
           in RevealSection to avoid clobbering its logo-hide observer. */}
       <ProjectShowcaseSlider projects={selectedProjects as any} />

@@ -13,7 +13,7 @@ const SERVICES = [
   { num: "07", name: "Content & Campaign Systems", desc: "So the message keeps moving.", dark: true },
 ]
 
-const BOX_W = 204
+const BOX_W = 200
 const BOX_H = 90
 
 interface Props {
@@ -172,7 +172,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       {/* RIGHT — interactive physics service deck */}
       <div
         ref={physicsRef}
-        className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[480px] md:min-h-[600px]"
+        className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[580px] md:min-h-[660px]"
         style={{ cursor: "grab" }}
       >
         {SERVICES.map((svc, i) => (
