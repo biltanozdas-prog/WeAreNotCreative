@@ -13,9 +13,8 @@ const SERVICES = [
   { num: "07", name: "Content & Campaign Systems", desc: "So the message keeps moving.", dark: true },
 ]
 
-const BOX_W = 188
-const BOX_H = 76
-const SECTION_H = 480
+const BOX_W = 210
+const BOX_H = 92
 
 export function ServicesPhysics() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -32,27 +31,27 @@ export function ServicesPhysics() {
     const W = container.offsetWidth
     const H = container.offsetHeight
 
-    const engine = Matter.Engine.create({ gravity: { x: 0, y: 1.8 } })
+    // Gentle gravity so the deck settles softly and stays put until dragged.
+    const engine = Matter.Engine.create({ gravity: { x: 0, y: 1.4 } })
     engineRef.current = engine
 
-    // Invisible bounds so boxes can't escape the section
-    const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 2, 50, { isStatic: true, friction: 0.8, label: "ground" })
+    const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 2, 50, { isStatic: true, friction: 0.9, label: "ground" })
     const wallL = Matter.Bodies.rectangle(-25, H / 2, 50, H * 4, { isStatic: true })
     const wallR = Matter.Bodies.rectangle(W + 25, H / 2, 50, H * 4, { isStatic: true })
     Matter.Composite.add(engine.world, [ground, wallL, wallR])
 
+    // Seed the boxes already STACKED at the bottom — no long fall.
     bodies.current = []
-    const cols = 3
+    const cx = W / 2
+    const baseY = H - BOX_H / 2 - 6
     SERVICES.forEach((_, i) => {
-      const col = i % cols
-      const slot = W / cols
-      const x = slot * col + slot / 2 + (Math.random() * 40 - 20)
-      const y = -60 - i * 80
+      const x = cx + (Math.random() * 48 - 24)
+      const y = Math.max(BOX_H / 2 + 4, baseY - i * (BOX_H * 0.92))
       const body = Matter.Bodies.rectangle(x, y, BOX_W, BOX_H, {
-        restitution: 0.1,
-        friction: 0.8,
-        frictionAir: 0.015,
-        angle: (Math.random() - 0.5) * 0.3,
+        restitution: 0.08,
+        friction: 0.9,
+        frictionAir: 0.02,
+        angle: (Math.random() - 0.5) * 0.14,
         label: `box-${i}`,
       })
       bodies.current.push(body)
@@ -143,46 +142,33 @@ export function ServicesPhysics() {
   }, [])
 
   return (
-    <section className="bg-background border-t border-foreground border-b border-foreground">
-      {/* Eyebrow header strip */}
-      <div className="flex justify-between items-center px-8 md:px-[60px] py-5 border-b border-foreground/10">
-        <h2 className="text-[clamp(13px,1.6vw,20px)] font-black tracking-[-0.02em] uppercase">
-          What We Do
-        </h2>
-        <p className="text-[8px] md:text-[9px] tracking-[.18em] uppercase text-foreground/40">
-          Drag the boxes
-        </p>
-      </div>
-
-      {/* Physics arena — full width */}
-      <div
-        ref={containerRef}
-        className="relative overflow-hidden bg-background touch-none"
-        style={{ height: SECTION_H, cursor: "grab" }}
-      >
-        {SERVICES.map((svc, i) => (
-          <div
-            key={svc.num}
-            ref={(el) => {
-              if (el) boxEls.current[i] = el
-            }}
-            className={`absolute select-none border border-foreground px-3 py-3 ${
-              svc.dark ? "bg-foreground text-background" : "bg-background text-foreground"
-            }`}
-            style={{ width: BOX_W, height: BOX_H, top: 0, left: 0, willChange: "transform" }}
-          >
-            <p className={`text-[8px] tracking-[.12em] mb-1 ${svc.dark ? "text-white/30" : "text-foreground/30"}`}>
-              {svc.num}
-            </p>
-            <p className="text-[11px] font-black tracking-[-0.015em] uppercase leading-[1.1] mb-1">
-              {svc.name}
-            </p>
-            <p className={`text-[9px] leading-[1.4] ${svc.dark ? "text-white/40" : "text-foreground/40"}`}>
-              {svc.desc}
-            </p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <div
+      ref={containerRef}
+      className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[560px] md:min-h-[640px]"
+      style={{ cursor: "grab" }}
+    >
+      {SERVICES.map((svc, i) => (
+        <div
+          key={svc.num}
+          ref={(el) => {
+            if (el) boxEls.current[i] = el
+          }}
+          className={`absolute select-none border border-foreground px-4 py-3.5 ${
+            svc.dark ? "bg-foreground text-background" : "bg-background text-foreground"
+          }`}
+          style={{ width: BOX_W, height: BOX_H, top: 0, left: 0, willChange: "transform" }}
+        >
+          <p className={`text-[8px] tracking-[.12em] mb-1.5 ${svc.dark ? "text-white/30" : "text-foreground/30"}`}>
+            {svc.num}
+          </p>
+          <p className="text-[13px] font-black tracking-[-0.015em] uppercase leading-[1.05] mb-1">
+            {svc.name}
+          </p>
+          <p className={`text-[9px] leading-[1.4] ${svc.dark ? "text-white/40" : "text-foreground/40"}`}>
+            {svc.desc}
+          </p>
+        </div>
+      ))}
+    </div>
   )
 }
