@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { draftMode } from "next/headers"
 import { HeroVideo } from "@/components/hero-video"
 import { ManifestoSection } from "@/components/manifesto-section"
-import { WhatWeDoSection } from "@/components/what-we-do-section"
+import { ServicesPhysics } from "@/components/services-physics"
 import { HomepageJournal } from "@/components/homepage-journal"
 import { RevealSection } from "@/components/reveal-section"
 // Revalidate the homepage every 10 seconds to bypass Vercel Webhook setup failures
@@ -122,8 +122,8 @@ export default async function HomePage() {
         body={homeData?.manifestoText || undefined}
       />
 
-      {/* What We Do — statement + numbered service list with sweep */}
-      <WhatWeDoSection />
+      {/* What We Do — physics-driven service boxes (Matter.js) */}
+      <ServicesPhysics />
 
       {/* Selected Work — slider keeps its own IntersectionObserver, NOT wrapped
           in RevealSection to avoid clobbering its logo-hide observer. */}
