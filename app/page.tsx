@@ -2,8 +2,9 @@ import type { Metadata } from "next"
 import { draftMode } from "next/headers"
 import { HeroVideo } from "@/components/hero-video"
 import { ManifestoSection } from "@/components/manifesto-section"
-import { ServicesSection } from "@/components/services-section"
+import { WhatWeDoSection } from "@/components/what-we-do-section"
 import { HomepageJournal } from "@/components/homepage-journal"
+import { RevealSection } from "@/components/reveal-section"
 // Revalidate the homepage every 10 seconds to bypass Vercel Webhook setup failures
 export const revalidate = 10
 
@@ -115,34 +116,45 @@ export default async function HomePage() {
       <HeroVideo videoUrl={homeData?.heroVideoUrl} />
       {/* Spacer for the fixed video hero — 50vh mobile / 100vh desktop */}
       <div className="h-[50vh] md:h-screen" />
+      {/* Manifesto — two-column (left existing, right statement + tags) */}
       <ManifestoSection
         headline={homeData?.headline || undefined}
         body={homeData?.manifestoText || undefined}
       />
-      <ServicesSection />
+
+      {/* What We Do — statement + numbered service list with sweep */}
+      <WhatWeDoSection />
+
+      {/* Selected Work — slider keeps its own IntersectionObserver, NOT wrapped
+          in RevealSection to avoid clobbering its logo-hide observer. */}
       <ProjectShowcaseSlider projects={selectedProjects as any} />
+
       {/* Journal preview (Sanity) */}
-      <HomepageJournal />
+      <RevealSection delay={0.05}>
+        <HomepageJournal />
+      </RevealSection>
 
       {/* Footer CTA */}
-      <section className="bg-background relative z-10 px-8 py-32 md:px-[60px] md:py-[180px] border-t border-secondary">
-        {homeData?.ctaLabel && (
-          <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-8 md:mb-12">
-            {homeData.ctaLabel}
-          </p>
-        )}
-        {homeData?.ctaHeadline && (
-          <h2 className="font-sans font-black text-[clamp(36px,7vw,120px)] leading-[0.85] uppercase text-foreground tracking-[-0.03em] mb-10 md:mb-16">
-            {homeData.ctaHeadline}
-          </h2>
-        )}
-        <Link
-          href="/contact"
-          className="font-sans font-medium text-[14px] md:text-[16px] uppercase tracking-[0.15em] text-foreground no-underline border-b-2 border-foreground pb-1 hover:opacity-60 transition-opacity"
-        >
-          {homeData?.ctaButtonText ?? "Start a Conversation"}
-        </Link>
-      </section>
+      <RevealSection delay={0.1}>
+        <section className="bg-background relative z-10 px-8 py-32 md:px-[60px] md:py-[180px] border-t border-secondary">
+          {homeData?.ctaLabel && (
+            <p className="font-sans font-light text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-8 md:mb-12">
+              {homeData.ctaLabel}
+            </p>
+          )}
+          {homeData?.ctaHeadline && (
+            <h2 className="font-sans font-black text-[clamp(36px,7vw,120px)] leading-[0.85] uppercase text-foreground tracking-[-0.03em] mb-10 md:mb-16">
+              {homeData.ctaHeadline}
+            </h2>
+          )}
+          <Link
+            href="/contact"
+            className="font-sans font-medium text-[14px] md:text-[16px] uppercase tracking-[0.15em] text-foreground no-underline border-b-2 border-foreground pb-1 hover:opacity-60 transition-opacity"
+          >
+            {homeData?.ctaButtonText ?? "Start a Conversation"}
+          </Link>
+        </section>
+      </RevealSection>
     </main>
   )
 }
