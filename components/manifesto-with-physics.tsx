@@ -35,8 +35,12 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
     const W = container.offsetWidth
     const H = container.offsetHeight
 
-    // Gentle gravity — the deck settles softly and stays put until dragged.
-    const engine = Matter.Engine.create({ gravity: { x: 0, y: 1.4 } })
+    // Gentle gravity + sleeping so boxes fully stop (no idle micro-jitter
+    // that makes the empty area look like it's flickering colour).
+    const engine = Matter.Engine.create({
+      gravity: { x: 0, y: 1.4 },
+      enableSleeping: true,
+    })
 
     const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 2, 50, { isStatic: true, friction: 0.9 })
     const wallL = Matter.Bodies.rectangle(-25, H / 2, 50, H * 4, { isStatic: true })
@@ -148,7 +152,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
   return (
     <section className="bg-background relative z-10 grid grid-cols-1 md:grid-cols-2 border-b border-foreground items-stretch">
       {/* LEFT — Manifesto */}
-      <div className="flex flex-col justify-between px-8 md:px-[60px] py-16 md:py-[120px] md:border-r border-foreground">
+      <div className="flex flex-col justify-center px-8 md:px-[60px] py-16 md:py-24 md:border-r border-foreground">
         <div>
           <p className="font-sans font-light text-[11px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-10">
             Manifesto
@@ -163,7 +167,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
         </div>
         <a
           href="/contact"
-          className="font-sans font-medium text-[13px] md:text-[14px] uppercase tracking-[0.15em] border-b-2 border-foreground pb-0.5 hover:opacity-60 transition-opacity mt-10 md:mt-0 w-fit no-underline text-foreground"
+          className="font-sans font-medium text-[13px] md:text-[14px] uppercase tracking-[0.15em] border-b-2 border-foreground pb-0.5 hover:opacity-60 transition-opacity mt-12 md:mt-16 w-fit no-underline text-foreground"
         >
           Start a Project
         </a>
@@ -172,7 +176,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       {/* RIGHT — interactive physics service deck */}
       <div
         ref={physicsRef}
-        className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[580px] md:min-h-[660px]"
+        className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[460px] md:min-h-[560px]"
         style={{ cursor: "grab" }}
       >
         {SERVICES.map((svc, i) => (
