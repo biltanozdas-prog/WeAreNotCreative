@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Matter from "matter-js"
 
 const SERVICES = [
@@ -12,9 +12,6 @@ const SERVICES = [
   { num: "06", name: "Objects & Products", desc: "So the idea exists in your hands.", dark: false },
   { num: "07", name: "Content & Campaign Systems", desc: "So the message keeps moving.", dark: true },
 ]
-
-const BOX_W = 200
-const BOX_H = 90
 
 interface Props {
   headline?: string
@@ -28,12 +25,29 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
   const frameRef = useRef<number>(0)
   const dragging = useRef<{ body: Matter.Body; offX: number; offY: number } | null>(null)
 
+  // Box size adapts to viewport (kept in state so the DOM boxes + physics
+  // bodies stay in sync; defaults match SSR so there's no hydration jump).
+  const [box, setBox] = useState({ w: 200, h: 90 })
+
+  useEffect(() => {
+    const update = () => {
+      const next = window.innerWidth < 768 ? { w: 150, h: 76 } : { w: 200, h: 90 }
+      setBox((prev) => (prev.w === next.w ? prev : next))
+    }
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+  }, [])
+
   useEffect(() => {
     const container = physicsRef.current
     if (!container) return
 
-    const W = container.offsetWidth
-    const H = container.offsetHeight
+    const BOX_W = box.w
+    const BOX_H = box.h
+
+    let W = container.offsetWidth
+    let H = container.offsetHeight
 
     // Gentle gravity + sleeping so boxes fully stop (no idle micro-jitter
     // that makes the empty area look like it's flickering colour).
@@ -42,10 +56,20 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       enableSleeping: true,
     })
 
-    const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 2, 50, { isStatic: true, friction: 0.9 })
+    const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 4, 50, { isStatic: true, friction: 0.9 })
     const wallL = Matter.Bodies.rectangle(-25, H / 2, 50, H * 4, { isStatic: true })
     const wallR = Matter.Bodies.rectangle(W + 25, H / 2, 50, H * 4, { isStatic: true })
     Matter.Composite.add(engine.world, [ground, wallL, wallR])
+
+    // Keep the floor + right wall in place if the container resizes
+    // (mobile rotate, responsive width change) without rebuilding the world.
+    const ro = new ResizeObserver(() => {
+      W = container.offsetWidth
+      H = container.offsetHeight
+      Matter.Body.setPosition(ground, { x: W / 2, y: H + 25 })
+      Matter.Body.setPosition(wallR, { x: W + 25, y: H / 2 })
+    })
+    ro.observe(container)
 
     // Seed the boxes ALREADY STACKED near the bottom — visible on first paint,
     // no long fall. They settle in place and wait to be dragged.
@@ -138,6 +162,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
 
     return () => {
       cancelAnimationFrame(frameRef.current)
+      ro.disconnect()
       Matter.Runner.stop(runner)
       Matter.Engine.clear(engine)
       container.removeEventListener("mousedown", onDown)
@@ -147,7 +172,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       window.removeEventListener("touchmove", onTouchMove)
       window.removeEventListener("touchend", endDrag)
     }
-  }, [])
+  }, [box])
 
   return (
     <section className="bg-background relative z-10 grid grid-cols-1 md:grid-cols-2 border-b border-foreground items-stretch">
@@ -188,7 +213,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
             className={`absolute select-none border border-foreground px-4 py-3.5 ${
               svc.dark ? "bg-foreground text-background" : "bg-background text-foreground"
             }`}
-            style={{ width: BOX_W, height: BOX_H, top: 0, left: 0, willChange: "transform" }}
+            style={{ width: box.w, height: box.h, top: 0, left: 0, willChange: "transform" }}
           >
             <p className={`text-[8px] tracking-[.12em] mb-1.5 ${svc.dark ? "text-white/30" : "text-foreground/30"}`}>
               {svc.num}
