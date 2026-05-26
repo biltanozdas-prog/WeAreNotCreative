@@ -113,8 +113,10 @@ export default async function HomePage() {
   return (
     <main>
       <HeroVideo videoUrl={homeData?.heroVideoUrl} />
-      {/* Spacer for the fixed video hero — 50vh mobile / 100vh desktop */}
-      <div className="h-[50vh] md:h-screen" />
+      {/* Spacer for the fixed video hero — 50vh mobile / 100vh desktop.
+          Transparent + pointer-events-none so the video underneath stays visible
+          and the user can't accidentally interact with the empty area. */}
+      <div className="h-[50vh] md:h-screen bg-transparent pointer-events-none" />
       {/* Manifesto — left text, right interactive physics service deck */}
       <ManifestoWithPhysics
         headline={homeData?.headline || undefined}

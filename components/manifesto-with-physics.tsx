@@ -201,7 +201,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       {/* RIGHT — interactive physics service deck */}
       <div
         ref={physicsRef}
-        className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[460px] md:min-h-[560px]"
+        className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[520px] md:min-h-[580px]"
         style={{ cursor: "grab" }}
       >
         {SERVICES.map((svc, i) => (
