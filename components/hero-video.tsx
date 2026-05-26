@@ -28,18 +28,15 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
   if (!videoUrl || !isVisible) return null
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-[50vh] md:h-screen z-0 overflow-hidden bg-black">
+    <div className="fixed top-0 left-0 w-screen h-[56vw] min-h-[280px] max-h-[60vh] md:h-screen md:max-h-none z-0 overflow-hidden bg-black">
       <video
         ref={videoRef}
         style={{
           position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          minWidth: "100%",
-          minHeight: "100%",
-          width: "auto",
-          height: "auto",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
         }}
         playsInline
         loop

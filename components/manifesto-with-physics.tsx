@@ -71,14 +71,16 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
     })
     ro.observe(container)
 
-    // Seed the boxes ALREADY STACKED near the bottom — visible on first paint,
-    // no long fall. They settle in place and wait to be dragged.
+    // Seed across the FULL container width so mobile (narrow grid cell)
+    // doesn't pile everything in the middle. Boxes drop from above with
+    // staggered timing — settle into a pile at the bottom.
     bodies.current = []
-    const cx = W / 2
-    const baseY = H - BOX_H / 2 - 6
+    const cols = W < 400 ? 2 : 3
     SERVICES.forEach((_, i) => {
-      const x = cx + (Math.random() * 48 - 24)
-      const y = Math.max(BOX_H / 2 + 4, baseY - i * (BOX_H * 0.92))
+      const col = i % cols
+      const colW = W / cols
+      const x = colW * col + colW / 2 + (Math.random() * 20 - 10)
+      const y = -50 - Math.floor(i / cols) * (BOX_H + 10) - Math.random() * 30
       const body = Matter.Bodies.rectangle(x, y, BOX_W, BOX_H, {
         restitution: 0.08,
         friction: 0.9,
@@ -149,6 +151,8 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
     }
     const onTouchMove = (e: TouchEvent) => {
       if (!dragging.current) return
+      // Only block page scroll while a box is actually being dragged.
+      e.preventDefault()
       const r = container.getBoundingClientRect()
       moveDrag(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top)
     }
@@ -157,7 +161,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
     window.addEventListener("mousemove", onMove)
     window.addEventListener("mouseup", endDrag)
     container.addEventListener("touchstart", onTouchDown, { passive: true })
-    window.addEventListener("touchmove", onTouchMove, { passive: true })
+    window.addEventListener("touchmove", onTouchMove, { passive: false })
     window.addEventListener("touchend", endDrag)
 
     return () => {
@@ -201,7 +205,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       {/* RIGHT — interactive physics service deck */}
       <div
         ref={physicsRef}
-        className="relative overflow-hidden bg-background touch-none w-full h-full min-h-[520px] md:min-h-[580px]"
+        className="relative overflow-hidden bg-background w-full h-full min-h-[520px] md:min-h-[580px]"
         style={{ cursor: "grab" }}
       >
         {SERVICES.map((svc, i) => (
