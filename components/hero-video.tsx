@@ -7,10 +7,21 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay may be blocked
+    const v = videoRef.current
+    if (!v) return
+    const tryPlay = () => {
+      v.play().catch(() => {
+        // Autoplay still blocked; nothing else to do.
       })
+    }
+    // First attempt immediately, second once enough data is loaded
+    // (iOS can reject the early play() call before metadata is ready).
+    tryPlay()
+    v.addEventListener("canplay", tryPlay, { once: true })
+    v.addEventListener("loadedmetadata", tryPlay, { once: true })
+    return () => {
+      v.removeEventListener("canplay", tryPlay)
+      v.removeEventListener("loadedmetadata", tryPlay)
     }
   }, [])
 
@@ -31,6 +42,7 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
     <div className="fixed top-0 left-0 w-screen h-[56vw] min-h-[280px] max-h-[60vh] md:h-screen md:max-h-none z-0 overflow-hidden bg-black">
       <video
         ref={videoRef}
+        src={videoUrl}
         style={{
           position: "absolute",
           inset: 0,
@@ -42,6 +54,7 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
         loop
         muted
         autoPlay
+        preload="auto"
       >
         <source type="video/mp4" src={videoUrl} />
       </video>

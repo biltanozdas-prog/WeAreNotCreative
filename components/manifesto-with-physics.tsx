@@ -132,7 +132,13 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
     }
     function endDrag() {
       if (!dragging.current) return
-      Matter.Body.setStatic(dragging.current.body, false)
+      const b = dragging.current.body
+      Matter.Body.setStatic(b, false)
+      // Force-wake the body — with enableSleeping true, setStatic(false)
+      // alone can leave the body in a sleeping state where gravity stops
+      // affecting it and the box just hangs in mid-air.
+      Matter.Sleeping.set(b, false)
+      Matter.Body.setVelocity(b, { x: 0, y: 0.5 })
       dragging.current = null
     }
 
@@ -214,18 +220,20 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
             ref={(el) => {
               if (el) boxEls.current[i] = el
             }}
-            className={`absolute select-none border border-foreground px-4 py-3.5 ${
+            className={`absolute select-none border border-foreground overflow-hidden px-3 py-2.5 md:px-4 md:py-3.5 ${
               svc.dark ? "bg-foreground text-background" : "bg-background text-foreground"
             }`}
             style={{ width: box.w, height: box.h, top: 0, left: 0, willChange: "transform" }}
           >
-            <p className={`text-[8px] tracking-[.12em] mb-1.5 ${svc.dark ? "text-white/30" : "text-foreground/30"}`}>
+            <p className={`text-[8px] tracking-[.12em] mb-1 md:mb-1.5 ${svc.dark ? "text-white/30" : "text-foreground/30"}`}>
               {svc.num}
             </p>
-            <p className="text-[12px] font-black tracking-[-0.015em] uppercase leading-[1.05] mb-1">
+            <p className="text-[11px] md:text-[12px] font-black tracking-[-0.015em] uppercase leading-[1.05] mb-1">
               {svc.name}
             </p>
-            <p className={`text-[9px] leading-[1.4] ${svc.dark ? "text-white/45" : "text-foreground/45"}`}>
+            {/* Desc hidden on mobile — the 150x76 mobile box can't fit a third
+                line without text spilling outside the border. */}
+            <p className={`hidden md:block text-[9px] leading-[1.4] ${svc.dark ? "text-white/45" : "text-foreground/45"}`}>
               {svc.desc}
             </p>
           </div>

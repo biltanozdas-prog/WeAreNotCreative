@@ -187,7 +187,7 @@ export function ProjectShowcaseSlider({ projects }: ProjectShowcaseSliderProps) 
                                         </span>
                                     </div>
                                     {/* Brand label — white background block */}
-                                    <div className="bg-white text-black px-[10px] py-[6px] md:px-[14px] md:py-[10px] font-['Montserrat'] font-normal text-[10px] md:text-[13px] leading-none">
+                                    <div className="bg-white text-black px-[10px] py-[6px] md:px-[14px] md:py-[10px] font-['Montserrat'] font-black tracking-[-0.03em] text-[11px] md:text-[15px] leading-none">
                                         WeAreNotCreative
                                     </div>
                                 </div>
