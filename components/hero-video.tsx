@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 
 export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
@@ -25,21 +26,28 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
     }
   }, [])
 
-  // Hide video once user scrolls past the first viewport
+  // Hide video the moment the user has scrolled past the hero container,
+  // so the fixed video never bleeds under shorter sections below
+  // (manifesto, etc.) where the viewport would otherwise show it.
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY
-      const vh = window.innerHeight
-      setIsVisible(scrollY < vh * 1.2)
+      const c = containerRef.current
+      if (!c) return
+      setIsVisible(window.scrollY < c.offsetHeight)
     }
+    handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
+    window.addEventListener("resize", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("resize", handleScroll)
+    }
   }, [])
 
   if (!videoUrl || !isVisible) return null
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-[64vw] min-h-[320px] max-h-[70vh] md:h-screen md:max-h-none z-0 overflow-hidden bg-black">
+    <div ref={containerRef} className="fixed top-0 left-0 w-screen h-[64vw] min-h-[320px] max-h-[70vh] md:h-screen md:max-h-none z-0 overflow-hidden bg-black">
       <video
         ref={videoRef}
         src={videoUrl}
