@@ -5,7 +5,11 @@ import { useEffect, useRef, useState } from "react"
 export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(true)
+  // `past` = the user has scrolled below the hero container. We do NOT
+  // unmount the component on this; the container stays in the DOM so
+  // the ref keeps working and we can flip back to visible when the
+  // user scrolls back up.
+  const [past, setPast] = useState(false)
 
   useEffect(() => {
     const v = videoRef.current
@@ -15,8 +19,6 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
         // Autoplay still blocked; nothing else to do.
       })
     }
-    // First attempt immediately, second once enough data is loaded
-    // (iOS can reject the early play() call before metadata is ready).
     tryPlay()
     v.addEventListener("canplay", tryPlay, { once: true })
     v.addEventListener("loadedmetadata", tryPlay, { once: true })
@@ -24,16 +26,24 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
       v.removeEventListener("canplay", tryPlay)
       v.removeEventListener("loadedmetadata", tryPlay)
     }
-  }, [])
+  }, [videoUrl])
 
-  // Hide video the moment the user has scrolled past the hero container,
-  // so the fixed video never bleeds under shorter sections below
-  // (manifesto, etc.) where the viewport would otherwise show it.
+  // Track whether the hero has scrolled past the viewport. Pause the
+  // video while it's hidden, resume on scroll-back so it doesn't keep
+  // burning data in the background.
   useEffect(() => {
     const handleScroll = () => {
       const c = containerRef.current
       if (!c) return
-      setIsVisible(window.scrollY < c.offsetHeight)
+      const isPast = window.scrollY >= c.offsetHeight
+      setPast(isPast)
+      const v = videoRef.current
+      if (!v) return
+      if (isPast) {
+        v.pause()
+      } else if (v.paused) {
+        v.play().catch(() => {})
+      }
     }
     handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
@@ -44,10 +54,15 @@ export function HeroVideo({ videoUrl }: { videoUrl?: string }) {
     }
   }, [])
 
-  if (!videoUrl || !isVisible) return null
+  if (!videoUrl) return null
 
   return (
-    <div ref={containerRef} className="fixed top-0 left-0 w-screen h-[64vw] min-h-[320px] max-h-[70vh] md:h-screen md:max-h-none z-0 overflow-hidden bg-black">
+    <div
+      ref={containerRef}
+      aria-hidden={past}
+      style={{ visibility: past ? "hidden" : "visible" }}
+      className="fixed top-0 left-0 w-screen h-[64vw] min-h-[320px] max-h-[70vh] md:h-screen md:max-h-none z-0 overflow-hidden bg-black pointer-events-none"
+    >
       <video
         ref={videoRef}
         src={videoUrl}
