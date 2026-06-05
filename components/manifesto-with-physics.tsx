@@ -59,11 +59,14 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
     let W = container.offsetWidth
     let H = container.offsetHeight
 
-    // Gentle gravity + sleeping so boxes fully stop (no idle micro-jitter
-    // that makes the empty area look like it's flickering colour).
+    // Gentle gravity. enableSleeping is OFF on purpose — with it on,
+    // boxes that bounced into each other on the way down could pick up a
+    // momentary velocity ~0 and immediately fall asleep mid-air, leaving
+    // them stuck floating. Air friction is high enough that bodies still
+    // settle quickly without the sleep optimisation.
     const engine = Matter.Engine.create({
       gravity: { x: 0, y: 1.4 },
-      enableSleeping: true,
+      enableSleeping: false,
     })
 
     const ground = Matter.Bodies.rectangle(W / 2, H + 25, W * 4, 50, { isStatic: true, friction: 0.9 })
@@ -81,20 +84,26 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
     })
     ro.observe(container)
 
-    // Seed across the FULL container width so mobile (narrow grid cell)
-    // doesn't pile everything in the middle. Boxes drop from above with
-    // staggered timing — settle into a pile at the bottom.
+    // Seed across the FULL container width. Column count adapts so on
+    // ultra-wide screens the 7 boxes lay out as 2 rows of ~4, while on
+    // narrow phones we drop to 2 cols. Bodies start above the arena and
+    // fall in, settling into a pile at the bottom thanks to high air
+    // friction and the no-sleep engine config.
     bodies.current = []
-    const cols = W < 400 ? 2 : 3
+    // Roughly how many boxes can comfortably fit side-by-side in W
+    const colsByWidth = Math.max(2, Math.min(4, Math.floor(W / (BOX_W + 24))))
+    const cols = colsByWidth
     SERVICES.forEach((_, i) => {
       const col = i % cols
+      const row = Math.floor(i / cols)
       const colW = W / cols
-      const x = colW * col + colW / 2 + (Math.random() * 20 - 10)
-      const y = -50 - Math.floor(i / cols) * (BOX_H + 10) - Math.random() * 30
+      const x = colW * col + colW / 2 + (Math.random() * 18 - 9)
+      // Stagger rows above the arena so they fall in succession
+      const y = -BOX_H / 2 - row * (BOX_H + 14) - Math.random() * 24
       const body = Matter.Bodies.rectangle(x, y, BOX_W, BOX_H, {
-        restitution: 0.08,
+        restitution: 0.05,
         friction: 0.9,
-        frictionAir: 0.02,
+        frictionAir: 0.06,
         angle: (Math.random() - 0.5) * 0.14,
         label: `box-${i}`,
       })
