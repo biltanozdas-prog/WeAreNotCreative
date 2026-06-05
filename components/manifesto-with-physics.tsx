@@ -118,9 +118,17 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       return undefined
     }
 
+    function wakeAll() {
+      // Sleeping bodies don't respond to gravity. When we lift one box out
+      // of the pile, everything resting on it has to be woken or it just
+      // hangs in mid-air.
+      bodies.current.forEach((body) => Matter.Sleeping.set(body, false))
+    }
+
     function startDrag(mx: number, my: number) {
       const b = getBody(mx, my)
       if (!b) return
+      wakeAll()
       Matter.Body.setStatic(b, true)
       dragging.current = { body: b, offX: mx - b.position.x, offY: my - b.position.y }
     }
@@ -136,11 +144,11 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       if (!dragging.current) return
       const b = dragging.current.body
       Matter.Body.setStatic(b, false)
-      // Force-wake the body — with enableSleeping true, setStatic(false)
-      // alone can leave the body in a sleeping state where gravity stops
-      // affecting it and the box just hangs in mid-air.
-      Matter.Sleeping.set(b, false)
       Matter.Body.setVelocity(b, { x: 0, y: 0.5 })
+      // Wake the released box AND every other box. Otherwise the ones
+      // that used to be resting on it stay asleep and float in place
+      // once their support is gone.
+      wakeAll()
       dragging.current = null
     }
 
