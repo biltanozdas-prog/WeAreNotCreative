@@ -31,9 +31,17 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
 
   useEffect(() => {
     const update = () => {
-      // Mobile box height bumped 76 -> 100 so the description line
-      // (now visible on mobile too) actually fits inside the border.
-      const next = window.innerWidth < 768 ? { w: 154, h: 100 } : { w: 200, h: 90 }
+      // Responsive box dims so the deck reads in proportion to the arena
+      // on every breakpoint (phone, tablet/laptop, desktop, ultra-wide).
+      const w = window.innerWidth
+      const next =
+        w < 768
+          ? { w: 154, h: 100 }
+          : w < 1280
+            ? { w: 200, h: 90 }
+            : w < 1536
+              ? { w: 240, h: 102 }
+              : { w: 280, h: 112 }
       setBox((prev) => (prev.w === next.w ? prev : next))
     }
     update()
@@ -202,7 +210,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
           <p className="font-sans font-light text-[11px] md:text-[13px] uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-10">
             Manifesto
           </p>
-          <h2 className="font-sans font-black text-[8vw] md:text-[5.5vw] leading-[0.88] uppercase text-foreground max-w-[95%] text-balance tracking-[-0.03em] mb-8 md:mb-12">
+          <h2 className="font-sans font-black text-[clamp(36px,8vw,108px)] md:text-[clamp(40px,5.5vw,84px)] leading-[0.88] uppercase text-foreground max-w-[95%] text-balance tracking-[-0.03em] mb-8 md:mb-12">
             {headline ?? "Design as a Cultural Practice."}
           </h2>
           <p className="font-sans font-light text-[15px] md:text-[18px] leading-[1.65] text-muted-foreground max-w-[480px] md:ml-[6ch]">
@@ -221,7 +229,7 @@ export function ManifestoWithPhysics({ headline, body }: Props) {
       {/* RIGHT — interactive physics service deck */}
       <div
         ref={physicsRef}
-        className="relative overflow-hidden bg-background w-full h-full min-h-[520px] md:min-h-[580px]"
+        className="relative overflow-hidden bg-background w-full h-full min-h-[520px] md:min-h-[580px] xl:min-h-[660px] 2xl:min-h-[740px]"
         style={{ cursor: "grab" }}
       >
         {SERVICES.map((svc, i) => (
